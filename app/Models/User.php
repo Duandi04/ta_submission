@@ -4,13 +4,17 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles, SoftDeletes, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +25,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'nim_nip',
+        'phone',
+        'address',
+        'profile_photo',
+        'is_active',
     ];
 
     /**
@@ -43,6 +52,79 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * Activity log options
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'email', 'nim_nip', 'is_active'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
+    /**
+     * Relationships
+     */
+    public function thesisSubmissions()
+    {
+        return $this->hasMany(ThesisSubmission::class, 'student_id');
+    }
+
+    public function supervisedTheses()
+    {
+        return $this->hasMany(ThesisSubmission::class, 'supervisor_id');
+    }
+
+    public function assessments()
+    {
+        return $this->hasMany(Assessment::class, 'evaluator_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function uploadedFiles()
+    {
+        return $this->hasMany(SubmissionFile::class, 'uploaded_by');
+    }
+
+    /**
+     * Helper methods
+     */
+    public function isStudent(): bool
+    {
+        return $this->hasRole('mahasiswa');
+    }
+
+    public function isSupervisor(): bool
+    {
+        return $this->hasRole('dosen_pembimbing');
+    }
+
+    public function isExaminer(): bool
+    {
+        return $this->hasRole('dosen_penguji');
+    }
+
+    public function isCoordinator(): bool
+    {
+        return $this->hasRole('koordinator');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
     }
 }
