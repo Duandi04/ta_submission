@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->text('address')->nullable();
             $table->string('profile_photo')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->foreignId('program_studi_id')->nullable()->constrained('program_studis')->onDelete('set null');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

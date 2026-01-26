@@ -1,0 +1,105 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\ThesisSubmission;
+use App\Models\User;
+
+class DashboardService
+{
+    /**
+     * Get dashboard statistics based on user role.
+     */
+    public function getStats(User $user): array
+    {
+        $stats = [];
+
+        if ($user->hasRole('admin')) {
+            $stats = $this->getAdminStats();
+        } elseif ($user->hasRole('koordinator')) {
+            $stats = $this->getCoordinatorStats();
+        } elseif ($user->hasRole('dosen_pembimbing')) {
+            $stats = $this->getSupervisorStats($user);
+        } elseif ($user->hasRole('dosen_penguji')) {
+            $stats = $this->getExaminerStats($user);
+        } elseif ($user->hasRole('mahasiswa')) {
+            $stats = $this->getStudentStats($user);
+        }
+
+        return $stats;
+    }
+
+    protected function getAdminStats(): array
+    {
+        return [
+            'total_users' => User::count(),
+            'total_submissions' => ThesisSubmission::count(),
+            'pending_submissions' => ThesisSubmission::where('status', 'pending')->count(),
+            'approved_submissions' => ThesisSubmission::where('status', 'approved')->count(),
+        ];
+    }
+
+    protected function getKaprodiStats(User $user): array
+    {
+        $prodiId = $user->program_studi_id;
+
+        $studentQuery = User::role('mahasiswa');
+        if ($prodiId) {
+            $studentQuery->where('program_studi_id', $prodiId);
+        }
+
+        $allStudentsCount = $studentQuery->count();
+
+        $submissionQuery = ThesisSubmission::query();
+        if ($prodiId) {
+            $submissionQuery->whereHas('student', function ($q) use ($prodiId) {
+                $q->where('program_studi_id', $prodiId);
+            });
+        }
+
+        return [
+            'total_students' => $allStudentsCount,
+            'total_submissions' => $submissionQuery->count(),
+            'pending_submissions' => $submissionQuery->clone()->where('status', 'submitted')->count(),
+            'approved_submissions' => $submissionQuery->clone()->where('status', 'approved')->count(),
+        ];
+    }
+
+    protected function getCoordinatorStats(): array
+    {
+        return [
+            'total_submissions' => ThesisSubmission::count(),
+            'pending_review' => ThesisSubmission::where('status', 'pending')->count(),
+            'in_progress' => ThesisSubmission::where('status', 'in_progress')->count(),
+            'completed' => ThesisSubmission::where('status', 'completed')->count(),
+        ];
+    }
+
+    protected function getSupervisorStats(User $user): array
+    {
+        return [
+            'supervised_students' => $user->supervisedTheses()->count(),
+            'pending_review' => $user->supervisedTheses()->where('status', 'pending')->count(),
+            'in_progress' => $user->supervisedTheses()->where('status', 'in_progress')->count(),
+        ];
+    }
+
+    protected function getExaminerStats(User $user): array
+    {
+        return [
+            'total_assessments' => $user->assessments()->count(),
+            'pending_assessments' => $user->assessments()->where('is_submitted', false)->count(),
+            'submitted_assessments' => $user->assessments()->where('is_submitted', true)->count(),
+        ];
+    }
+
+    protected function getStudentStats(User $user): array
+    {
+        return [
+            'my_submissions' => $user->thesisSubmissions()->count(),
+            'drafts' => $user->thesisSubmissions()->where('status', 'draft')->count(),
+            'pending' => $user->thesisSubmissions()->where('status', 'pending')->count(),
+            'approved' => $user->thesisSubmissions()->where('status', 'approved')->count(),
+        ];
+    }
+}

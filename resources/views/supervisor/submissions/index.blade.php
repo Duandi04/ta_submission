@@ -109,7 +109,7 @@
     @else
         <div class="card">
             <div class="card-body text-center py-5">
-                <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+                <i class="bi bi-inbox empty-state-icon"></i>
                 <h4 class="mt-3">Belum Ada Mahasiswa Bimbingan</h4>
                 <p class="text-muted">Anda belum ditugaskan membimbing mahasiswa.</p>
             </div>

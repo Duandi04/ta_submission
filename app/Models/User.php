@@ -30,6 +30,7 @@ class User extends Authenticatable
         'address',
         'profile_photo',
         'is_active',
+        'program_studi_id',
     ];
 
     /**

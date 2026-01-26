@@ -46,18 +46,22 @@ class RolePermissionSeeder extends Seeder
 
             // Reports
             'view reports',
+
+            // Settings & Rubrics
+            'manage settings',
+            'manage rubrics',
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Create roles and assign permissions
-        $admin = Role::create(['name' => 'admin']);
+        $admin = Role::firstOrCreate(['name' => 'admin']);
         $admin->givePermissionTo(Permission::all());
 
-        $koordinator = Role::create(['name' => 'koordinator']);
-        $koordinator->givePermissionTo([
+        $koordinator = Role::firstOrCreate(['name' => 'koordinator']);
+        $koordinator->syncPermissions([
             'view users',
             'view submissions',
             'approve submissions',
@@ -68,8 +72,22 @@ class RolePermissionSeeder extends Seeder
             'view reports',
         ]);
 
-        $dosenPembimbing = Role::create(['name' => 'dosen_pembimbing']);
-        $dosenPembimbing->givePermissionTo([
+        $kaprodi = Role::firstOrCreate(['name' => 'kaprodi']);
+        $kaprodi->syncPermissions([
+            'view users',
+            'view submissions',
+            'approve submissions',
+            'reject submissions',
+            'view assessments',
+            'view comments',
+            'view activity logs',
+            'view reports',
+            'manage settings',
+            'manage rubrics',
+        ]);
+
+        $dosenPembimbing = Role::firstOrCreate(['name' => 'dosen_pembimbing']);
+        $dosenPembimbing->syncPermissions([
             'view submissions',
             'edit submissions',
             'approve submissions',
@@ -80,8 +98,8 @@ class RolePermissionSeeder extends Seeder
             'create comments',
         ]);
 
-        $dosenPenguji = Role::create(['name' => 'dosen_penguji']);
-        $dosenPenguji->givePermissionTo([
+        $dosenPenguji = Role::firstOrCreate(['name' => 'dosen_penguji']);
+        $dosenPenguji->syncPermissions([
             'view submissions',
             'view assessments',
             'create assessments',
@@ -90,8 +108,8 @@ class RolePermissionSeeder extends Seeder
             'create comments',
         ]);
 
-        $mahasiswa = Role::create(['name' => 'mahasiswa']);
-        $mahasiswa->givePermissionTo([
+        $mahasiswa = Role::firstOrCreate(['name' => 'mahasiswa']);
+        $mahasiswa->syncPermissions([
             'view submissions',
             'create submissions',
             'edit submissions',

@@ -21,10 +21,9 @@
                             <tr>
                                 <th>No</th>
                                 <th>Judul</th>
-                                <th>Pembimbing</th>
                                 <th>Status</th>
                                 <th>Tgl Pengajuan</th>
-                                <th>Aksi</th>
+                                <th class="text-end">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -36,23 +35,22 @@
                                         <br>
                                         <small class="text-muted">{{ $submission->research_field }}</small>
                                     </td>
-                                    <td>{{ $submission->supervisor?->name ?? '-' }}</td>
                                     <td>
                                         <span class="badge bg-{{ $submission->getStatusBadgeClass() }}">
                                             {{ $submission->getStatusLabel() }}
                                         </span>
                                     </td>
                                     <td>{{ $submission->submission_date?->format('d M Y') ?? '-' }}</td>
-                                    <td>
+                                    <td class="text-end">
                                         <div class="btn-group btn-group-sm">
-                                            <a href="{{ route('student.submissions.show', $submission) }}" class="btn btn-primary"
-                                                title="Lihat Detail">
-                                                <i class="bi-eye"></i>
+                                            <a href="{{ route('student.submissions.show', $submission) }}"
+                                                class="btn btn-sm btn-outline-primary px-3" title="Lihat Detail">
+                                                Detail
                                             </a>
                                             @if($submission->canBeEditedByStudent())
-                                                <a href="{{ route('student.submissions.edit', $submission) }}" class="btn btn-warning"
-                                                    title="Edit">
-                                                    <i class="bi bi-pencil"></i>
+                                                <a href="{{ route('student.submissions.edit', $submission) }}"
+                                                    class="btn btn-sm btn-outline-warning px-3" title="Edit">
+                                                    Edit
                                                 </a>
                                             @endif
                                             @if($submission->status === 'draft')
@@ -60,8 +58,9 @@
                                                     class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger" data-confirm-delete title="Hapus">
-                                                        <i class="bi bi-trash"></i>
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger px-3" data-confirm-delete
+                                                        title="Hapus">
+                                                        Hapus
                                                     </button>
                                                 </form>
                                             @endif
@@ -81,7 +80,7 @@
     @else
         <div class="card">
             <div class="card-body text-center py-5">
-                <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+                <i class="bi bi-inbox empty-state-icon"></i>
                 <h4 class="mt-3">Belum Ada Pengajuan</h4>
                 <p class="text-muted">Buat pengajuan tugas akhir pertama Anda sekarang.</p>
                 <a href="{{ route('student.submissions.create') }}" class="btn btn-primary mt-2">

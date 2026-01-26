@@ -4,24 +4,27 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\ThesisSubmission;
+use App\Services\Student\SubmissionService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class SubmissionController extends Controller
 {
+    public function __construct(
+        protected SubmissionService $submissionService
+    ) {
+    }
+
     public function index()
     {
-        $submissions = auth()->user()->thesisSubmissions()
-            ->with(['supervisor', 'assessments'])
-            ->latest()
-            ->paginate(10);
+        $submissions = $this->submissionService->getStudentSubmissions();
 
         return view('student.submissions.index', compact('submissions'));
     }
 
     public function create()
     {
-        $supervisors = \App\Models\User::role('dosen_pembimbing')->get();
+        $supervisors = $this->submissionService->getSupervisors();
+
         return view('student.submissions.create', compact('supervisors'));
     }
 
@@ -32,32 +35,13 @@ class SubmissionController extends Controller
             'abstract' => 'required',
             'research_field' => 'nullable|max:100',
             'supervisor_id' => 'required|exists:users,id',
-            'proposal_file' => 'required|file|mimes:pdf,doc,docx|max:10240', // 10MB max
+            'proposal_file' => 'required|file|mimes:pdf,doc,docx|max:10240',
         ]);
 
-        $submission = auth()->user()->thesisSubmissions()->create([
-            ...$validated,
-            'status' => 'draft',
-        ]);
-
-        // Handle file upload
-        if ($request->hasFile('proposal_file')) {
-            $file = $request->file('proposal_file');
-            $path = $file->store('submissions/' . $submission->id, 'public');
-
-            $submission->files()->create([
-                'file_name' => $file->getClientOriginalName(),
-                'file_path' => $path,
-                'file_type' => 'proposal',
-                'file_size' => $file->getSize(),
-                'mime_type' => $file->getMimeType(),
-                'uploaded_by' => auth()->id(),
-            ]);
-        }
-
-        activity()
-            ->performedOn($submission)
-            ->log('Created thesis submission');
+        $submission = $this->submissionService->create(
+            $validated,
+            $request->file('proposal_file')
+        );
 
         return redirect()
             ->route('student.submissions.show', $submission)
@@ -75,17 +59,16 @@ class SubmissionController extends Controller
 
     public function edit(ThesisSubmission $submission)
     {
-        abort_if($submission->student_id !== auth()->id(), 403);
-        abort_if(!$submission->canBeEditedByStudent(), 403, 'Pengajuan ini tidak dapat diedit.');
+        abort_if(!$this->submissionService->canEdit($submission), 403, 'Pengajuan ini tidak dapat diedit.');
 
-        $supervisors = \App\Models\User::role('dosen_pembimbing')->get();
+        $supervisors = $this->submissionService->getSupervisors();
+
         return view('student.submissions.edit', compact('submission', 'supervisors'));
     }
 
     public function update(Request $request, ThesisSubmission $submission)
     {
-        abort_if($submission->student_id !== auth()->id(), 403);
-        abort_if(!$submission->canBeEditedByStudent(), 403);
+        abort_if(!$this->submissionService->canEdit($submission), 403);
 
         $validated = $request->validate([
             'title' => 'required|max:255',
@@ -95,26 +78,11 @@ class SubmissionController extends Controller
             'proposal_file' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
         ]);
 
-        $submission->update($validated);
-
-        // Handle file upload
-        if ($request->hasFile('proposal_file')) {
-            $file = $request->file('proposal_file');
-            $path = $file->store('submissions/' . $submission->id, 'public');
-
-            $submission->files()->create([
-                'file_name' => $file->getClientOriginalName(),
-                'file_path' => $path,
-                'file_type' => 'proposal',
-                'file_size' => $file->getSize(),
-                'mime_type' => $file->getMimeType(),
-                'uploaded_by' => auth()->id(),
-            ]);
-        }
-
-        activity()
-            ->performedOn($submission)
-            ->log('Updated thesis submission');
+        $this->submissionService->update(
+            $submission,
+            $validated,
+            $request->file('proposal_file')
+        );
 
         return redirect()
             ->route('student.submissions.show', $submission)
@@ -123,14 +91,9 @@ class SubmissionController extends Controller
 
     public function destroy(ThesisSubmission $submission)
     {
-        abort_if($submission->student_id !== auth()->id(), 403);
-        abort_if($submission->status !== 'draft', 403, 'Hanya pengajuan draft yang dapat dihapus.');
+        abort_if(!$this->submissionService->canDelete($submission), 403, 'Hanya pengajuan draft yang dapat dihapus.');
 
-        activity()
-            ->performedOn($submission)
-            ->log('Deleted thesis submission');
-
-        $submission->delete();
+        $this->submissionService->delete($submission);
 
         return redirect()
             ->route('student.submissions.index')

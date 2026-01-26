@@ -38,7 +38,7 @@
                         </tr>
                         <tr>
                             <th>Pembimbing</th>
-                            <td>: {{ $submission->supervisor?->name ?? '-' }}</td>
+                            <td>: Dosen Pembimbing</td>
                         </tr>
                         <tr>
                             <th>Status</th>
@@ -134,7 +134,7 @@
                                 <tbody>
                                     @foreach($submission->assessments->where('is_submitted', true) as $assessment)
                                         <tr>
-                                            <td>{{ $assessment->evaluator->name }}</td>
+                                            <td>Penilai {{ $loop->iteration }}</td>
                                             <td>{{ $assessment->getEvaluatorTypeLabel() }}</td>
                                             <td><strong>{{ $assessment->total_score }}</strong></td>
                                             <td>{{ $assessment->submitted_at->format('d M Y') }}</td>
@@ -166,7 +166,7 @@
                                         <strong>{{ ucfirst(str_replace('_', ' ', $status->new_status)) }}</strong><br>
                                         <small class="text-muted">
                                             {{ $status->created_at->format('d M Y H:i') }}<br>
-                                            oleh {{ $status->changer->name }}
+                                            oleh {{ $status->changer->hasRole('mahasiswa') ? 'Mahasiswa' : 'Dosen/Admin' }}
                                         </small>
                                         @if($status->comment)
                                             <p class="mt-1 mb-0 small">{{ $status->comment }}</p>

@@ -81,6 +81,30 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="program_studi_id" class="form-label">Program Studi <span class="text-danger">*</span></label>
+                            <select class="form-select @error('program_studi_id') is-invalid @enderror" id="program_studi_id" name="program_studi_id">
+                                <option value="">-- Pilih Program Studi --</option>
+                                @foreach($programStudis as $prodi)
+                                    <option value="{{ $prodi->id }}" {{ old('program_studi_id') == $prodi->id ? 'selected' : '' }}>
+                                        [{{ $prodi->code }}] {{ $prodi->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="form-text mt-1">Wajib diisi untuk mahasiswa, dosen, dan kaprodi.</div>
+                            @error('program_studi_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="is_active">Akun Aktif</label>
+                            </div>
+                            <div class="form-text">Jika tidak aktif, user tidak akan bisa login.</div>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
                             <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
                                 <option value="">-- Pilih Role --</option>

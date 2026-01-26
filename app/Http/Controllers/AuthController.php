@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        protected AuthService $authService
+    ) {
+    }
+
     public function showLogin()
     {
         return view('auth.login');
@@ -19,31 +24,20 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-
-            activity()
-                ->causedBy(Auth::user())
-                ->log('User logged in');
+        if ($this->authService->attempt($credentials, $request->boolean('remember'))) {
+            $this->authService->loginUser($request);
 
             return redirect()->intended(route('dashboard'));
         }
 
         return back()->withErrors([
-            'email' => 'Email atau password salah.',
+            'email' => 'Email atau password salah, atau akun Anda belum aktif.',
         ])->onlyInput('email');
     }
 
     public function logout(Request $request)
     {
-        activity()
-            ->causedBy(Auth::user())
-            ->log('User logged out');
-
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $this->authService->logout($request);
 
         return redirect()->route('login');
     }

@@ -1,6 +1,30 @@
-// JavaScript for Sistem Pengajuan TA
+// JavaScript for Sistem Pengajuan TA - Modern & Performance Oriented
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Sidebar Toggle Logic
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    
+    // Load sidebar state from localStorage
+    const sidebarState = localStorage.getItem('sidebarState');
+    if (sidebarState === 'collapsed') {
+        sidebar?.classList.add('collapsed');
+        mainContent?.classList.add('expanded');
+    }
+
+    sidebarToggle?.addEventListener('click', function() {
+        sidebar?.classList.toggle('collapsed');
+        mainContent?.classList.toggle('expanded');
+        
+        // Save state to localStorage
+        if (sidebar?.classList.contains('collapsed')) {
+            localStorage.setItem('sidebarState', 'collapsed');
+        } else {
+            localStorage.setItem('sidebarState', 'expanded');
+        }
+    });
+
     // Auto-hide alerts after 5 seconds
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
@@ -25,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Confirm delete actions
-    const deleteButtons = document.querySelectorAll('[data-confirm-delete]');
+    const deleteButtons = document.querySelectorAll('[data-confirm-delete], .btn-delete');
     deleteButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) {
@@ -35,56 +59,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Auto-submit on filter change
-    const autoSubmitSelects = document.querySelectorAll('[data-auto-submit]');
-    autoSubmitSelects.forEach(select => {
-        select.addEventListener('change', function() {
-            this.closest('form').submit();
-        });
-    });
-
-    // Character counter for textareas
-    const textareas = document.querySelectorAll('textarea[maxlength]');
-    textareas.forEach(textarea => {
-        const maxLength = textarea.getAttribute('maxlength');
-        const counter = document.createElement('small');
-        counter.className = 'text-muted float-end';
-        counter.textContent = `0 / ${maxLength}`;
-        textarea.parentNode.appendChild(counter);
-
-        textarea.addEventListener('input', function() {
-            const length = this.value.length;
-            counter.textContent = `${length} / ${maxLength}`;
-        });
+    // Tooltips initialization
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 });
 
-// Form validation
-(function () {
-    'use strict'
-    const forms = document.querySelectorAll('.needs-validation')
-    Array.from(forms).forEach(form => {
-        form.addEventListener('submit', event => {
-            if (!form.checkValidity()) {
-                event.preventDefault()
-                event.stopPropagation()
-            }
-            form.classList.add('was-validated')
-        }, false)
-    })
-})()
-
-// Helper functions
+// Helper functions for loading states
 function showLoading() {
     const overlay = document.createElement('div');
     overlay.className = 'spinner-overlay';
-    overlay.innerHTML = '<div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div>';
+    overlay.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
     document.body.appendChild(overlay);
 }
 
 function hideLoading() {
     const overlay = document.querySelector('.spinner-overlay');
-    if (overlay) {
-        overlay.remove();
-    }
+    if (overlay) overlay.remove();
 }

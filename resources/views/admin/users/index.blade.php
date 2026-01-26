@@ -56,6 +56,8 @@
                             <th>Email</th>
                             <th>NIM/NIP</th>
                             <th>Role</th>
+                            <th>Email / NIM/NIP</th>
+                            <th>Role / Program Studi</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -65,18 +67,26 @@
                             <tr>
                                 <td>{{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}</td>
                                 <td>{{ $user->name }}</td>
-                                <td>{{ $user->email }}</td>
-                                <td>{{ $user->nim_nip ?? '-' }}</td>
                                 <td>
-                                    <span class="badge bg-primary">
-                                        {{ ucfirst(str_replace('_', ' ', $user->getRoleNames()->first())) }}
-                                    </span>
+                                    <div class="small fw-bold">{{ $user->email }}</div>
+                                    <div class="text-muted small">NIM/NIP: {{ $user->nim_nip ?? '-' }}</div>
+                                </td>
+                                <td>
+                                    @foreach($user->getRoleNames() as $role)
+                                        <span
+                                            class="badge bg-primary rounded-pill">{{ ucfirst(str_replace('_', ' ', $role)) }}</span>
+                                    @endforeach
+                                    @if($user->programStudi)
+                                        <div class="small text-muted mt-1">
+                                            <i class="bi bi-mortarboard me-1"></i>{{ $user->programStudi->name }}
+                                        </div>
+                                    @endif
                                 </td>
                                 <td>
                                     @if($user->is_active)
                                         <span class="badge bg-success">Aktif</span>
                                     @else
-                                        <span class="badge bg-danger">Nonaktif</span>
+                                        <span class="badge bg-danger">Non-Aktif</span>
                                     @endif
                                 </td>
                                 <td>
