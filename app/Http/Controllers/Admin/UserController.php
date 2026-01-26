@@ -27,6 +27,10 @@ class UserController extends Controller
             $query->role($request->role);
         }
 
+        if ($request->role_group === 'lecturer') {
+            $query->role(['dosen_pembimbing', 'dosen_penguji', 'kaprodi']);
+        }
+
         $users = $query->latest()->paginate(15);
         $roles = Role::all();
 
@@ -77,7 +81,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        $user->load(['roles', 'thesisSubmissions', 'supervisedTheses', 'assessments']);
+        $user->load(['roles', 'programStudi.faculty', 'thesisSubmissions', 'supervisedTheses', 'assessments.thesisSubmission.student']);
         return view('admin.users.show', compact('user'));
     }
 

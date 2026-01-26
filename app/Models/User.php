@@ -71,6 +71,11 @@ class User extends Authenticatable
     /**
      * Relationships
      */
+    public function programStudi()
+    {
+        return $this->belongsTo(ProgramStudi::class);
+    }
+
     public function thesisSubmissions()
     {
         return $this->hasMany(ThesisSubmission::class, 'student_id');

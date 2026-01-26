@@ -163,10 +163,24 @@
                 @role('admin')
                 <div class="sidebar-label">Administrator</div>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"
-                        href="{{ route('admin.users.index') }}">
+                    <a class="nav-link {{ request('role_group') == 'lecturer' ? 'active' : '' }}"
+                        href="{{ route('admin.users.index', ['role_group' => 'lecturer']) }}">
+                        <i class="bi bi-person-badge-fill"></i>
+                        <span>Daftar Dosen</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request('role') == 'mahasiswa' ? 'active' : '' }}"
+                        href="{{ route('admin.users.index', ['role' => 'mahasiswa']) }}">
                         <i class="bi bi-people-fill"></i>
-                        <span>Kelola Pengguna</span>
+                        <span>Daftar Mahasiswa</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ !request()->hasAny(['role', 'role_group']) && request()->routeIs('admin.users.*') ? 'active' : '' }}"
+                        href="{{ route('admin.users.index') }}">
+                        <i class="bi bi-person-lines-fill"></i>
+                        <span>Semua Pengguna</span>
                     </a>
                 </li>
                 <li class="nav-item">

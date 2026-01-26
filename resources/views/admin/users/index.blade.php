@@ -1,10 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Kelola Pengguna')
+@php
+    $pageTitle = 'Kelola Pengguna';
+    if (request('role_group') == 'lecturer')
+        $pageTitle = 'Daftar Dosen & Kaprodi';
+    elseif (request('role') == 'mahasiswa')
+        $pageTitle = 'Daftar Mahasiswa';
+@endphp
+
+@section('title', $pageTitle)
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <h1 class="h2">Kelola Pengguna</h1>
+        <h1 class="h2">{{ $pageTitle }}</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
             <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Tambah Pengguna
@@ -53,11 +61,8 @@
                         <tr>
                             <th>No</th>
                             <th>Nama</th>
-                            <th>Email</th>
-                            <th>NIM/NIP</th>
-                            <th>Role</th>
-                            <th>Email / NIM/NIP</th>
-                            <th>Role / Program Studi</th>
+                            <th>Identitas & Kontak</th>
+                            <th>Role & Prodi</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -74,19 +79,19 @@
                                 <td>
                                     @foreach($user->getRoleNames() as $role)
                                         <span
-                                            class="badge bg-primary rounded-pill">{{ ucfirst(str_replace('_', ' ', $role)) }}</span>
+                                            class="badge bg-primary rounded-pill mb-1">{{ ucfirst(str_replace('_', ' ', $role)) }}</span>
                                     @endforeach
                                     @if($user->programStudi)
-                                        <div class="small text-muted mt-1">
+                                        <div class="small text-dark fw-bold mt-1">
                                             <i class="bi bi-mortarboard me-1"></i>{{ $user->programStudi->name }}
                                         </div>
                                     @endif
                                 </td>
                                 <td>
                                     @if($user->is_active)
-                                        <span class="badge bg-success">Aktif</span>
+                                        <span class="badge bg-success rounded-pill px-3">Aktif</span>
                                     @else
-                                        <span class="badge bg-danger">Non-Aktif</span>
+                                        <span class="badge bg-danger rounded-pill px-3">Non-Aktif</span>
                                     @endif
                                 </td>
                                 <td>
