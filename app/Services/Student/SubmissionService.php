@@ -15,18 +15,25 @@ class SubmissionService
      */
     public function getStudentSubmissions(int $perPage = 10)
     {
-        return Auth::user()->thesisSubmissions()
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        return $user->thesisSubmissions()
             ->with(['supervisor', 'assessments'])
             ->latest()
             ->paginate($perPage);
     }
 
+
     /**
-     * Get all available supervisors.
+     * Store a revision file.
      */
-    public function getSupervisors()
+    public function storeRevision(ThesisSubmission $submission, UploadedFile $file): void
     {
-        return User::role('dosen_pembimbing')->get();
+        $this->uploadFile($submission, $file, 'revision');
+
+        activity()
+            ->performedOn($submission)
+            ->log('Uploaded revision file');
     }
 
     /**
@@ -34,14 +41,16 @@ class SubmissionService
      */
     public function create(array $data, ?UploadedFile $file = null): ThesisSubmission
     {
-        $maxDrafts = (int) Setting::getValue('max_thesis_drafts', 3);
-        $currentCount = Auth::user()->thesisSubmissions()->count();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $currentCount = $user->thesisSubmissions()->count();
 
+        $maxDrafts = (int) Setting::getValue('max_thesis_drafts', 3);
         if ($currentCount >= $maxDrafts) {
             throw new \Exception("Anda telah mencapai batas maksimal pengunggahan draft ({$maxDrafts} draft). Tengah hubungi Kaprodi jika ada kendala.");
         }
 
-        $submission = Auth::user()->thesisSubmissions()->create([
+        $submission = $user->thesisSubmissions()->create([
             ...$data,
             'status' => 'draft',
         ]);
@@ -109,7 +118,9 @@ class SubmissionService
      */
     public function canEdit(ThesisSubmission $submission): bool
     {
-        return $submission->student_id === Auth::id() && $submission->canBeEditedByStudent();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        return $submission->student_id === $user->id && $submission->canBeEditedByStudent();
     }
 
     /**
@@ -117,6 +128,8 @@ class SubmissionService
      */
     public function canDelete(ThesisSubmission $submission): bool
     {
-        return $submission->student_id === Auth::id() && $submission->status === 'draft';
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        return $submission->student_id === $user->id && $submission->status === 'draft';
     }
 }

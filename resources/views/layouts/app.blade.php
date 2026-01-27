@@ -46,13 +46,20 @@
             <div class="collapse navbar-collapse px-3" id="navbarContent">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button"
-                            data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#"
+                            role="button" data-bs-toggle="dropdown">
                             <div
                                 class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center avatar-circle">
                                 <i class="bi bi-person-fill"></i>
                             </div>
-                            <span class="fw-semibold d-none d-sm-block">{{ auth()->user()->name }}</span>
+                            <div class="d-none d-sm-block text-start">
+                                <span class="fw-semibold d-block lh-1">{{ auth()->user()->name }}</span>
+                                @if (auth()->user()->programStudi)
+                                    <small class="text-muted smaller-extra d-block mt-1">
+                                        {{ auth()->user()->programStudi->name }}
+                                    </small>
+                                @endif
+                            </div>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2">
                             <li><a class="dropdown-item d-flex align-items-center gap-2"
@@ -89,130 +96,130 @@
                 </li>
 
                 @role('mahasiswa')
-                <div class="sidebar-label">Mahasiswa</div>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('student.submissions.*') ? 'active' : '' }}"
-                        href="{{ route('student.submissions.index') }}">
-                        <i class="bi bi-file-earmark-text-fill"></i>
-                        <span>Pengajuan Saya</span>
-                    </a>
-                </li>
+                    <div class="sidebar-label">Mahasiswa</div>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('student.submissions.*') ? 'active' : '' }}"
+                            href="{{ route('student.submissions.index') }}">
+                            <i class="bi bi-file-earmark-text-fill"></i>
+                            <span>Pengajuan Saya</span>
+                        </a>
+                    </li>
                 @endrole
 
-                @role('dosen_pembimbing')
-                <div class="sidebar-label">Dosen</div>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('supervisor.students.*') ? 'active' : '' }}"
-                        href="{{ route('supervisor.students.index') }}">
-                        <i class="bi bi-people-fill"></i>
-                        <span>Mahasiswa Bimbingan</span>
-                    </a>
-                </li>
-                @role('dosen_penguji')
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('examiner.assessments.*') ? 'active' : '' }}"
-                        href="{{ route('examiner.assessments.index') }}">
-                        <i class="bi bi-clipboard-check-fill"></i>
-                        <span>Penilaian</span>
-                    </a>
-                </li>
-                @endrole
+                @role('dosen|kaprodi')
+                    <div class="sidebar-label">Dosen</div>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('supervisor.students.*') ? 'active' : '' }}"
+                            href="{{ route('supervisor.students.index') }}">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Mahasiswa Bimbingan</span>
+                        </a>
+                    </li>
+                    @role('dosen')
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('examiner.assessments.*') ? 'active' : '' }}"
+                                href="{{ route('examiner.assessments.index') }}">
+                                <i class="bi bi-clipboard-check-fill"></i>
+                                <span>Penilaian</span>
+                            </a>
+                        </li>
+                    @endrole
                 @endrole
 
                 @role('koordinator')
-                <div class="sidebar-label">Koordinator</div>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('coordinator.students.*') ? 'active' : '' }}"
-                        href="{{ route('coordinator.students.index') }}">
-                        <i class="bi bi-people-fill"></i>
-                        <span>Daftar Mahasiswa</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('coordinator.reports.*') ? 'active' : '' }}"
-                        href="{{ route('coordinator.reports.index') }}">
-                        <i class="bi bi-bar-chart-fill"></i>
-                        <span>Laporan</span>
-                    </a>
-                </li>
+                    <div class="sidebar-label">Koordinator</div>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('coordinator.students.*') ? 'active' : '' }}"
+                            href="{{ route('coordinator.students.index') }}">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Daftar Mahasiswa</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('coordinator.reports.*') ? 'active' : '' }}"
+                            href="{{ route('coordinator.reports.index') }}">
+                            <i class="bi bi-bar-chart-fill"></i>
+                            <span>Laporan</span>
+                        </a>
+                    </li>
                 @endrole
 
                 @role('kaprodi')
-                <div class="sidebar-label">Kaprodi</div>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('kaprodi.students.*') ? 'active' : '' }}"
-                        href="{{ route('kaprodi.students.index') }}">
-                        <i class="bi bi-people-fill"></i>
-                        <span>Seluruh Mahasiswa</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('kaprodi.rubrics.*') ? 'active' : '' }}"
-                        href="{{ route('kaprodi.rubrics.index') }}">
-                        <i class="bi bi-clipboard-data-fill"></i>
-                        <span>Rubrik Penilaian</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('kaprodi.settings.*') ? 'active' : '' }}"
-                        href="{{ route('kaprodi.settings.index') }}">
-                        <i class="bi bi-gear-fill"></i>
-                        <span>Pengaturan TA</span>
-                    </a>
-                </li>
+                    <div class="sidebar-label">Kaprodi</div>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('kaprodi.students.*') ? 'active' : '' }}"
+                            href="{{ route('kaprodi.students.index') }}">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Seluruh Mahasiswa</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('kaprodi.rubrics.*') ? 'active' : '' }}"
+                            href="{{ route('kaprodi.rubrics.index') }}">
+                            <i class="bi bi-clipboard-data-fill"></i>
+                            <span>Rubrik Penilaian</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('kaprodi.settings.*') ? 'active' : '' }}"
+                            href="{{ route('kaprodi.settings.index') }}">
+                            <i class="bi bi-gear-fill"></i>
+                            <span>Pengaturan TA</span>
+                        </a>
+                    </li>
                 @endrole
 
                 @role('admin')
-                <div class="sidebar-label">Administrator</div>
-                <li class="nav-item">
-                    <a class="nav-link {{ request('role_group') == 'lecturer' ? 'active' : '' }}"
-                        href="{{ route('admin.users.index', ['role_group' => 'lecturer']) }}">
-                        <i class="bi bi-person-badge-fill"></i>
-                        <span>Daftar Dosen</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request('role') == 'mahasiswa' ? 'active' : '' }}"
-                        href="{{ route('admin.users.index', ['role' => 'mahasiswa']) }}">
-                        <i class="bi bi-people-fill"></i>
-                        <span>Daftar Mahasiswa</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ !request()->hasAny(['role', 'role_group']) && request()->routeIs('admin.users.*') ? 'active' : '' }}"
-                        href="{{ route('admin.users.index') }}">
-                        <i class="bi bi-person-lines-fill"></i>
-                        <span>Semua Pengguna</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.faculties.*') ? 'active' : '' }}"
-                        href="{{ route('admin.faculties.index') }}">
-                        <i class="bi bi-building-fill"></i>
-                        <span>Kelola Fakultas</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.program-studis.*') ? 'active' : '' }}"
-                        href="{{ route('admin.program-studis.index') }}">
-                        <i class="bi bi-mortarboard-fill"></i>
-                        <span>Kelola Prodi</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.configuration.*') ? 'active' : '' }}"
-                        href="{{ route('admin.configuration.index') }}">
-                        <i class="bi bi-gear-fill"></i>
-                        <span>Pengaturan Sistem</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}"
-                        href="{{ route('admin.activity-logs.index') }}">
-                        <i class="bi bi-clock-history"></i>
-                        <span>Log Aktivitas</span>
-                    </a>
-                </li>
+                    <div class="sidebar-label">Administrator</div>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request('role_group') == 'lecturer' ? 'active' : '' }}"
+                            href="{{ route('admin.users.index', ['role_group' => 'lecturer']) }}">
+                            <i class="bi bi-person-badge-fill"></i>
+                            <span>Daftar Dosen</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request('role') == 'mahasiswa' ? 'active' : '' }}"
+                            href="{{ route('admin.users.index', ['role' => 'mahasiswa']) }}">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Daftar Mahasiswa</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ !request()->hasAny(['role', 'role_group']) && request()->routeIs('admin.users.*') ? 'active' : '' }}"
+                            href="{{ route('admin.users.index') }}">
+                            <i class="bi bi-person-lines-fill"></i>
+                            <span>Semua Pengguna</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.faculties.*') ? 'active' : '' }}"
+                            href="{{ route('admin.faculties.index') }}">
+                            <i class="bi bi-building-fill"></i>
+                            <span>Kelola Fakultas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.program-studis.*') ? 'active' : '' }}"
+                            href="{{ route('admin.program-studis.index') }}">
+                            <i class="bi bi-mortarboard-fill"></i>
+                            <span>Kelola Prodi</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.configuration.*') ? 'active' : '' }}"
+                            href="{{ route('admin.configuration.index') }}">
+                            <i class="bi bi-gear-fill"></i>
+                            <span>Pengaturan Sistem</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}"
+                            href="{{ route('admin.activity-logs.index') }}">
+                            <i class="bi bi-clock-history"></i>
+                            <span>Log Aktivitas</span>
+                        </a>
+                    </li>
                 @endrole
             </ul>
         </div>

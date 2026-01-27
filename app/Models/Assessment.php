@@ -37,7 +37,7 @@ class Assessment extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['total_score', 'is_submitted'])
+            ->logOnly(['total_score', 'comments', 'strengths', 'weaknesses', 'recommendations', 'is_submitted', 'submitted_at'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }

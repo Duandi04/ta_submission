@@ -20,11 +20,20 @@
 
                         <div class="mb-3">
                             <label for="name" class="form-label">Nama Lengkap</label>
+                            @php
+                                $isRestricted =
+                                    auth()->user()->hasRole('mahasiswa') || auth()->user()->hasRole('dosen');
+                            @endphp
                             <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
-                                name="name" value="{{ old('name', auth()->user()->name) }}" required>
+                                name="name" value="{{ old('name', auth()->user()->name) }}"
+                                {{ $isRestricted ? 'readonly' : 'required' }}>
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                            @if ($isRestricted)
+                                <small class="text-muted">Nama lengkap tidak dapat diubah secara mandiri. Silakan hubungi
+                                    admin jika terdapat kesalahan.</small>
+                            @endif
                         </div>
 
                         <div class="mb-3">
@@ -54,8 +63,7 @@
 
                         <div class="mb-3">
                             <label for="address" class="form-label">Alamat</label>
-                            <textarea class="form-control @error('address') is-invalid @enderror" id="address"
-                                name="address" rows="3">{{ old('address', auth()->user()->address) }}</textarea>
+                            <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="3">{{ old('address', auth()->user()->address) }}</textarea>
                             @error('address')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -129,7 +137,7 @@
                     </p>
                     <p class="mb-2">
                         <strong>Status:</strong><br>
-                        @if(auth()->user()->is_active)
+                        @if (auth()->user()->is_active)
                             <span class="badge bg-success">Aktif</span>
                         @else
                             <span class="badge bg-danger">Nonaktif</span>
@@ -139,6 +147,20 @@
                         <strong>Terdaftar sejak:</strong><br>
                         {{ auth()->user()->created_at->format('d F Y') }}
                     </p>
+                    @if (auth()->user()->programStudi)
+                        <hr class="opacity-50">
+                        <p class="mb-2">
+                            <strong>Program Studi:</strong><br>
+                            <span class="text-dark fw-medium small">{{ auth()->user()->programStudi->name }}</span>
+                        </p>
+                        @if (auth()->user()->programStudi->faculty)
+                            <p class="mb-0">
+                                <strong>Fakultas:</strong><br>
+                                <span
+                                    class="text-dark fw-medium small">{{ auth()->user()->programStudi->faculty->name }}</span>
+                            </p>
+                        @endif
+                    @endif
                 </div>
             </div>
         </div>

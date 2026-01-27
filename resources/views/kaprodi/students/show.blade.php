@@ -47,12 +47,65 @@
                                     </td>
                                     <td>{{ $submission->submission_date?->format('d M Y') ?? '-' }}</td>
                                     <td class="text-end pe-3">
-                                        {{-- In a real app, this would link to a coordinator/kaprodi detail view --}}
-                                        <a href="#" class="btn btn-sm btn-outline-primary px-3 disabled">
-                                            Detail & Overview
-                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-primary px-3" data-bs-toggle="modal" data-bs-target="#assignModal{{ $submission->id }}">
+                                            <i class="bi bi-person-plus"></i> Atur Dosen
+                                        </button>
                                     </td>
                                 </tr>
+
+                                <!-- Assign Modal -->
+                                <div class="modal fade" id="assignModal{{ $submission->id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form action="{{ route('kaprodi.submissions.assign-lecturers', $submission->id) }}" method="POST">
+                                                @csrf
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Atur Dosen - {{ Str::limit($submission->title, 30) }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#assignModal{{ $submission->id }}"></button>
+                                                </div>
+                                                <div class="modal-body text-start">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Dosen Pembimbing</label>
+                                                        <select name="supervisor_id" class="form-select" required>
+                                                            <option value="">Pilih Pembimbing</option>
+                                                            @foreach($lecturers as $lecturer)
+                                                                <option value="{{ $lecturer->id }}" {{ $submission->supervisor_id == $lecturer->id ? 'selected' : '' }}>
+                                                                    {{ $lecturer->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Dosen Penguji 1</label>
+                                                        <select name="examiner_1_id" class="form-select" required>
+                                                            <option value="">Pilih Penguji 1</option>
+                                                            @foreach($lecturers as $lecturer)
+                                                                <option value="{{ $lecturer->id }}" {{ $submission->assessments->where('evaluator_type', 'examiner_1')->first()?->evaluator_id == $lecturer->id ? 'selected' : '' }}>
+                                                                    {{ $lecturer->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Dosen Penguji 2</label>
+                                                        <select name="examiner_2_id" class="form-select" required>
+                                                            <option value="">Pilih Penguji 2</option>
+                                                            @foreach($lecturers as $lecturer)
+                                                                <option value="{{ $lecturer->id }}" {{ $submission->assessments->where('evaluator_type', 'examiner_2')->first()?->evaluator_id == $lecturer->id ? 'selected' : '' }}>
+                                                                    {{ $lecturer->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                             @endforeach
                         </tbody>
                     </table>

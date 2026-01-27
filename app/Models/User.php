@@ -63,7 +63,7 @@ class User extends Authenticatable
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'email', 'nim_nip', 'is_active'])
+            ->logOnly(['name', 'email', 'nim_nip', 'phone', 'address', 'is_active', 'program_studi_id'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
@@ -114,14 +114,19 @@ class User extends Authenticatable
         return $this->hasRole('mahasiswa');
     }
 
+    public function isLecturer(): bool
+    {
+        return $this->hasRole('dosen');
+    }
+
     public function isSupervisor(): bool
     {
-        return $this->hasRole('dosen_pembimbing');
+        return $this->hasRole('dosen');
     }
 
     public function isExaminer(): bool
     {
-        return $this->hasRole('dosen_penguji');
+        return $this->hasRole('dosen');
     }
 
     public function isCoordinator(): bool

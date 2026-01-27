@@ -14,7 +14,9 @@ class AssessmentService
      */
     public function getExaminerAssessments(int $perPage = 10)
     {
-        return Auth::user()->assessments()
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        return $user->assessments()
             ->with(['thesisSubmission.student', 'thesisSubmission'])
             ->latest()
             ->paginate($perPage);

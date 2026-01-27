@@ -36,8 +36,8 @@
 
                         <div class="mb-3">
                             <label for="abstract" class="form-label">Abstrak <span class="text-danger">*</span></label>
-                            <textarea class="form-control @error('abstract') is-invalid @enderror" id="abstract"
-                                name="abstract" rows="6" required maxlength="2000">{{ old('abstract') }}</textarea>
+                            <textarea class="form-control @error('abstract') is-invalid @enderror" id="abstract" name="abstract" rows="6"
+                                required maxlength="2000">{{ old('abstract') }}</textarea>
                             @error('abstract')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -55,22 +55,6 @@
                             <small class="text-muted">Contoh: Sistem Informasi, Keamanan Jaringan, Data Mining, dll.</small>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="supervisor_id" class="form-label">Dosen Pembimbing <span
-                                    class="text-danger">*</span></label>
-                            <select class="form-select @error('supervisor_id') is-invalid @enderror" id="supervisor_id"
-                                name="supervisor_id" required>
-                                <option value="">-- Pilih Dosen Pembimbing --</option>
-                                @foreach($supervisors as $supervisor)
-                                    <option value="{{ $supervisor->id }}" {{ old('supervisor_id') == $supervisor->id ? 'selected' : '' }}>
-                                        {{ $supervisor->name }} ({{ $supervisor->nim_nip }})
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('supervisor_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
 
                         <div class="mb-3">
                             <label for="proposal_file" class="form-label">File Proposal <span
@@ -109,7 +93,7 @@
                         <li>Isi semua kolom yang wajib diisi (*)</li>
                         <li>Pastikan judul sesuai dengan topik penelitian</li>
                         <li>Abstrak harus menjelaskan tujuan, metode, dan kontribusi penelitian</li>
-                        <li>Pilih dosen pembimbing sesuai bidang penelitian</li>
+                        <li>Pilih dosen pembimbing (Akan ditetapkan oleh Kaprodi)</li>
                         <li>Upload file proposal dalam format yang ditentukan</li>
                         <li>Setelah disimpan, Anda dapat mengedit pengajuan sampai diajukan</li>
                     </ol>

@@ -5,9 +5,14 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Student\SubmissionController as StudentSubmissionController;
 use App\Http\Controllers\Supervisor\SubmissionController as SupervisorSubmissionController;
 use App\Http\Controllers\Coordinator\SubmissionController as CoordinatorSubmissionController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\ConfigurationController;
+use App\Http\Controllers\Admin\FacultyController;
+use App\Http\Controllers\Admin\ProgramStudiController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Examiner\AssessmentController;
+use App\Http\Controllers\Kaprodi\KaprodiController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Guest routes
@@ -23,19 +28,28 @@ Route::middleware('auth')->group(function () {
 
     // Student routes
     Route::middleware('role:mahasiswa')->prefix('student')->name('student.')->group(function () {
+        Route::post('submissions/{submission}/revision', [StudentSubmissionController::class, 'storeRevision'])->name('submissions.revision');
         Route::resource('submissions', StudentSubmissionController::class);
     });
 
-    // Supervisor routes
-    Route::middleware('role:dosen_pembimbing')->prefix('supervisor')->name('supervisor.')->group(function () {
-        Route::get('/students', [SupervisorSubmissionController::class, 'index'])->name('students.index');
-        Route::get('/students/{student}', [SupervisorSubmissionController::class, 'studentDetails'])->name('students.show');
-        Route::get('/submissions/{submission}', [SupervisorSubmissionController::class, 'show'])->name('submissions.show');
-    });
-
-    // Examiner routes
-    Route::middleware('role:dosen_penguji')->prefix('examiner')->name('examiner.')->group(function () {
-        Route::resource('assessments', AssessmentController::class);
+    // Dosen / Supervisor routes
+    Route::middleware('role:dosen|kaprodi')->prefix('dosen')->group(function () {
+        Route::name('supervisor.')->group(function () {
+            Route::get('/students', [SupervisorSubmissionController::class, 'index'])->name('students.index');
+            Route::get('/students/{student}', [SupervisorSubmissionController::class, 'studentDetails'])->name('students.show');
+            Route::get('/submissions/{submission}', [SupervisorSubmissionController::class, 'show'])->name('submissions.show');
+        });
+        
+        // Examiner specific routes inside dosen group (no supervisor prefix)
+        Route::resource('assessments', AssessmentController::class)->names([
+            'index' => 'examiner.assessments.index',
+            'create' => 'examiner.assessments.create',
+            'store' => 'examiner.assessments.store',
+            'show' => 'examiner.assessments.show',
+            'edit' => 'examiner.assessments.edit',
+            'update' => 'examiner.assessments.update',
+            'destroy' => 'examiner.assessments.destroy',
+        ]);
     });
 
     // Coordinator routes
@@ -44,32 +58,44 @@ Route::middleware('auth')->group(function () {
         Route::get('/students/{student}', [CoordinatorSubmissionController::class, 'show'])->name('submissions.show'); // Adjust this as needed
 
         Route::get('/reports', function () {
-            return view('coordinator.reports.index');
+            $submissions = \App\Models\ThesisSubmission::with(['student', 'supervisor'])
+                ->latest()
+                ->paginate(15);
+            return view('coordinator.reports.index', compact('submissions'));
         })->name('reports.index');
     });
 
     // Kaprodi routes
     Route::middleware('role:kaprodi')->prefix('kaprodi')->name('kaprodi.')->group(function () {
-        Route::get('/students', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'index'])->name('students.index');
-        Route::get('/students/{student}', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'studentDetails'])->name('students.show');
-        Route::get('/settings', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'settings'])->name('settings.index');
-        Route::post('/settings', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'updateSettings'])->name('settings.update');
-        Route::get('/rubrics', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'rubrics'])->name('rubrics.index');
+        Route::get('/students', [KaprodiController::class, 'index'])->name('students.index');
+        Route::get('/students/{student}', [KaprodiController::class, 'studentDetails'])->name('students.show');
+        Route::post('/submissions/{submission}/assign-lecturers', [KaprodiController::class, 'assignLecturers'])->name('submissions.assign-lecturers');
+        Route::get('/settings', [KaprodiController::class, 'settings'])->name('settings.index');
+        Route::post('/settings', [KaprodiController::class, 'updateSettings'])->name('settings.update');
+        Route::get('/rubrics', [KaprodiController::class, 'rubrics'])->name('rubrics.index');
+        Route::get('/rubrics/create', [KaprodiController::class, 'createRubric'])->name('rubrics.create');
+        Route::post('/rubrics', [KaprodiController::class, 'storeRubric'])->name('rubrics.store');
+        Route::get('/rubrics/{id}/edit', [KaprodiController::class, 'editRubric'])->name('rubrics.edit');
+        Route::put('/rubrics/{id}', [KaprodiController::class, 'updateRubric'])->name('rubrics.update');
+        Route::delete('/rubrics/{id}', [KaprodiController::class, 'destroyRubric'])->name('rubrics.destroy');
     });
 
     // Admin routes
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::resource('users', UserController::class);
-        Route::resource('faculties', \App\Http\Controllers\Admin\FacultyController::class);
-        Route::resource('program-studis', \App\Http\Controllers\Admin\ProgramStudiController::class);
-        Route::get('/configuration', [\App\Http\Controllers\Admin\ConfigurationController::class, 'index'])->name('configuration.index');
-        Route::post('/configuration', [\App\Http\Controllers\Admin\ConfigurationController::class, 'update'])->name('configuration.update');
+        Route::resource('faculties', FacultyController::class);
+        Route::resource('program-studis', ProgramStudiController::class);
+        Route::get('/configuration', [ConfigurationController::class, 'index'])->name('configuration.index');
+        Route::post('/configuration', [ConfigurationController::class, 'update'])->name('configuration.update');
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     });
 
 
     // Profile routes (accessible to all authenticated users)
-    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+
+    // Custom Download route
+    Route::get('/files/{file}/download', [\App\Http\Controllers\FileDownloadController::class, 'download'])->name('files.download');
 });

@@ -6,9 +6,9 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 class="h2">Rubrik Penilaian</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <button class="btn btn-primary">
+            <a href="{{ route('kaprodi.rubrics.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Tambah Rubrik
-            </button>
+            </a>
         </div>
     </div>
 
@@ -41,8 +41,16 @@
                                 @endforeach
                             </ul>
                             <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-outline-warning flex-grow-1">Edit Rubrik</button>
-                                <button class="btn btn-sm btn-outline-primary flex-grow-1">Lihat Detail</button>
+                                <a href="{{ route('kaprodi.rubrics.edit', $rubric->id) }}" class="btn btn-sm btn-outline-warning flex-grow-1">
+                                    <i class="bi bi-pencil me-1"></i> Edit
+                                </a>
+                                <form action="{{ route('kaprodi.rubrics.destroy', $rubric->id) }}" method="POST" class="flex-grow-1 d-inline" onsubmit="return confirmDelete(event, this)">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                                        <i class="bi bi-trash me-1"></i> Hapus
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>

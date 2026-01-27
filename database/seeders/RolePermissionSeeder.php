@@ -86,21 +86,11 @@ class RolePermissionSeeder extends Seeder
             'manage rubrics',
         ]);
 
-        $dosenPembimbing = Role::firstOrCreate(['name' => 'dosen_pembimbing']);
-        $dosenPembimbing->syncPermissions([
+        $dosen = Role::firstOrCreate(['name' => 'dosen']);
+        $dosen->syncPermissions([
             'view submissions',
             'edit submissions',
             'approve submissions',
-            'view assessments',
-            'create assessments',
-            'edit assessments',
-            'view comments',
-            'create comments',
-        ]);
-
-        $dosenPenguji = Role::firstOrCreate(['name' => 'dosen_penguji']);
-        $dosenPenguji->syncPermissions([
-            'view submissions',
             'view assessments',
             'create assessments',
             'edit assessments',

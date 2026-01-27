@@ -15,16 +15,16 @@
                     <div class="col-md-3">
                         <label class="form-label small">Dari Tanggal</label>
                         <input type="date" class="form-control form-control-sm" name="date_from"
-                            value="{{ request('date_from') }}">
+                            value="{{ request('date_from') }}" data-auto-submit>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small">Sampai Tanggal</label>
                         <input type="date" class="form-control form-control-sm" name="date_to"
-                            value="{{ request('date_to') }}">
+                            value="{{ request('date_to') }}" data-auto-submit>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small">Pengguna</label>
-                        <select class="form-select form-select-sm" name="user_id">
+                        <select class="form-select form-select-sm" name="user_id" data-auto-submit>
                             <option value="">Semua Pengguna</option>
                             @foreach($users as $user)
                                 <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
@@ -49,60 +49,85 @@
         </div>
     </div>
 
-    <!-- Activity Log Table -->
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-sm table-hover">
-                    <thead>
-                        <tr>
-                            <th width="150">Waktu</th>
-                            <th>Pengguna</th>
-                            <th>Aktivitas</th>
-                            <th>Subject</th>
-                            <th width="100">IP Address</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($activities as $activity)
+    <div id="ajax-container">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead>
                             <tr>
-                                <td>
-                                    <small>{{ $activity->created_at->format('d M Y H:i:s') }}</small>
-                                </td>
-                                <td>
-                                    <strong>{{ $activity->causer?->name ?? 'System' }}</strong>
-                                    <br>
-                                    <small class="text-muted">{{ $activity->causer?->email }}</small>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info">{{ $activity->description }}</span>
-                                </td>
-                                <td>
-                                    @if($activity->subject)
-                                        <small>
-                                            {{ class_basename($activity->subject_type) }}
-                                            #{{ $activity->subject_id }}
-                                        </small>
-                                    @else
-                                        <small class="text-muted">-</small>
-                                    @endif
-                                </td>
-                                <td>
-                                    <small>{{ $activity->properties['ip'] ?? '-' }}</small>
-                                </td>
+                                <th class="ps-3" width="150">Waktu</th>
+                                <th>Pengguna</th>
+                                <th>Aktivitas & Perubahan</th>
+                                <th>Subject</th>
+                                <th width="100">IP Address</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">Tidak ada log aktivitas.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse($activities as $activity)
+                                <tr>
+                                    <td class="ps-3">
+                                        <small class="text-muted d-block">{{ $activity->created_at->format('d M Y') }}</small>
+                                        <small class="fw-bold">{{ $activity->created_at->format('H:i:s') }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ $activity->causer?->name ?? 'System' }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ $activity->causer?->email }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column gap-1">
+                                            <span class="badge bg-info-subtle text-info border border-info-subtle align-self-start">{{ $activity->description }}</span>
+                                            @if(isset($activity->properties['attributes']))
+                                                <div class="mt-1">
+                                                    <ul class="list-unstyled mb-0 small">
+                                                        @foreach($activity->properties['attributes'] as $key => $value)
+                                                            @if(!in_array($key, ['updated_at', 'created_at']))
+                                                                <li class="mb-1">
+                                                                    <span class="text-muted fw-semibold">{{ ucfirst(str_replace('_', ' ', $key)) }}:</span>
+                                                                    @if(isset($activity->properties['old'][$key]))
+                                                                        <span class="text-danger text-decoration-line-through me-1">{{ $activity->properties['old'][$key] }}</span>
+                                                                        <i class="bi bi-arrow-right mx-1 text-muted"></i>
+                                                                    @endif
+                                                                    <span class="text-success fw-bold">{{ $value }}</span>
+                                                                </li>
+                                                            @endif
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if($activity->subject)
+                                            <div class="small">
+                                                <span class="text-muted">{{ class_basename($activity->subject_type) }}</span>
+                                                <span class="fw-bold">#{{ $activity->subject_id }}</span>
+                                            </div>
+                                        @else
+                                            <small class="text-muted">-</small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ $activity->properties['ip'] ?? '-' }}</small>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-5">
+                                        <i class="bi bi-journal-x display-4 d-block mb-3"></i>
+                                        Tidak ada log aktivitas ditemukan.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="mt-3">
-        {{ $activities->links() }}
+        <div class="mt-3">
+            {{ $activities->links() }}
+        </div>
     </div>
 @endsection

@@ -110,11 +110,11 @@
                         <p class="small text-muted mb-4">Tindakan berikut akan menghapus seluruh data user secara permanen
                             dari sistem.</p>
                         @if($user->id !== auth()->id())
-                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
-                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
+                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-outline-danger w-100">
+                                <button type="submit" class="btn btn-outline-danger w-100" data-confirm-delete
+                                    data-confirm-message="Apakah Anda yakin ingin menghapus user ini? Seluruh data terkait juga akan terhapus.">
                                     <i class="bi bi-trash3 me-1"></i> Hapus User
                                 </button>
                             </form>

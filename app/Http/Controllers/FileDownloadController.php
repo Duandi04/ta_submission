@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\SubmissionFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
+class FileDownloadController extends Controller
+{
+    /**
+     * Download a submission file with a custom filename format: [Student Name] Submission Title.ext
+     */
+    public function download(SubmissionFile $file)
+    {
+        $submission = $file->thesisSubmission;
+
+        // Basic security check (Student can download their own, Dosen/Kaprodi/Admin/Koordinator can download based on roles)
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user->hasRole('mahasiswa') && $submission->student_id !== $user->id) {
+            abort(403);
+        }
+
+        // Generate custom filename
+        $studentName = $submission->student->name;
+        $title = $submission->title;
+        $extension = pathinfo($file->file_path, PATHINFO_EXTENSION);
+
+        // Sanitize title for filename
+        $safeTitle = Str::limit(Str::slug($title, ' '), 50);
+        
+        $customFilename = sprintf('[%s] %s.%s', $studentName, $safeTitle, $extension);
+
+        if (!Storage::disk('public')->exists($file->file_path)) {
+            abort(404, 'File tidak ditemukan di server.');
+        }
+
+        return Storage::disk('public')->download($file->file_path, $customFilename);
+    }
+}

@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::with('roles');
+        $query = User::with(['roles', 'programStudi']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -27,14 +27,23 @@ class UserController extends Controller
             $query->role($request->role);
         }
 
+        if ($request->filled('program_studi_id')) {
+            $query->where('program_studi_id', $request->program_studi_id);
+        }
+
         if ($request->role_group === 'lecturer') {
-            $query->role(['dosen_pembimbing', 'dosen_penguji', 'kaprodi']);
+            $query->whereHas('roles', function($q) {
+                $q->whereIn('name', ['dosen', 'kaprodi']);
+            });
+        } elseif ($request->role === 'mahasiswa') {
+            $query->role('mahasiswa');
         }
 
         $users = $query->latest()->paginate(15);
         $roles = Role::all();
+        $programStudis = \App\Models\ProgramStudi::all();
 
-        return view('admin.users.index', compact('users', 'roles'));
+        return view('admin.users.index', compact('users', 'roles', 'programStudis'));
     }
 
     public function create()
@@ -54,7 +63,7 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'role' => 'required|string|exists:roles,name',
-            'program_studi_id' => 'required_if:role,mahasiswa,dosen_pembimbing,dosen_penguji,kaprodi|nullable|exists:program_studis,id',
+            'program_studi_id' => 'required_if:role,mahasiswa,dosen,kaprodi|nullable|exists:program_studis,id',
             'is_active' => 'boolean',
         ]);
 
@@ -70,11 +79,6 @@ class UserController extends Controller
         ]);
 
         $user->assignRole($validated['role']);
-
-        activity()
-            ->performedOn($user)
-            ->causedBy(auth()->user())
-            ->log('User created: ' . $user->name);
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
     }
@@ -102,7 +106,7 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'role' => 'required|string|exists:roles,name',
-            'program_studi_id' => 'required_if:role,mahasiswa,dosen_pembimbing,dosen_penguji,kaprodi|nullable|exists:program_studis,id',
+            'program_studi_id' => 'required_if:role,mahasiswa,dosen,kaprodi|nullable|exists:program_studis,id',
             'is_active' => 'boolean',
         ]);
 
@@ -122,11 +126,6 @@ class UserController extends Controller
 
         $user->update($userData);
         $user->syncRoles([$validated['role']]);
-
-        activity()
-            ->performedOn($user)
-            ->causedBy(auth()->user())
-            ->log('User updated: ' . $user->name);
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil diperbarui.');
     }

@@ -12,56 +12,58 @@
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th class="ps-3">Nama Fakultas</th>
-                            <th>Kode</th>
-                            <th>Jumlah Prodi</th>
-                            <th class="text-end pe-3">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($faculties as $faculty)
+    <div id="ajax-container">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
                             <tr>
-                                <td class="ps-3 fw-semibold">{{ $faculty->name }}</td>
-                                <td><span class="badge bg-light text-dark border">{{ $faculty->code }}</span></td>
-                                <td>{{ $faculty->program_studis_count }}</td>
-                                <td class="text-end pe-3">
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.faculties.edit', $faculty) }}"
-                                            class="btn btn-sm btn-outline-secondary">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <form action="{{ route('admin.faculties.destroy', $faculty) }}" method="POST"
-                                            class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                onclick="return confirm('Hapus fakultas ini?')">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
+                                <th class="ps-3">Nama Fakultas</th>
+                                <th>Kode</th>
+                                <th>Jumlah Prodi</th>
+                                <th class="text-end pe-3">Aksi</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center py-5">
-                                    <p class="text-muted mb-0">Belum ada data fakultas.</p>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse($faculties as $faculty)
+                                <tr>
+                                    <td class="ps-3 fw-semibold">{{ $faculty->name }}</td>
+                                    <td><span class="badge bg-light text-dark border">{{ $faculty->code }}</span></td>
+                                    <td>{{ $faculty->program_studis_count }}</td>
+                                    <td class="text-end pe-3">
+                                        <div class="btn-group">
+                                            <a href="{{ route('admin.faculties.edit', $faculty) }}"
+                                                class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form action="{{ route('admin.faculties.destroy', $faculty) }}" method="POST"
+                                                class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm-delete
+                                                    data-confirm-message="Hapus fakultas ini? Seluruh data prodi terkait juga akan terhapus.">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center py-5">
+                                        <p class="text-muted mb-0">Belum ada data fakultas.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="mt-3">
-        {{ $faculties->links() }}
+        <div class="mt-3">
+            {{ $faculties->links() }}
+        </div>
     </div>
 @endsection

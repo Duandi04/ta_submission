@@ -7,85 +7,87 @@
         <h1 class="h2">Penilaian Tugas Akhir</h1>
     </div>
 
-    @if($assessments->count() > 0)
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Mahasiswa</th>
-                                <th>Judul</th>
-                                <th>Tipe</th>
-                                <th>Nilai</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($assessments as $assessment)
+    <div id="ajax-container">
+        @if($assessments->count() > 0)
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
                                 <tr>
-                                    <td>{{ $loop->iteration + ($assessments->currentPage() - 1) * $assessments->perPage() }}</td>
-                                    <td>
-                                        <strong>{{ $assessment->thesisSubmission->student->name }}</strong>
-                                        <br>
-                                        <small class="text-muted">{{ $assessment->thesisSubmission->student->nim_nip }}</small>
-                                    </td>
-                                    <td>{{ Str::limit($assessment->thesisSubmission->title, 50) }}</td>
-                                    <td>
-                                        <span class="badge bg-secondary">
-                                            {{ $assessment->getEvaluatorTypeLabel() }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @if($assessment->is_submitted)
-                                            <strong class="text-success">{{ $assessment->total_score }}</strong>
-                                        @else
-                                            <span class="text-muted">Draft</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($assessment->is_submitted)
-                                            <span class="badge bg-success">
-                                                <i class="bi bi-check-circle"></i> Sudah Submit
-                                            </span>
-                                        @else
-                                            <span class="badge bg-warning">
-                                                <i class="bi bi-clock"></i> Draft
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm">
-                                            <a href="{{ route('examiner.assessments.show', $assessment) }}" class="btn btn-primary">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            @if(!$assessment->is_submitted)
-                                                <a href="{{ route('examiner.assessments.edit', $assessment) }}" class="btn btn-warning">
-                                                    <i class="bi bi-pencil"></i>
-                                                </a>
-                                            @endif
-                                        </div>
-                                    </td>
+                                    <th class="ps-3">No</th>
+                                    <th>Mahasiswa</th>
+                                    <th>Judul</th>
+                                    <th>Tipe</th>
+                                    <th>Nilai</th>
+                                    <th>Status</th>
+                                    <th class="text-end pe-3">Aksi</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach($assessments as $assessment)
+                                    <tr>
+                                        <td class="ps-3">{{ $loop->iteration + ($assessments->currentPage() - 1) * $assessments->perPage() }}</td>
+                                        <td>
+                                            <strong>{{ $assessment->thesisSubmission->student->name }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ $assessment->thesisSubmission->student->nim_nip }}</small>
+                                        </td>
+                                        <td>{{ Str::limit($assessment->thesisSubmission->title, 50) }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
+                                                {{ $assessment->getEvaluatorTypeLabel() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if($assessment->is_submitted)
+                                                <strong class="text-success">{{ $assessment->total_score }}</strong>
+                                            @else
+                                                <span class="text-muted">Draft</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($assessment->is_submitted)
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                                    <i class="bi bi-check-circle me-1"></i>Sudah Submit
+                                                </span>
+                                            @else
+                                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle text-dark">
+                                                    <i class="bi bi-clock me-1"></i>Draft
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="text-end pe-3">
+                                            <div class="btn-group">
+                                                <a href="{{ route('examiner.assessments.show', $assessment) }}" class="btn btn-sm btn-outline-primary" title="Lihat">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                @if(!$assessment->is_submitted)
+                                                    <a href="{{ route('examiner.assessments.edit', $assessment) }}" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="mt-3">
-            {{ $assessments->links() }}
-        </div>
-    @else
-        <div class="card">
-            <div class="card-body text-center py-5">
-                <i class="bi bi-clipboard-data empty-state-icon"></i>
-                <h4 class="mt-3">Belum Ada Penilaian</h4>
-                <p class="text-muted">Anda belum ditugaskan untuk menilai tugas akhir apapun.</p>
+            <div class="mt-3">
+                {{ $assessments->links() }}
             </div>
-        </div>
-    @endif
+        @else
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-clipboard-data empty-state-icon text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3">Belum Ada Penilaian</h4>
+                    <p class="text-muted">Anda belum ditugaskan untuk menilai tugas akhir apapun.</p>
+                </div>
+            </div>
+        @endif
+    </div>
 @endsection

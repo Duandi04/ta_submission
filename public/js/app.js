@@ -83,11 +83,125 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Tooltips initialization
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
+    // AJAX Real-time Search & Filtering Logic
+    const ajaxSubmit = (form) => {
+        const formData = new FormData(form);
+        const searchParams = new URLSearchParams(formData);
+        const url = `${form.action}?${searchParams.toString()}`;
+
+        // Update URL
+        window.history.pushState({}, '', url);
+
+        // Fetch new content
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newContent = doc.querySelector('#ajax-container');
+            const currentContainer = document.querySelector('#ajax-container');
+
+            if (newContent && currentContainer) {
+                currentContainer.innerHTML = newContent.innerHTML;
+                
+                // Re-initialize any dynamic elements in the new content
+                // (e.g., tooltips, delete buttons)
+                initDeleteButtons();
+                initTooltips();
+            }
+        })
+        .catch(error => console.error('Error during search:', error));
+    };
+
+    const searchInputs = document.querySelectorAll('[data-auto-search], input[name="search"]');
+    let searchTimeout;
+
+    searchInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const form = this.closest('form');
+            if (form) {
+                searchTimeout = setTimeout(() => {
+                    ajaxSubmit(form);
+                }, 500); // 500ms debounce
+            }
+        });
+
+        // Prevent form submission on Enter so it doesn't reload the page
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const form = this.closest('form');
+                if (form) ajaxSubmit(form);
+            }
+        });
     });
+
+    const autoSubmitElements = document.querySelectorAll('[data-auto-submit]');
+    autoSubmitElements.forEach(element => {
+        element.addEventListener('change', function() {
+            const form = this.closest('form');
+            if (form) ajaxSubmit(form);
+        });
+    });
+
+    // Encapsulate delete buttons initialization for re-use after AJAX
+    function initDeleteButtons() {
+        // Confirm delete actions with SweetAlert2
+        const deleteButtons = document.querySelectorAll('[data-confirm-delete], .btn-delete');
+        deleteButtons.forEach(button => {
+            // Remove existing listener to prevent duplicates if initialization is called multiple times
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            
+            newButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const form = this.closest('form');
+                const message = this.getAttribute('data-confirm-message') || 'Apakah Anda yakin ingin menghapus data ini?';
+
+                Swal.fire({
+                    title: 'Konfirmasi Hapus',
+                    text: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    customClass: {
+                        confirmButton: 'btn btn-danger px-4',
+                        cancelButton: 'btn btn-secondary px-4 me-2'
+                    },
+                    buttonsStyling: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (form) {
+                            form.submit();
+                        } else if (this.tagName === 'A') {
+                            window.location.href = this.href;
+                        }
+                    }
+                });
+            });
+        });
+    }
+
+    // Encapsulate tooltips initialization
+    function initTooltips() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+
+    // Initial call
+    initDeleteButtons();
+    initTooltips();
 });
 
 // Helper functions for loading states
