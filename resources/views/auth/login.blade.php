@@ -3,6 +3,23 @@
 @section('title', 'Login - Sistem Pengajuan TA')
 
 @section('content')
+    <style>
+        .password-toggle-btn {
+            z-index: 5;
+            color: #64748b;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .password-toggle-btn:hover {
+            color: var(--primary-500);
+        }
+
+        .password-toggle-btn:focus {
+            box-shadow: none;
+        }
+    </style>
     <div class="login-card">
         <div class="login-header">
             <div class="icon-wrapper">
@@ -73,9 +90,5 @@
 @endsection
 
 @push('scripts')
-    <script>     document.addEventListener('DOMContentLoaded', function () {
-            const togglePassword = document.querySelector('#togglePassword'); const password = document.querySelector('#password'); const icon = document.querySelector('#toggleIcon');
-            if (togglePassword && password && icon) { togglePassword.addEventListener('click', function () {                 // Toggle the type attribute                 const type = password.getAttribute('type') === 'password' ? 'text' : 'password';                 password.setAttribute('type', type);
-        // Toggle the icon                 icon.classList.toggle('bi-eye');                 icon.classList.toggle('bi-eye-slash');             });         }     });
-    </script>
+    <script src="{{ asset('js/auth.js') }}"></script>
 @endpush

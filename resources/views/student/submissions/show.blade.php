@@ -82,34 +82,59 @@
 
             <!-- Files Card -->
             <div class="card mb-3">
-                <div class="card-header">
-                    <i class="bi bi-paperclip"></i> File Terlampir
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-paperclip"></i> File Terlampir</span>
                 </div>
                 <div class="card-body">
+                    @php $proposalFile = $submission->files->where('file_type', 'proposal')->first(); @endphp
                     @if($submission->files->count() > 0)
-                        <div class="list-group">
+                        <div class="list-group mb-3">
                             @foreach($submission->files as $file)
-                                <div class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-center">
+                                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="file-icon-wrapper me-3">
+                                            @if(str_contains($file->mime_type, 'pdf'))
+                                                <i class="bi bi-file-earmark-pdf-fill text-danger fs-4"></i>
+                                            @else
+                                                <i class="bi bi-file-earmark-word-fill text-primary fs-4"></i>
+                                            @endif
+                                        </div>
                                         <div>
-                                            <i class="bi bi-file-earmark-pdf text-danger"></i>
-                                            <strong>{{ $file->file_name }}</strong><br>
+                                            <h6 class="mb-0">{{ $file->file_name }}</h6>
                                             <small class="text-muted">
-                                                {{ $file->getFileTypeLabel() }} -
-                                                {{ $file->getFormattedFileSize() }} -
-                                                Uploaded: {{ $file->created_at->format('d M Y H:i') }}
+                                                {{ $file->getFileTypeLabel() }} • {{ $file->getFormattedFileSize() }} • {{ $file->created_at->format('d M Y H:i') }}
                                             </small>
                                         </div>
-                                        <a href="{{ Storage::url($file->file_path) }}" class="btn btn-sm btn-primary"
+                                    </div>
+                                    <div class="btn-group">
+                                        <a href="{{ Storage::url($file->file_path) }}" class="btn btn-sm btn-outline-primary"
                                             target="_blank">
-                                            <i class="bi bi-download"></i> Download
+                                            <i class="bi bi-eye"></i> Lihat
+                                        </a>
+                                        <a href="{{ Storage::url($file->file_path) }}" class="btn btn-sm btn-outline-secondary" download>
+                                            <i class="bi bi-download"></i> Unduh
                                         </a>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
+
+                        @if($proposalFile && str_contains($proposalFile->mime_type, 'pdf'))
+                            <div class="pdf-preview-container mt-4">
+                                <h6 class="mb-3"><i class="bi bi-eye"></i> Pratinjau Proposal (PDF)</h6>
+                                <div class="ratio ratio-16x9 border rounded overflow-hidden shadow-sm" style="height: 600px;">
+                                    <iframe src="{{ Storage::url($proposalFile->file_path) }}#toolbar=0" title="PDF Preview"></iframe>
+                                </div>
+                                <div class="mt-2 text-center">
+                                    <small class="text-muted">Gunakan tombol 'Lihat' di atas jika pratinjau tidak muncul.</small>
+                                </div>
+                            </div>
+                        @endif
                     @else
-                        <p class="text-muted text-center">Belum ada file terlampir.</p>
+                        <div class="text-center py-4">
+                            <i class="bi bi-file-earmark-x text-muted fs-1 mb-2 d-block"></i>
+                            <p class="text-muted mb-0">Belum ada file terlampir.</p>
+                        </div>
                     @endif
                 </div>
             </div>

@@ -1,6 +1,6 @@
 # Sistem Pengajuan Tugas Akhir (TA Submission System)
 
-A web-based application for managing the Thesis (Tugas Akhir) submission process, built with Laravel 11. This system facilitates the interaction between students (mahasiswa), supervisors (dosen pembimbing), examiners (dosen penguji), coordinators (koordinator), and administrators.
+A web-based application for managing the Thesis (Tugas Akhir) submission process, built with Laravel 12. This system facilitates the interaction between students (mahasiswa), supervisors (dosen pembimbing), examiners (dosen penguji), coordinators (koordinator), and administrators.
 
 ## Features
 
