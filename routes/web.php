@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
     // Student routes
     Route::middleware('role:mahasiswa')->prefix('student')->name('student.')->group(function () {
         Route::post('submissions/{submission}/revision', [StudentSubmissionController::class, 'storeRevision'])->name('submissions.revision');
+        Route::patch('submissions/{submission}/cancel', [StudentSubmissionController::class, 'cancel'])->name('submissions.cancel');
+        Route::patch('submissions/{submission}/submit', [StudentSubmissionController::class, 'submit'])->name('submissions.submit');
         Route::resource('submissions', StudentSubmissionController::class);
     });
 
@@ -53,6 +55,7 @@ Route::middleware('auth')->group(function () {
             'update' => 'examiner.assessments.update',
             'destroy' => 'examiner.assessments.destroy',
         ]);
+        Route::post('assessments/{assessment}/submit', [AssessmentController::class, 'submit'])->name('examiner.assessments.submit');
     });
 
     // Coordinator routes
@@ -67,6 +70,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:kaprodi')->prefix('kaprodi')->name('kaprodi.')->group(function () {
         Route::get('/students', [KaprodiController::class, 'index'])->name('students.index');
         Route::get('/students/{student}', [KaprodiController::class, 'studentDetails'])->name('students.show');
+        Route::get('/submissions/{submission}', [KaprodiController::class, 'submissionShow'])->name('submissions.show');
+        Route::get('/assessments/{assessment}', [KaprodiController::class, 'assessmentShow'])->name('assessments.show');
         Route::post('/submissions/{submission}/assign-lecturers', [KaprodiController::class, 'assignLecturers'])->name('submissions.assign-lecturers');
         Route::get('/settings', [KaprodiController::class, 'settings'])->name('settings.index');
         Route::post('/settings', [KaprodiController::class, 'updateSettings'])->name('settings.update');
@@ -96,6 +101,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
 
-    // Custom Download route
+    // Custom Download and Preview routes
     Route::get('/files/{file}/download', [\App\Http\Controllers\FileDownloadController::class, 'download'])->name('files.download');
+    Route::get('/files/{file}/preview', [\App\Http\Controllers\FileDownloadController::class, 'preview'])->name('files.preview');
 });

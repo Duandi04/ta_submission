@@ -300,6 +300,80 @@
                     @endif
                 </div>
             </div>
+
+            <!-- Activity Log -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="bi bi-activity"></i> Riwayat Aktivitas
+                </div>
+                <div class="card-body p-0">
+                    @php
+                        $activities = $submission->getActivityLogs();
+                    @endphp
+                    @if ($activities->count() > 0)
+                        <ul class="list-group list-group-flush">
+                            @foreach ($activities->take(8) as $activity)
+                                <li class="list-group-item py-2">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <small class="fw-semibold">{{ $activity->causer?->name ?? 'System' }}</small>
+                                            <p class="mb-0 small text-muted">{{ $activity->description }}</p>
+                                        </div>
+                                        <small
+                                            class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="text-center py-4 text-muted small">
+                            Belum ada riwayat aktivitas.
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Submit Button (Only for Draft) -->
+            @if ($submission->status === 'draft')
+                <div class="card border-success mb-3">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-send"></i> Ajukan Proposal
+                    </div>
+                    <div class="card-body">
+                        <p class="small text-muted mb-3">Jika Anda yakin dengan draft ini, silakan ajukan untuk direview
+                            oleh Kaprodi.</p>
+                        <form action="{{ route('student.submissions.submit', $submission) }}" method="POST"
+                            onsubmit="return confirm('Apakah Anda yakin ingin mengajukan proposal ini? Proposal yang sudah diajukan tidak dapat diedit kembali sampai ada revisi.')">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-send me-1"></i> Ajukan Sekarang
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Cancel Submission Button -->
+            @if (in_array($submission->status, ['draft', 'submitted']))
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <i class="bi bi-x-circle"></i> Batalkan Pengajuan
+                    </div>
+                    <div class="card-body">
+                        <p class="small text-muted mb-3">Anda dapat membatalkan pengajuan ini jika masih dalam status Draft
+                            atau Sudah Diajukan.</p>
+                        <form action="{{ route('student.submissions.cancel', $submission) }}" method="POST"
+                            onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pengajuan ini?')">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="bi bi-x-circle me-1"></i> Batalkan Pengajuan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 @endsection

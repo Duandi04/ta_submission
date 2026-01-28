@@ -52,7 +52,7 @@
                     <h6><i class="bi bi-file-text"></i> Abstrak</h6>
                     <p class="text-justify">{{ $submission->abstract }}</p>
 
-                    @if($submission->notes)
+                    @if ($submission->notes)
                         <div class="alert alert-info">
                             <strong><i class="bi bi-sticky"></i> Catatan:</strong><br>
                             {{ $submission->notes }}
@@ -66,27 +66,69 @@
                     <i class="bi bi-paperclip"></i> File Pengajuan
                 </div>
                 <div class="card-body">
-                    @if($submission->files->count() > 0)
-                        <div class="list-group">
-                            @foreach($submission->files as $file)
-                                <div class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-center">
+                    @if ($submission->files->count() > 0)
+                        @php
+                            $proposalFiles = $submission->files->where('file_type', 'proposal');
+                            $revisionFiles = $submission->files->where('file_type', 'revision');
+                        @endphp
+
+                        @if ($proposalFiles->count() > 0)
+                            <p class="small text-muted mb-1"><strong>Proposal</strong></p>
+                            <div class="list-group mb-3">
+                                @foreach ($proposalFiles as $file)
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
-                                            <i class="bi bi-file-earmark-pdf text-danger fs-4"></i>
-                                            <strong class="ms-2">{{ $file->file_name }}</strong><br>
-                                            <small class="text-muted ms-5">
-                                                {{ $file->getFileTypeLabel() }} -
-                                                {{ $file->getFormattedFileSize() }} -
-                                                {{ $file->created_at->format('d/m/Y H:i') }}
-                                            </small>
+                                            <i class="bi bi-file-earmark-pdf text-danger fs-5 me-2"></i>
+                                            <strong>{{ $file->file_name }}</strong>
+                                            <br>
+                                            <small class="text-muted ms-4">{{ $file->getFormattedFileSize() }} -
+                                                {{ $file->created_at->format('d/m/Y H:i') }}</small>
                                         </div>
-                                        <a href="/storage/{{ $file->file_path }}" class="btn btn-sm btn-primary" target="_blank">
-                                            <i class="bi bi-download"></i> Download
-                                        </a>
+                                        <div>
+                                            @if (Str::endsWith(strtolower($file->file_name), '.pdf'))
+                                                <a href="{{ route('files.preview', $file) }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-primary me-1" title="Preview PDF">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                            @endif
+                                            <a href="{{ route('files.download', $file) }}" class="btn btn-sm btn-primary"
+                                                title="Download">
+                                                <i class="bi bi-download"></i>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            @endforeach
-                        </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @if ($revisionFiles->count() > 0)
+                            <p class="small text-muted mb-1"><strong>Revisi</strong></p>
+                            <div class="list-group">
+                                @foreach ($revisionFiles as $file)
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="bi bi-file-earmark-pdf text-warning fs-5 me-2"></i>
+                                            <strong>{{ $file->file_name }}</strong>
+                                            <br>
+                                            <small class="text-muted ms-4">{{ $file->getFormattedFileSize() }} -
+                                                {{ $file->created_at->format('d/m/Y H:i') }}</small>
+                                        </div>
+                                        <div>
+                                            @if (Str::endsWith(strtolower($file->file_name), '.pdf'))
+                                                <a href="{{ route('files.preview', $file) }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-primary me-1" title="Preview PDF">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                            @endif
+                                            <a href="{{ route('files.download', $file) }}" class="btn btn-sm btn-primary"
+                                                title="Download">
+                                                <i class="bi bi-download"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     @else
                         <p class="text-muted text-center mb-0">Belum ada file terlampir.</p>
                     @endif
@@ -115,8 +157,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Catatan</label>
-                            <textarea class="form-control" name="notes" rows="4"
-                                placeholder="Berikan catatan atau feedback..."></textarea>
+                            <textarea class="form-control" name="notes" rows="4" placeholder="Berikan catatan atau feedback..."></textarea>
                         </div>
 
                         <div class="d-grid">
@@ -133,9 +174,9 @@
                     <i class="bi bi-clock-history"></i> Riwayat Status
                 </div>
                 <div class="card-body">
-                    @if($submission->statuses->count() > 0)
+                    @if ($submission->statuses->count() > 0)
                         <div class="timeline">
-                            @foreach($submission->statuses->sortByDesc('created_at')->take(5) as $status)
+                            @foreach ($submission->statuses->sortByDesc('created_at')->take(5) as $status)
                                 <div class="timeline-item">
                                     <div class="timeline-icon">
                                         <i class="bi bi-circle-fill"></i>
@@ -146,7 +187,7 @@
                                             {{ $status->created_at->format('d/m/Y H:i') }}<br>
                                             oleh {{ $status->changer->name }}
                                         </small>
-                                        @if($status->comment)
+                                        @if ($status->comment)
                                             <p class="mt-1 mb-0 small">{{ $status->comment }}</p>
                                         @endif
                                     </div>
@@ -155,6 +196,71 @@
                         </div>
                     @else
                         <p class="text-muted text-center small mb-0">Belum ada riwayat.</p>
+                    @endif
+                </div>
+            </div>
+
+            @php
+                $latestFile = $submission->getLatestFile();
+            @endphp
+            @if ($latestFile)
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-file-earmark-check"></i> Dokumen Utama (Terbaru)
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-file-earmark-pdf text-danger fs-2 me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="mb-0 fw-semibold">{{ $latestFile->file_name }}</p>
+                                <small class="text-muted">{{ $latestFile->getFileTypeLabel() }} -
+                                    {{ $latestFile->getFormattedFileSize() }}</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 mt-3">
+                            @if (Str::endsWith(strtolower($latestFile->file_name), '.pdf'))
+                                <a href="{{ route('files.preview', $latestFile) }}" target="_blank"
+                                    class="btn btn-primary flex-grow-1">
+                                    <i class="bi bi-eye me-1"></i> Preview
+                                </a>
+                            @endif
+                            <a href="{{ route('files.download', $latestFile) }}"
+                                class="btn btn-outline-secondary flex-grow-1">
+                                <i class="bi bi-download me-1"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-activity"></i> Riwayat Aktivitas Mahasiswa
+                </div>
+                <div class="card-body p-0">
+                    @php
+                        $activities = $submission->getActivityLogs();
+                    @endphp
+                    @if ($activities->count() > 0)
+                        <ul class="list-group list-group-flush">
+                            @foreach ($activities->take(8) as $activity)
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <small
+                                                class="fw-semibold text-dark">{{ $activity->causer?->name ?? 'System' }}</small>
+                                            <p class="mb-0 small text-muted">{{ $activity->description }}</p>
+                                        </div>
+                                        <small
+                                            class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="text-center py-4 text-muted small">
+                            Belum ada riwayat aktivitas.
+                        </div>
                     @endif
                 </div>
             </div>

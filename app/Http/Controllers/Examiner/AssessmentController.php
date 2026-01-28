@@ -79,7 +79,7 @@ class AssessmentController extends Controller
         abort_if(!$this->assessmentService->canEdit($assessment), 403, 'Penilaian yang sudah disubmit tidak dapat diedit.');
 
         $assessment->load(['scores']);
-        $criteria = $this->assessmentService->getCriteria();
+        $criteria = $this->assessmentService->getCriteriaForAssessment($assessment);
         $submission = $assessment->thesisSubmission;
 
         return view('examiner.assessments.edit', compact('assessment', 'submission', 'criteria'));
@@ -114,5 +114,20 @@ class AssessmentController extends Controller
         return redirect()
             ->route('examiner.assessments.index')
             ->with('success', 'Penilaian berhasil dihapus!');
+    }
+
+    public function submit(Assessment $assessment)
+    {
+        abort_if($assessment->evaluator_id !== auth()->id(), 403);
+        abort_if($assessment->is_submitted, 403, 'Penilaian sudah disubmit.');
+
+        $assessment->update([
+            'is_submitted' => true,
+            'submitted_at' => now(),
+        ]);
+
+        return redirect()
+            ->route('examiner.assessments.show', $assessment)
+            ->with('success', 'Penilaian berhasil disubmit!');
     }
 }

@@ -114,6 +114,7 @@ class ThesisSubmission extends Model
             'scheduled_for_defense' => 'primary',
             'defense_in_progress' => 'warning',
             'completed' => 'success',
+            'cancelled' => 'danger',
             default => 'secondary',
         };
     }
@@ -130,7 +131,29 @@ class ThesisSubmission extends Model
             'scheduled_for_defense' => 'Dijadwalkan Sidang',
             'defense_in_progress' => 'Sedang Sidang',
             'completed' => 'Selesai',
+            'cancelled' => 'Dibatalkan',
             default => 'Tidak Diketahui',
         };
+    }
+
+    /**
+     * Get the latest (most recent) file for this submission.
+     * Prioritizes revision files, falls back to proposal.
+     */
+    public function getLatestFile(): ?SubmissionFile
+    {
+        return $this->files()->latest('created_at')->first();
+    }
+
+    /**
+     * Get activity logs related to this submission.
+     */
+    public function getActivityLogs()
+    {
+        return \Spatie\Activitylog\Models\Activity::where('subject_type', self::class)
+            ->where('subject_id', $this->id)
+            ->with('causer')
+            ->latest()
+            ->get();
     }
 }

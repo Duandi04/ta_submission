@@ -40,4 +40,32 @@ class FileDownloadController extends Controller
 
         return Storage::disk('public')->download($file->file_path, $customFilename);
     }
+
+    /**
+     * Preview (inline display) a submission file (useful for PDFs).
+     */
+    public function preview(SubmissionFile $file)
+    {
+        $submission = $file->thesisSubmission;
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // Students can only preview their own files
+        if ($user->hasRole('mahasiswa') && $submission->student_id !== $user->id) {
+            abort(403);
+        }
+
+        if (!Storage::disk('public')->exists($file->file_path)) {
+            abort(404, 'File tidak ditemukan di server.');
+        }
+
+        $path = Storage::disk('public')->path($file->file_path);
+        $mimeType = $file->mime_type ?? 'application/octet-stream';
+
+        return response()->file($path, [
+            'Content-Type' => $mimeType,
+            'Content-Disposition' => 'inline; filename="' . $file->file_name . '"',
+        ]);
+    }
 }

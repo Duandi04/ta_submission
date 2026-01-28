@@ -16,6 +16,8 @@ class Assessment extends Model
         'thesis_submission_id',
         'evaluator_id',
         'evaluator_type',
+        'rubric_id',
+        'rubric_snapshot',
         'total_score',
         'comments',
         'strengths',
@@ -31,6 +33,7 @@ class Assessment extends Model
             'total_score' => 'decimal:2',
             'is_submitted' => 'boolean',
             'submitted_at' => 'datetime',
+            'rubric_snapshot' => 'array',
         ];
     }
 
@@ -59,6 +62,11 @@ class Assessment extends Model
     public function scores()
     {
         return $this->hasMany(AssessmentScore::class);
+    }
+
+    public function rubric()
+    {
+        return $this->belongsTo(Rubric::class);
     }
 
     /**
@@ -93,6 +101,7 @@ class Assessment extends Model
             'supervisor' => 'Pembimbing',
             'examiner_1' => 'Penguji 1',
             'examiner_2' => 'Penguji 2',
+            'assessor' => 'Penilai',
             default => 'Tidak Diketahui',
         };
     }

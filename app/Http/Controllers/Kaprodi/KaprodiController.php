@@ -33,9 +33,41 @@ class KaprodiController extends Controller
     {
         $data = $request->validated();
 
-        $this->kaprodiService->assignLecturers($submissionId, $data);
+        try {
+            $this->kaprodiService->assignLecturers($submissionId, $data);
+            return back()->with('success', 'Dosen penilai berhasil ditetapkan.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
 
-        return back()->with('success', 'Dosen penilai berhasil ditetapkan.');
+    public function submissionShow(int $submissionId)
+    {
+        $submission = \App\Models\ThesisSubmission::with(['student', 'files', 'assessments.evaluator', 'assessments.scores'])
+            ->findOrFail($submissionId);
+
+        // Navigation logic
+        $prev = \App\Models\ThesisSubmission::where('id', '<', $submissionId)->orderBy('id', 'desc')->first();
+        $next = \App\Models\ThesisSubmission::where('id', '>', $submissionId)->orderBy('id', 'asc')->first();
+        $count = \App\Models\ThesisSubmission::count();
+        $position = \App\Models\ThesisSubmission::where('id', '<=', $submissionId)->count();
+
+        $navigation = [
+            'prev' => $prev?->id,
+            'next' => $next?->id,
+            'current' => $position,
+            'total' => $count,
+            'query' => []
+        ];
+
+        $lecturers = $this->kaprodiService->getLecturers();
+        return view('kaprodi.submissions.show', compact('submission', 'lecturers', 'navigation'));
+    }
+
+    public function assessmentShow(\App\Models\Assessment $assessment)
+    {
+        $assessment->load(['evaluator', 'scores', 'thesisSubmission.student', 'thesisSubmission.files']);
+        return view('kaprodi.assessments.show', compact('assessment'));
     }
 
     public function settings()

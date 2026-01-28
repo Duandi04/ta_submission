@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Auto-hide alerts after 5 seconds
-    const alerts = document.querySelectorAll('.alert');
+    // Auto-hide alerts after 5 seconds (except those marked as persistent)
+    const alerts = document.querySelectorAll('.alert:not(.alert-persistent)');
     alerts.forEach(alert => {
         setTimeout(() => {
             const bsAlert = new bootstrap.Alert(alert);

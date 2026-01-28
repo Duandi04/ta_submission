@@ -26,7 +26,7 @@
                         <thead>
                             <tr>
                                 <th class="ps-3">Judul</th>
-                                <th>Pembimbing</th>
+                                <th>Dosen Penilai</th>
                                 <th>Status</th>
                                 <th>Tanggal Submit</th>
                                 <th class="text-end pe-3">Aksi</th>
@@ -40,7 +40,16 @@
                                         <div class="text-muted smaller-text">{{ $submission->research_field ?? 'Umum' }}
                                         </div>
                                     </td>
-                                    <td>{{ $submission->supervisor?->name ?? 'Belum Ditentukan' }}</td>
+                                    <td>
+                                        @if ($submission->assessments->count() > 0)
+                                            @foreach ($submission->assessments as $assessment)
+                                                <span
+                                                    class="badge bg-light text-dark border me-1">{{ $assessment->evaluator->name ?? 'N/A' }}</span>
+                                            @endforeach
+                                        @else
+                                            <span class="text-muted small">Belum Ditentukan</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         <span class="badge bg-{{ $submission->getStatusBadgeClass() }} rounded-pill">
                                             {{ $submission->getStatusLabel() }}
@@ -48,9 +57,14 @@
                                     </td>
                                     <td>{{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
                                     <td class="text-end pe-3">
-                                        <button type="button" class="btn btn-sm btn-outline-primary px-3"
-                                            data-bs-toggle="modal" data-bs-target="#assignModal{{ $submission->id }}">
-                                            <i class="bi bi-person-plus"></i> Atur Dosen
+                                        <a href="{{ route('kaprodi.submissions.show', $submission) }}"
+                                            class="btn btn-sm btn-outline-info px-2 me-1" title="Lihat Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-primary px-2"
+                                            data-bs-toggle="modal" data-bs-target="#assignModal{{ $submission->id }}"
+                                            title="Atur Dosen">
+                                            <i class="bi bi-person-plus"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -74,8 +88,9 @@
                                                     <div class="mb-3">
                                                         <label class="form-label">Dosen Penilai <span
                                                                 class="text-danger">*</span></label>
-                                                        <select name="assessor_ids[]" class="form-select" multiple
-                                                            size="6" required>
+                                                        <select id="assessor-select-{{ $submission->id }}"
+                                                            name="assessor_ids[]" multiple required
+                                                            placeholder="Pilih dosen penilai...">
                                                             @php
                                                                 $currentAssessorIds = $submission->assessments
                                                                     ->pluck('evaluator_id')
@@ -88,8 +103,6 @@
                                                                 </option>
                                                             @endforeach
                                                         </select>
-                                                        <div class="form-text">Tahan Ctrl (Cmd di Mac) untuk memilih
-                                                            beberapa dosen.</div>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
@@ -114,3 +127,17 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @foreach ($submissions as $submission)
+                new TomSelect('#assessor-select-{{ $submission->id }}', {
+                    plugins: ['remove_button'],
+                    persist: false,
+                    create: false,
+                });
+            @endforeach
+        });
+    </script>
+@endpush

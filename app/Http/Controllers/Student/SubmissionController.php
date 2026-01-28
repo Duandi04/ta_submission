@@ -124,4 +124,58 @@ class SubmissionController extends Controller
             ->route('student.submissions.index')
             ->with('success', 'Pengajuan berhasil dihapus!');
     }
+
+    public function cancel(ThesisSubmission $submission)
+    {
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+        abort_if($submission->student_id !== $user->id, 403);
+        abort_if(!in_array($submission->status, ['draft', 'submitted']), 403, 'Pengajuan tidak dapat dibatalkan.');
+
+        $submission->update(['status' => 'cancelled']);
+
+        // Log status change
+        $submission->statuses()->create([
+            'previous_status' => $submission->getOriginal('status'),
+            'new_status' => 'cancelled',
+            'changed_by' => $user->id,
+            'comment' => 'Dibatalkan oleh mahasiswa.',
+        ]);
+
+        activity()
+            ->performedOn($submission)
+            ->causedBy($user)
+            ->log('Membatalkan pengajuan');
+
+        return redirect()
+            ->route('student.submissions.index')
+            ->with('success', 'Pengajuan berhasil dibatalkan!');
+    }
+
+    public function submit(ThesisSubmission $submission)
+    {
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+        abort_if($submission->student_id !== $user->id, 403);
+        abort_if($submission->status !== 'draft', 403, 'Hanya pengajuan draft yang dapat disubmit.');
+
+        $submission->update(['status' => 'submitted', 'submission_date' => now()]);
+
+        // Log status change
+        $submission->statuses()->create([
+            'previous_status' => 'draft',
+            'new_status' => 'submitted',
+            'changed_by' => $user->id,
+            'comment' => 'Pengajuan disubmit oleh mahasiswa.',
+        ]);
+
+        activity()
+            ->performedOn($submission)
+            ->causedBy($user)
+            ->log('Mengajukan submission');
+
+        return redirect()
+            ->route('student.submissions.show', $submission)
+            ->with('success', 'Pengajuan berhasil disubmit! Menunggu review Kaprodi.');
+    }
 }

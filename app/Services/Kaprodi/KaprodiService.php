@@ -90,34 +90,65 @@ class KaprodiService
         $submission = ThesisSubmission::findOrFail($submissionId);
         $assessorIds = $data['assessor_ids'] ?? [];
 
+        // Check if submission is in 'submitted' status only.
+        // If it is 'under_review', it means lecturers are already assigned and we should not allow changes (per user request: "udah gak bisa hapus penilainya, ataupun ubah")
+        if ($submission->status === 'under_review') {
+             throw new \Exception('Dosen penilai sudah ditetapkan dan tidak dapat diubah lagi.');
+        }
+
+        if ($submission->status !== 'submitted') {
+             throw new \Exception('Mahasiswa belum melakukan submit pengajuan (final) atau status tidak valid untuk penetapan dosen.');
+        }
+
+        // Get the active rubric to lock it for this assignment
+        $activeRubric = Rubric::where('is_active', true)->first();
+        
+        if (!$activeRubric) {
+             throw new \Exception('Belum ada rubrik penilaian yang aktif. Harap aktifkan salah satu rubrik terlebih dahulu.');
+        }
+
+        $rubricId = $activeRubric->id;
+        $rubricSnapshot = $activeRubric->criteria;
+
         // Delete old assessments that are not in the new list
         \App\Models\Assessment::where('thesis_submission_id', $submission->id)
             ->whereNotIn('evaluator_id', $assessorIds)
             ->delete();
 
-        // Add or keep existing assessors
+        // Add or keep existing assessors with the locked rubric
         foreach ($assessorIds as $assessorId) {
-            \App\Models\Assessment::updateOrCreate(
+            \App\Models\Assessment::withTrashed()->updateOrCreate(
                 [
                     'thesis_submission_id' => $submission->id,
                     'evaluator_id' => $assessorId,
                 ],
-                ['evaluator_type' => 'assessor']
+                [
+                    'evaluator_type' => 'assessor',
+                    'rubric_id' => $rubricId,
+                    'rubric_snapshot' => $rubricSnapshot,
+                    'deleted_at' => null, // Restore if it was soft deleted
+                ]
             );
         }
 
-        // Update status if it was just submitted
-        if ($submission->status === 'submitted') {
+        // Always update status to under_review when dosen is assigned
+        $previousStatus = $submission->status;
+        if ($previousStatus !== 'under_review' && count($assessorIds) > 0) {
             $submission->update(['status' => 'under_review']);
             
             // Log status change
             \App\Models\ThesisStatus::create([
                 'thesis_submission_id' => $submission->id,
-                'old_status' => 'submitted',
+                'old_status' => $previousStatus,
                 'new_status' => 'under_review',
                 'changed_by' => Auth::id(),
-                'comment' => 'Dosen penilai telah ditetapkan oleh Kaprodi.',
+                'comment' => 'Dosen penilai telah ditetapkan oleh Kaprodi. Pengajuan dalam penilaian.',
             ]);
+
+            activity()
+                ->performedOn($submission)
+                ->causedBy(Auth::user())
+                ->log('Dosen penilai ditetapkan, status berubah ke Dalam Penilaian');
         }
     }
 
