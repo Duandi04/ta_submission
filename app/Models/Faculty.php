@@ -16,7 +16,8 @@ class Faculty extends Model
         return LogOptions::defaults()
             ->logOnly(['name', 'code'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontSubmitEmptyLogs()
+            ->useLogName('faculties');
     }
 
     public function programStudis()

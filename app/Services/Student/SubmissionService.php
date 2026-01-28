@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Setting;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class SubmissionService
 {
@@ -47,7 +48,9 @@ class SubmissionService
 
         $maxDrafts = (int) Setting::getValue('max_thesis_drafts', 3);
         if ($currentCount >= $maxDrafts) {
-            throw new \Exception("Anda telah mencapai batas maksimal pengunggahan draft ({$maxDrafts} draft). Tengah hubungi Kaprodi jika ada kendala.");
+            throw ValidationException::withMessages([
+                'limit' => "Anda telah mencapai batas maksimal pengunggahan draft ({$maxDrafts} draft). Silakan hubungi Kaprodi jika ada kendala."
+            ]);
         }
 
         $submission = $user->thesisSubmissions()->create([

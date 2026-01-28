@@ -12,8 +12,8 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-8">
+    <div class="row justify-content-center">
+        <div class="col-md-8 mx-auto">
             <div class="card">
                 <div class="card-body">
                     <form action="{{ route('admin.users.store') }}" method="POST" class="needs-validation" novalidate>
@@ -73,19 +73,21 @@
 
                         <div class="mb-3">
                             <label for="address" class="form-label">Alamat</label>
-                            <textarea class="form-control @error('address') is-invalid @enderror" id="address"
-                                name="address" rows="3">{{ old('address') }}</textarea>
+                            <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="3">{{ old('address') }}</textarea>
                             @error('address')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="mb-3">
-                            <label for="program_studi_id" class="form-label">Program Studi <span class="text-danger">*</span></label>
-                            <select class="form-select @error('program_studi_id') is-invalid @enderror" id="program_studi_id" name="program_studi_id">
+                            <label for="program_studi_id" class="form-label">Program Studi <span
+                                    class="text-danger">*</span></label>
+                            <select class="form-select @error('program_studi_id') is-invalid @enderror"
+                                id="program_studi_id" name="program_studi_id">
                                 <option value="">-- Pilih Program Studi --</option>
-                                @foreach($programStudis as $prodi)
-                                    <option value="{{ $prodi->id }}" {{ old('program_studi_id') == $prodi->id ? 'selected' : '' }}>
+                                @foreach ($programStudis as $prodi)
+                                    <option value="{{ $prodi->id }}"
+                                        {{ old('program_studi_id') == $prodi->id ? 'selected' : '' }}>
                                         [{{ $prodi->code }}] {{ $prodi->name }}
                                     </option>
                                 @endforeach
@@ -98,7 +100,8 @@
 
                         <div class="mb-3">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active"
+                                    value="1" {{ old('is_active', true) ? 'checked' : '' }}>
                                 <label class="form-check-label" for="is_active">Akun Aktif</label>
                             </div>
                             <div class="form-text">Jika tidak aktif, user tidak akan bisa login.</div>
@@ -106,10 +109,12 @@
 
                         <div class="mb-3">
                             <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
-                            <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
+                            <select class="form-select @error('role') is-invalid @enderror" id="role" name="role"
+                                required>
                                 <option value="">-- Pilih Role --</option>
-                                @foreach($roles as $role)
-                                    <option value="{{ $role->name }}" {{ old('role') == $role->name ? 'selected' : '' }}>
+                                @foreach ($roles as $role)
+                                    <option value="{{ $role->name }}"
+                                        {{ old('role') == $role->name ? 'selected' : '' }}>
                                         {{ ucfirst(str_replace('_', ' ', $role->name)) }}
                                     </option>
                                 @endforeach

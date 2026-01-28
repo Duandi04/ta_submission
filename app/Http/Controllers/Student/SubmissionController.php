@@ -53,14 +53,28 @@ class SubmissionController extends Controller
 
         $submission->load(['supervisor', 'files', 'assessments.evaluator', 'comments.user', 'statuses.changer']);
 
-        return view('student.submissions.show', compact('submission'));
+        $navigation = \App\Helpers\NavigationHelper::getNavigation(
+            $submission, 
+            ThesisSubmission::where('student_id', $user->id), 
+            'created_at', 
+            'desc'
+        );
+
+        return view('student.submissions.show', compact('submission', 'navigation'));
     }
 
     public function edit(ThesisSubmission $submission)
     {
         abort_if(!$this->submissionService->canEdit($submission), 403, 'Pengajuan ini tidak dapat diedit.');
 
-        return view('student.submissions.edit', compact('submission'));
+        $navigation = \App\Helpers\NavigationHelper::getNavigation(
+            $submission, 
+            ThesisSubmission::where('student_id', \Illuminate\Support\Facades\Auth::id()), 
+            'created_at', 
+            'desc'
+        );
+
+        return view('student.submissions.edit', compact('submission', 'navigation'));
     }
 
     public function update(Request $request, ThesisSubmission $submission)

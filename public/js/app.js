@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebar?.classList.toggle('collapsed');
         mainContent?.classList.toggle('expanded');
         
+        // Remove the initialization class once user starts interacting
+        document.documentElement.classList.remove('sidebar-collapsed-init');
+        
         // Save state to localStorage
         if (sidebar?.classList.contains('collapsed')) {
             localStorage.setItem('sidebarState', 'collapsed');

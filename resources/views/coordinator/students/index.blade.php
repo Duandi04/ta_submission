@@ -13,20 +13,45 @@
                 <table class="table table-hover align-middle">
                     <thead>
                         <tr>
-                            <th class="ps-3">Mahasiswa</th>
-                            <th>NIM</th>
+                            <th class="ps-3" style="width: 50px;">No</th>
+                            <th>
+                                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'name', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
+                                    class="text-dark text-decoration-none">
+                                    Mahasiswa
+                                    @if (request('sort_by') == 'name')
+                                        <i
+                                            class="bi bi-sort-{{ request('sort_order') == 'asc' ? 'alpha-down' : 'alpha-up' }}"></i>
+                                    @else
+                                        <i class="bi bi-hash text-muted small"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'nim_nip', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
+                                    class="text-dark text-decoration-none">
+                                    NIM
+                                    @if (request('sort_by') == 'nim_nip')
+                                        <i
+                                            class="bi bi-sort-{{ request('sort_order') == 'asc' ? 'numeric-down' : 'numeric-up' }}"></i>
+                                    @else
+                                        <i class="bi bi-hash text-muted small"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th>Total Draft</th>
                             <th class="text-end pe-3">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($students as $student)
+                        @foreach ($students as $student)
                             <tr>
-                                <td class="ps-3">
+                                <td class="ps-3 text-muted small">
+                                    {{ $loop->iteration + ($students->currentPage() - 1) * $students->perPage() }}</td>
+                                <td>
                                     <div class="fw-semibold text-dark">{{ $student->name }}</div>
                                     <div class="text-muted small">{{ $student->email }}</div>
                                 </td>
-                                <td>{{ $student->nim_nip }}</td>
+                                <td>{{ $student->nim_nip ?: '-' }}</td>
                                 <td>
                                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3">
                                         {{ $student->thesis_submissions_count }}

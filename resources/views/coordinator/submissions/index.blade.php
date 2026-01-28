@@ -88,7 +88,7 @@
                                         {{ $submission->getStatusLabel() }}
                                     </span>
                                 </td>
-                                <td>{{ $submission->created_at->format('d M Y') }}</td>
+                                <td>{{ $submission->created_at->format('d/m/Y') }}</td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
                                         <a href="{{ route('coordinator.submissions.show', $submission) }}"

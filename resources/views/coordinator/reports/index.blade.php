@@ -26,7 +26,8 @@
             <div class="card border-0 shadow-sm text-center py-3">
                 <div class="card-body">
                     <h6 class="text-muted small text-uppercase text-warning">Penilaian</h6>
-                    <h4 class="mb-0">{{ \App\Models\ThesisSubmission::whereIn('status', ['submitted', 'under_review'])->count() }}</h4>
+                    <h4 class="mb-0">
+                        {{ \App\Models\ThesisSubmission::whereIn('status', ['submitted', 'under_review'])->count() }}</h4>
                 </div>
             </div>
         </div>
@@ -62,18 +63,38 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light">
                         <tr>
-                            <th class="ps-3">No</th>
-                            <th>Mahasiswa</th>
+                            <th class="ps-3" style="width: 50px;">No</th>
+                            <th>
+                                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'student', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
+                                    class="text-dark text-decoration-none">
+                                    Mahasiswa
+                                    @if (request('sort_by') == 'student')
+                                        <i
+                                            class="bi bi-sort-{{ request('sort_order') == 'asc' ? 'alpha-down' : 'alpha-up' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th>Judul Thesis</th>
                             <th>Pembimbing</th>
                             <th class="text-center">Status</th>
-                            <th>Tgl Pengajuan</th>
+                            <th>
+                                <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'created_at', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
+                                    class="text-dark text-decoration-none">
+                                    Tgl Pengajuan
+                                    @if (request('sort_by') == 'created_at')
+                                        <i
+                                            class="bi bi-sort-{{ request('sort_order') == 'asc' ? 'numeric-down' : 'numeric-up' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($submissions as $submission)
                             <tr>
-                                <td class="ps-3">{{ $loop->iteration + ($submissions->currentPage() - 1) * $submissions->perPage() }}</td>
+                                <td class="ps-3">
+                                    {{ $loop->iteration + ($submissions->currentPage() - 1) * $submissions->perPage() }}
+                                </td>
                                 <td>
                                     <div class="fw-bold">{{ $submission->student->name }}</div>
                                     <div class="text-muted small">{{ $submission->student->nim_nip }}</div>
@@ -108,13 +129,19 @@
 
     <style>
         @media print {
-            .sidebar, .navbar, .btn-toolbar, .pagination {
+
+            .sidebar,
+            .navbar,
+            .btn-toolbar,
+            .pagination {
                 display: none !important;
             }
+
             #main-content {
                 margin: 0 !important;
                 padding: 0 !important;
             }
+
             .card {
                 box-shadow: none !important;
                 border: 1px solid #ddd !important;

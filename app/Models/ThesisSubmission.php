@@ -39,7 +39,8 @@ class ThesisSubmission extends Model
         return LogOptions::defaults()
             ->logOnly(['title', 'abstract', 'research_field', 'status', 'submission_date', 'defense_date', 'notes', 'final_score', 'supervisor_id'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontSubmitEmptyLogs()
+            ->useLogName('submissions');
     }
 
     /**

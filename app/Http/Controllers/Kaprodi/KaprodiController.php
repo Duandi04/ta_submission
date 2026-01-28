@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Kaprodi;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Kaprodi\KaprodiAssignLecturersRequest;
+use App\Http\Requests\Kaprodi\KaprodiRubricRequest;
+use App\Http\Requests\Kaprodi\KaprodiSettingsRequest;
 use App\Services\Kaprodi\KaprodiService;
-use Illuminate\Http\Request;
 
 class KaprodiController extends Controller
 {
@@ -27,17 +29,13 @@ class KaprodiController extends Controller
         return view('kaprodi.students.show', compact('student', 'submissions', 'lecturers'));
     }
 
-    public function assignLecturers(Request $request, int $submissionId)
+    public function assignLecturers(KaprodiAssignLecturersRequest $request, int $submissionId)
     {
-        $data = $request->validate([
-            'supervisor_id' => 'required|exists:users,id',
-            'examiner_1_id' => 'required|exists:users,id',
-            'examiner_2_id' => 'required|exists:users,id',
-        ]);
+        $data = $request->validated();
 
         $this->kaprodiService->assignLecturers($submissionId, $data);
 
-        return back()->with('success', 'Dosen pembimbing dan penguji berhasil ditetapkan.');
+        return back()->with('success', 'Dosen penilai berhasil ditetapkan.');
     }
 
     public function settings()
@@ -46,11 +44,9 @@ class KaprodiController extends Controller
         return view('kaprodi.settings.index', compact('settings'));
     }
 
-    public function updateSettings(Request $request)
+    public function updateSettings(KaprodiSettingsRequest $request)
     {
-        $data = $request->validate([
-            'max_thesis_drafts' => 'required|integer|min:1',
-        ]);
+        $data = $request->validated();
 
         $this->kaprodiService->updateSettings($data);
 
@@ -68,22 +64,9 @@ class KaprodiController extends Controller
         return view('kaprodi.rubrics.create');
     }
 
-    public function storeRubric(Request $request)
+    public function storeRubric(KaprodiRubricRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
-            'criteria' => 'required|array|min:1',
-            'criteria.*.name' => 'required|string|max:255',
-            'criteria.*.weight' => 'required|numeric|min:0|max:100',
-            'criteria.*.description' => 'nullable|string',
-        ]);
-
-        $totalWeight = array_sum(array_column($request->criteria, 'weight'));
-        if ($totalWeight != 100) {
-            return back()->withErrors(['criteria' => 'Total bobot kriteria harus tepat 100% (saat ini ' . $totalWeight . '%).'])->withInput();
-        }
+        $data = $request->validated();
 
         $this->kaprodiService->createRubric($data);
 
@@ -96,22 +79,9 @@ class KaprodiController extends Controller
         return view('kaprodi.rubrics.edit', compact('rubric'));
     }
 
-    public function updateRubric(Request $request, int $id)
+    public function updateRubric(KaprodiRubricRequest $request, int $id)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
-            'criteria' => 'required|array|min:1',
-            'criteria.*.name' => 'required|string|max:255',
-            'criteria.*.weight' => 'required|numeric|min:0|max:100',
-            'criteria.*.description' => 'nullable|string',
-        ]);
-
-        $totalWeight = array_sum(array_column($request->criteria, 'weight'));
-        if ($totalWeight != 100) {
-            return back()->withErrors(['criteria' => 'Total bobot kriteria harus tepat 100% (saat ini ' . $totalWeight . '%).'])->withInput();
-        }
+        $data = $request->validated();
 
         $this->kaprodiService->updateRubric($id, $data);
 

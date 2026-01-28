@@ -56,12 +56,12 @@
                         </tr>
                         <tr>
                             <th>Tanggal Pengajuan</th>
-                            <td>: {{ $submission->submission_date?->format('d F Y H:i') ?? '-' }}</td>
+                            <td>: {{ $submission->submission_date?->format('d/m/Y H:i') ?? '-' }}</td>
                         </tr>
                         @if($submission->defense_date)
                             <tr>
                                 <th>Jadwal Sidang</th>
-                                <td>: <strong class="text-primary">{{ $submission->defense_date->format('d F Y') }}</strong>
+                                <td>: <strong class="text-primary">{{ $submission->defense_date->format('d/m/Y') }}</strong>
                                 </td>
                             </tr>
                         @endif
@@ -89,7 +89,7 @@
                                             <strong class="ms-2">{{ $file->file_name }}</strong><br>
                                             <small class="text-muted ms-5">
                                                 {{ $file->getFormattedFileSize() }} -
-                                                {{ $file->created_at->format('d M Y H:i') }}
+                                                {{ $file->created_at->format('d/m/Y H:i') }}
                                             </small>
                                         </div>
                                         <a href="/storage/{{ $file->file_path }}" class="btn btn-sm btn-primary" target="_blank">
@@ -127,7 +127,7 @@
                                             <td>{{ $assessment->evaluator->name }}</td>
                                             <td>{{ $assessment->getEvaluatorTypeLabel() }}</td>
                                             <td><span class="badge bg-success fs-6">{{ $assessment->total_score }}</span></td>
-                                            <td>{{ $assessment->submitted_at->format('d M Y') }}</td>
+                                            <td>{{ $assessment->submitted_at->format('d/m/Y') }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -191,7 +191,7 @@
                                     <div>
                                         <strong>{{ ucfirst(str_replace('_', ' ', $status->new_status)) }}</strong><br>
                                         <small class="text-muted">
-                                            {{ $status->created_at->format('d M Y H:i') }}<br>
+                                            {{ $status->created_at->format('d/m/Y H:i') }}<br>
                                             {{ $status->changer->name }}
                                         </small>
                                     </div>

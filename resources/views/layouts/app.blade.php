@@ -22,16 +22,26 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @stack('styles')
+
+    <!-- Immediate Sidebar State Initialization -->
+    <script>
+        (function() {
+            const sidebarState = localStorage.getItem('sidebarState');
+            if (sidebarState === 'collapsed') {
+                document.documentElement.classList.add('sidebar-collapsed-init');
+            }
+        })();
+    </script>
 </head>
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg fixed-top shadow-none">
+    <nav class="navbar navbar-expand-lg fixed-top shadow-none border-bottom">
         <div class="container-fluid">
             <div class="d-flex align-items-center">
-                <a class="navbar-brand me-4" href="{{ route('dashboard') }}">
-                    <i
-                        class="bi bi-mortarboard-fill me-2"></i>{{ \App\Models\Setting::getValue('campus_name', 'Sistem TA') }}
+                <a class="navbar-brand me-4 d-flex align-items-center" href="{{ route('dashboard') }}">
+                    <i class="bi bi-mortarboard-fill me-2 fs-4"></i>
+                    <span>{{ \App\Models\Setting::getValue('campus_name', 'Sistem TA') }}</span>
                 </a>
                 <button class="sidebar-toggle" id="sidebarToggle">
                     <i class="bi bi-list"></i>
@@ -172,17 +182,17 @@
                 @role('admin')
                     <div class="sidebar-label">Administrator</div>
                     <li class="nav-item">
-                        <a class="nav-link {{ request('role_group') == 'lecturer' ? 'active' : '' }}"
-                            href="{{ route('admin.users.index', ['role_group' => 'lecturer']) }}">
+                        <a class="nav-link {{ request()->routeIs('admin.lecturers.*') ? 'active' : '' }}"
+                            href="{{ route('admin.lecturers.index') }}">
                             <i class="bi bi-person-badge-fill"></i>
-                            <span>Daftar Dosen</span>
+                            <span>Kelola Dosen</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request('role') == 'mahasiswa' ? 'active' : '' }}"
-                            href="{{ route('admin.users.index', ['role' => 'mahasiswa']) }}">
+                        <a class="nav-link {{ request()->routeIs('admin.students.*') ? 'active' : '' }}"
+                            href="{{ route('admin.students.index') }}">
                             <i class="bi bi-people-fill"></i>
-                            <span>Daftar Mahasiswa</span>
+                            <span>Kelola Mahasiswa</span>
                         </a>
                     </li>
                     <li class="nav-item">

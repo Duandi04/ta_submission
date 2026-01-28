@@ -37,7 +37,7 @@ class ActivityLogController extends Controller
             $query->where('subject_type', $request->subject_type);
         }
 
-        $activities = $query->paginate(20);
+        $activities = $query->paginate(15);
 
         // Get unique log names and subject types for filters
         $logNames = Activity::distinct()->pluck('log_name');

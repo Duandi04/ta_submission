@@ -46,8 +46,8 @@
                 @csrf
 
                 <div class="form-floating">
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email"
-                        value="{{ old('email') }}" placeholder="email@example.com" required autofocus>
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email"
+                        name="email" value="{{ old('email') }}" placeholder="email@example.com" required autofocus>
                     <label for="email"><i class="bi bi-envelope me-2"></i>Alamat Email</label>
                 </div>
 
@@ -75,16 +75,7 @@
                 </button>
             </form>
 
-            <div class="divider">
-                <span>Akun Demo</span>
-            </div>
 
-            <div class="demo-credentials">
-                <h6><i class="bi bi-info-circle"></i> Kredensial Demo</h6>
-                <p><strong>Admin:</strong> admin@ta.test</p>
-                <p><strong>Mahasiswa:</strong> mahasiswa1@ta.test</p>
-                <p><strong>Password:</strong> password</p>
-            </div>
         </div>
     </div>
 @endsection

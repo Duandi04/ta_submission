@@ -65,7 +65,8 @@ class User extends Authenticatable
         return LogOptions::defaults()
             ->logOnly(['name', 'email', 'nim_nip', 'phone', 'address', 'is_active', 'program_studi_id'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontSubmitEmptyLogs()
+            ->useLogName('users');
     }
 
     /**
@@ -137,5 +138,42 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');
+    }
+
+    /**
+     * Scopes
+     */
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('nim_nip', 'like', "%{$search}%");
+        });
+    }
+
+    public function scopeByRole($query, $role)
+    {
+        return $query->role($role);
+    }
+
+    public function scopeByProgramStudi($query, $programStudiId)
+    {
+        return $query->where('program_studi_id', $programStudiId);
+    }
+
+    public function scopeFilterByRequest($query, $request)
+    {
+        return $query->when($request->search, fn($q) => $q->search($request->search))
+            ->when($request->role, fn($q) => $q->role($request->role))
+            ->when($request->role_group == 'lecturer', fn($q) => $q->lecturers())
+            ->when($request->program_studi_id, fn($q) => $q->byProgramStudi($request->program_studi_id));
+    }
+
+    public function scopeLecturers($query)
+    {
+        return $query->whereHas('roles', function ($q) {
+            $q->whereIn('name', ['dosen', 'kaprodi']);
+        });
     }
 }

@@ -4,11 +4,18 @@
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <h1 class="h2">{{ isset($faculty) ? 'Edit' : 'Tambah' }} Fakultas</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('admin.faculties.index') }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left me-1"></i> Kembali
-            </a>
+        <h1 class="h2 mb-0">
+            {{ isset($faculty) ? 'Edit' : 'Tambah' }} Fakultas
+        </h1>
+        <div class="btn-toolbar mb-2 mb-md-0 d-flex align-items-center">
+            @if (isset($faculty))
+                @include('partials.record-navigation', ['route' => 'admin.faculties.edit'])
+            @endif
+            <div class="ms-3">
+                <a href="{{ route('admin.faculties.index') }}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Kembali
+                </a>
+            </div>
         </div>
     </div>
 
@@ -20,7 +27,9 @@
                         action="{{ isset($faculty) ? route('admin.faculties.update', $faculty) : route('admin.faculties.store') }}"
                         method="POST">
                         @csrf
-                        @if(isset($faculty)) @method('PUT') @endif
+                        @if (isset($faculty))
+                            @method('PUT')
+                        @endif
 
                         <div class="mb-3">
                             <label for="name" class="form-label">Nama Fakultas</label>

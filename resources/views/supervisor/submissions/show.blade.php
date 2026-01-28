@@ -43,7 +43,7 @@
                         </tr>
                         <tr>
                             <th>Tanggal Pengajuan</th>
-                            <td>: {{ $submission->submission_date?->format('d F Y') ?? '-' }}</td>
+                            <td>: {{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
                         </tr>
                     </table>
 
@@ -77,7 +77,7 @@
                                             <small class="text-muted ms-5">
                                                 {{ $file->getFileTypeLabel() }} -
                                                 {{ $file->getFormattedFileSize() }} -
-                                                {{ $file->created_at->format('d M Y H:i') }}
+                                                {{ $file->created_at->format('d/m/Y H:i') }}
                                             </small>
                                         </div>
                                         <a href="/storage/{{ $file->file_path }}" class="btn btn-sm btn-primary" target="_blank">
@@ -143,7 +143,7 @@
                                     <div>
                                         <strong>{{ ucfirst(str_replace('_', ' ', $status->new_status)) }}</strong><br>
                                         <small class="text-muted">
-                                            {{ $status->created_at->format('d M Y H:i') }}<br>
+                                            {{ $status->created_at->format('d/m/Y H:i') }}<br>
                                             oleh {{ $status->changer->name }}
                                         </small>
                                         @if($status->comment)

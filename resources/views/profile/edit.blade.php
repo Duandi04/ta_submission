@@ -145,7 +145,7 @@
                     </p>
                     <p class="mb-2">
                         <strong>Terdaftar sejak:</strong><br>
-                        {{ auth()->user()->created_at->format('d F Y') }}
+                        {{ auth()->user()->created_at->format('d/m/Y') }}
                     </p>
                     @if (auth()->user()->programStudi)
                         <hr class="opacity-50">

@@ -41,7 +41,7 @@
                                                 {{ $submission->getStatusLabel() }}
                                             </span>
                                         </td>
-                                        <td>{{ $submission->submission_date?->format('d M Y') ?? '-' }}</td>
+                                        <td>{{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
                                         <td class="text-end">
                                             <div class="btn-group btn-group-sm">
                                                 <a href="{{ route('student.submissions.show', $submission) }}"

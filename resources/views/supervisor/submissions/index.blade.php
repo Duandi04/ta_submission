@@ -86,7 +86,7 @@
                                             {{ $submission->getStatusLabel() }}
                                         </span>
                                     </td>
-                                    <td>{{ $submission->submission_date?->format('d M Y') ?? '-' }}</td>
+                                    <td>{{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
                                     <td>
                                         <div class="btn-group btn-group-sm">
                                             <a href="{{ route('supervisor.submissions.show', $submission) }}"

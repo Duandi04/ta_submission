@@ -1,115 +1,100 @@
 # Sistem Pengajuan Tugas Akhir (TA Submission System)
 
-A web-based application for managing the Thesis (Tugas Akhir) submission process, built with Laravel 12. This system facilitates the interaction between students (mahasiswa), supervisors (dosen pembimbing), examiners (dosen penguji), coordinators (koordinator), and administrators.
+A web-based application for managing the Thesis (Tugas Akhir) submission process, built with **Laravel 12**. This system facilitates the interaction between students (mahasiswa), supervisors (dosen pembimbing), examiners (dosen penguji), coordinators (koordinator), and administrators.
 
-## Features
+## 🚀 Features
 
--   **Role-Based Access Control**: Secure access management for different user roles.
--   **Student Module**: Submit thesis proposals, track status, and view assessment results.
--   **Supervisor Module**: Review and manage supervised students' submissions.
--   **Examiner Module**: Input assessments and grades for assigned theses.
--   **Coordinator Module**: Oversee all submissions, assign examiners, and generate reports.
--   **Admin Module**: Manage users, roles, and view system activity logs.
--   **Activity Logging**: Comprehensive audit trail for system actions.
--   **Responsive Design**: Built with Bootstrap 5 and custom CSS for a modern user interface.
+- **Role-Based Access Control**: Secure access management via `spatie/laravel-permission`.
+- **Student Module**: Submit thesis proposals, upload drafts, track revision history, and view grades.
+- **Supervisor & Examiner Module**: Manage guidance, provide revision notes, and input assessment rubrics.
+- **Coordinator Module**: Oversee all submissions, manage program reports, and monitor progress.
+- **Kaprodi Module**: Configure thesis settings (e.g., max drafts), manage assessment rubrics, and assign lecturers.
+- **Admin Module**: Manage users, faculties, study programs, and system-wide configurations.
+- **Activity Logging**: Full audit trail for every action using `spatie/laravel-activitylog`.
+- **Clean Code Architecture**: Adheres to modern best practices (FormRequests, Service Layer, Thin Controllers).
 
-## Technology Stack
+## 🛠 Technology Stack
 
--   **Backend Framework**: Laravel 11 (PHP 8.2+)
--   **Database**: MySQL
--   **Frontend**: Blade Templates, Bootstrap 5 (CDN)
--   **Asset Management**: Custom CSS/JS (No Node.js/NPM required)
+- **Backend Framework**: Laravel 12.x (PHP 8.2+)
+- **Database**: MySQL / MariaDB (SQLite supported for testing)
+- **Frontend**: Blade Templates, Bootstrap 5, SweetAlert2
+- **Testing**: PHPUnit (Feature & Unit Tests)
+- **Key Packages**:
+  - `spatie/laravel-permission`
+  - `spatie/laravel-activitylog`
+  - `intervention/image`
 
-## Requirements
+## 🏗 Clean Code & Architecture
 
-Before you begin, ensure you have the following installed on your machine:
+This project has been refactored to ensure high maintainability and scalability:
 
--   PHP >= 8.2
--   Composer
--   MySQL
+- **Service Layer**: Business logic is separated into dedicated Service classes (e.g., `AuthService`, `KaprodiService`).
+- **Form Requests**: Input validation is moved from controllers to dedicated Request classes (e.g., `UserRequest`, `RubricRequest`).
+- **Model Scopes**: encapsulated filtering and search logic within Eloquent Scopes for cleaner queries.
+- **Thin Controllers**: Controllers only handle request routing and response returning.
+- **Repository/Service Pattern**: logic for complex operations is decoupled from the Eloquent models.
 
-## Installation
+## 📥 Installation
 
-1.  **Clone the repository**
+1. **Clone the repository**
 
-    ```bash
-    git clone https://github.com/yourusername/ta_submission.git
-    cd ta_submission
-    ```
+   ```bash
+   git clone https://github.com/Duandi04/ta_submission.git
+   cd ta_submission
+   ```
 
-2.  **Install PHP Dependencies**
+2. **Install PHP Dependencies**
 
-    ```bash
-    composer install
-    ```
+   ```bash
+   composer install
+   ```
 
-3.  **Environment Setup**
+3. **Environment Setup**
 
-    Copy the `.env.example` file to `.env` and configure your database settings.
+   Copy `.env.example` to `.env` and configure your database.
 
-    ```bash
-    cp .env.example .env
-    ```
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-    Update the database configuration in `.env`:
+4. **Database Migration & Seeding**
 
-    ```env
-    DB_CONNECTION=mysql
-    DB_HOST=127.0.0.1
-    DB_PORT=3306
-    DB_DATABASE=ta_submission
-    DB_USERNAME=root
-    DB_PASSWORD=
-    ```
+   ```bash
+   php artisan migrate --seed
+   ```
 
-4.  **Generate Application Key**
+5. **Run the Application**
 
-    ```bash
-    php artisan key:generate
-    ```
+   ```bash
+   php artisan serve
+   ```
 
-5.  **Run Migrations and Seeders**
+## 🧪 Testing
 
-    This will create the database tables and populate them with sample data (users, roles, permissions).
+The project includes automated tests to ensure stability.
 
-    ```bash
-    php artisan migrate --seed
-    ```
+```bash
+# Run all tests
+php artisan test
 
-6.  **Run the Application**
+# Run specific feature tests
+php artisan test tests/Feature/AuthTest.php
+php artisan test tests/Feature/AdminUserTest.php
+```
 
-    ```bash
-    php artisan serve
-    ```
+## 🔑 Default Credentials
 
-    The application will be accessible at `http://localhost:8000`.
+Password for all accounts: `password`
 
-## Default Login Credentials
+| Role | Email |
+| :--- | :--- |
+| **Administrator** | `admin@ta.test` |
+| **Koordinator** | `koordinator@ta.test` |
+| **Kaprodi** | `kaprodi@ta.test` |
+| **Dosen** | `dosen@ta.test` |
+| **Mahasiswa** | `mahasiswa@ta.test` |
 
-The application comes with the following default users (password for all is `password`):
-
-| Role | Email | Password |
-| :--- | :--- | :--- |
-| **Administrator** | `admin@ta.test` | `password` |
-| **Koordinator** | `koordinator@ta.test` | `password` |
-| **Dosen Pembimbing** | `pembimbing1@ta.test` | `password` |
-| **Dosen Penguji** | `penguji1@ta.test` | `password` |
-| **Mahasiswa** | `mahasiswa1@ta.test` | `password` |
-
-## Project Structure
-
--   `app/Models`: Eloquent models (User, ThesisSubmission, Assessment, etc.)
--   `app/Http/Controllers`: Application logic and request handling.
--   `database/migrations`: Database schema definitions.
--   `database/seeders`: Initial data population.
--   `resources/views`: Blade templates for the frontend.
--   `routes/web.php`: Web application routes.
-
-## Notes
-
--   This project does **not** rely on Node.js or NPM. All frontend assets rely on CDN links or static files in `public/`.
--   Queues are configured to run suitably for local development. If you use features requiring background jobs, run `php artisan queue:listen`.
-
-## License
+## 📄 License
 
 This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

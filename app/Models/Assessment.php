@@ -39,7 +39,8 @@ class Assessment extends Model
         return LogOptions::defaults()
             ->logOnly(['total_score', 'comments', 'strengths', 'weaknesses', 'recommendations', 'is_submitted', 'submitted_at'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontSubmitEmptyLogs()
+            ->useLogName('assessments');
     }
 
     /**

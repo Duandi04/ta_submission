@@ -16,7 +16,8 @@ class ProgramStudi extends Model
         return LogOptions::defaults()
             ->logOnly(['name', 'code', 'faculty_id'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontSubmitEmptyLogs()
+            ->useLogName('program_studis');
     }
 
     public function faculty()

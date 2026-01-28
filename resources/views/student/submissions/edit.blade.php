@@ -4,11 +4,14 @@
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <h1 class="h2">Edit Pengajuan Tugas Akhir</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('student.submissions.show', $submission) }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Kembali
-            </a>
+        <h1 class="h2 mb-0">Edit Pengajuan Tugas Akhir</h1>
+        <div class="btn-toolbar mb-2 mb-md-0 d-flex align-items-center">
+            @include('partials.record-navigation', ['route' => 'student.submissions.edit'])
+            <div class="ms-3">
+                <a href="{{ route('student.submissions.show', $submission) }}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
+            </div>
         </div>
     </div>
 

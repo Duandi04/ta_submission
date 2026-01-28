@@ -2,10 +2,11 @@
 
 @php
     $pageTitle = 'Kelola Pengguna';
-    if (request('role_group') == 'lecturer')
+    if (request('role_group') == 'lecturer') {
         $pageTitle = 'Daftar Dosen & Kaprodi';
-    elseif (request('role') == 'mahasiswa')
+    } elseif (request('role') == 'mahasiswa') {
         $pageTitle = 'Daftar Mahasiswa';
+    }
 @endphp
 
 @section('title', $pageTitle)
@@ -15,7 +16,8 @@
         <h1 class="h2">{{ $pageTitle }}</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
             <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-circle me-1"></i> Tambah {{ request('role') == 'mahasiswa' ? 'Mahasiswa' : (request('role_group') == 'lecturer' ? 'Dosen' : 'Pengguna') }}
+                <i class="bi bi-plus-circle me-1"></i> Tambah
+                {{ request('role') == 'mahasiswa' ? 'Mahasiswa' : (request('role_group') == 'lecturer' ? 'Dosen' : 'Pengguna') }}
             </a>
         </div>
     </div>
@@ -27,37 +29,41 @@
                 <div class="row g-3">
                     <div class="col-md-4">
                         <input type="text" class="form-control" name="search" id="searchInput"
-                            placeholder="Cari nama, email, atau NIM/NIP..." value="{{ request('search') }}" data-auto-search>
+                            placeholder="Cari nama, email, atau NIM/NIP..." value="{{ request('search') }}"
+                            data-auto-search>
                     </div>
                     <div class="col-md-3">
                         <select class="form-select" name="program_studi_id" data-auto-submit>
                             <option value="">Semua Program Studi</option>
-                            @foreach($programStudis as $prodi)
-                                <option value="{{ $prodi->id }}" {{ request('program_studi_id') == $prodi->id ? 'selected' : '' }}>
+                            @foreach ($programStudis as $prodi)
+                                <option value="{{ $prodi->id }}"
+                                    {{ request('program_studi_id') == $prodi->id ? 'selected' : '' }}>
                                     {{ $prodi->name }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
-                    @if(request('role_group') == 'lecturer' || !request()->hasAny(['role', 'role_group']))
-                    <div class="col-md-2">
-                        <select class="form-select" name="role" data-auto-submit>
-                            <option value="">Semua Role</option>
-                            @foreach($roles as $role)
-                                @if(request('role_group') == 'lecturer')
-                                    @if(in_array($role->name, ['dosen', 'kaprodi']))
-                                        <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>
-                                            {{ ucfirst($role->name) }}
+                    @if (request('role_group') == 'lecturer' || !request()->hasAny(['role', 'role_group']))
+                        <div class="col-md-2">
+                            <select class="form-select" name="role" data-auto-submit>
+                                <option value="">Semua Role</option>
+                                @foreach ($roles as $role)
+                                    @if (request('role_group') == 'lecturer')
+                                        @if (in_array($role->name, ['dosen', 'kaprodi']))
+                                            <option value="{{ $role->name }}"
+                                                {{ request('role') == $role->name ? 'selected' : '' }}>
+                                                {{ ucfirst($role->name) }}
+                                            </option>
+                                        @endif
+                                    @else
+                                        <option value="{{ $role->name }}"
+                                            {{ request('role') == $role->name ? 'selected' : '' }}>
+                                            {{ ucfirst(str_replace('_', ' ', $role->name)) }}
                                         </option>
                                     @endif
-                                @else
-                                    <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>
-                                        {{ ucfirst(str_replace('_', ' ', $role->name)) }}
-                                    </option>
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
+                                @endforeach
+                            </select>
+                        </div>
                     @endif
                     <div class="col-md-3">
                         <button type="submit" class="btn btn-primary">
@@ -80,8 +86,38 @@
                         <thead>
                             <tr>
                                 <th class="ps-3" width="50">No</th>
-                                <th>Nama</th>
-                                <th>Identitas & Kontak</th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'name', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
+                                        class="text-dark text-decoration-none">
+                                        Nama
+                                        @if (request('sort_by') == 'name')
+                                            <i
+                                                class="bi bi-sort-{{ request('sort_order') == 'asc' ? 'alpha-down' : 'alpha-up' }}"></i>
+                                        @else
+                                            <i class="bi bi-hash text-muted small"></i>
+                                        @endif
+                                    </a>
+                                </th>
+                                <th>
+                                    <div class="d-flex flex-column">
+                                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'email', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
+                                            class="text-dark text-decoration-none">
+                                            Email
+                                            @if (request('sort_by') == 'email')
+                                                <i
+                                                    class="bi bi-sort-{{ request('sort_order') == 'asc' ? 'alpha-down' : 'alpha-up' }}"></i>
+                                            @endif
+                                        </a>
+                                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'nim_nip', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
+                                            class="text-muted text-decoration-none small">
+                                            NIM/NIP
+                                            @if (request('sort_by') == 'nim_nip')
+                                                <i
+                                                    class="bi bi-sort-{{ request('sort_order') == 'asc' ? 'numeric-down' : 'numeric-up' }}"></i>
+                                            @endif
+                                        </a>
+                                    </div>
+                                </th>
                                 <th>Role & Prodi</th>
                                 <th>Status</th>
                                 <th class="text-end pe-3">Aksi</th>
@@ -97,36 +133,42 @@
                                         <div class="text-muted small">NIM/NIP: {{ $user->nim_nip ?? '-' }}</div>
                                     </td>
                                     <td>
-                                        @foreach($user->getRoleNames() as $role)
+                                        @foreach ($user->getRoleNames() as $role)
                                             <span
                                                 class="badge bg-primary rounded-pill mb-1">{{ ucfirst(str_replace('_', ' ', $role)) }}</span>
                                         @endforeach
-                                        @if($user->programStudi)
+                                        @if ($user->programStudi)
                                             <div class="small text-dark fw-bold mt-1">
                                                 <i class="bi bi-mortarboard me-1"></i>{{ $user->programStudi->name }}
                                             </div>
                                         @endif
                                     </td>
                                     <td>
-                                        @if($user->is_active)
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">Aktif</span>
+                                        @if ($user->is_active)
+                                            <span
+                                                class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">Aktif</span>
                                         @else
-                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3">Non-Aktif</span>
+                                            <span
+                                                class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3">Non-Aktif</span>
                                         @endif
                                     </td>
                                     <td class="text-end pe-3">
                                         <div class="btn-group">
-                                            <a href="{{ route('admin.users.show', $user) }}" class="btn btn-sm btn-outline-info" title="Detail">
+                                            <a href="{{ route('admin.users.show', array_merge(['user' => $user->id], request()->query())) }}"
+                                                class="btn btn-sm btn-outline-info" title="Detail">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                            <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-outline-warning" title="Edit">
+                                            <a href="{{ route('admin.users.edit', array_merge(['user' => $user->id], request()->query())) }}"
+                                                class="btn btn-sm btn-outline-warning" title="Edit">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            @if($user->id !== auth()->id())
-                                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="d-inline">
+                                            @if ($user->id !== auth()->id())
+                                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
+                                                    class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm-delete title="Hapus">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                        data-confirm-delete title="Hapus">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>

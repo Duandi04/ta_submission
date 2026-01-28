@@ -88,39 +88,21 @@ class KaprodiService
     public function assignLecturers(int $submissionId, array $data)
     {
         $submission = ThesisSubmission::findOrFail($submissionId);
+        $assessorIds = $data['assessor_ids'] ?? [];
 
-        // Update supervisor
-        if (isset($data['supervisor_id'])) {
-            $submission->update(['supervisor_id' => $data['supervisor_id']]);
-            
-            // Sync supervisor assessment
+        // Delete old assessments that are not in the new list
+        \App\Models\Assessment::where('thesis_submission_id', $submission->id)
+            ->whereNotIn('evaluator_id', $assessorIds)
+            ->delete();
+
+        // Add or keep existing assessors
+        foreach ($assessorIds as $assessorId) {
             \App\Models\Assessment::updateOrCreate(
                 [
                     'thesis_submission_id' => $submission->id,
-                    'evaluator_type' => 'supervisor',
+                    'evaluator_id' => $assessorId,
                 ],
-                ['evaluator_id' => $data['supervisor_id']]
-            );
-        }
-
-        // Assign/Update Examiners
-        if (isset($data['examiner_1_id'])) {
-            \App\Models\Assessment::updateOrCreate(
-                [
-                    'thesis_submission_id' => $submission->id,
-                    'evaluator_type' => 'examiner_1',
-                ],
-                ['evaluator_id' => $data['examiner_1_id']]
-            );
-        }
-
-        if (isset($data['examiner_2_id'])) {
-            \App\Models\Assessment::updateOrCreate(
-                [
-                    'thesis_submission_id' => $submission->id,
-                    'evaluator_type' => 'examiner_2',
-                ],
-                ['evaluator_id' => $data['examiner_2_id']]
+                ['evaluator_type' => 'assessor']
             );
         }
 
@@ -134,7 +116,7 @@ class KaprodiService
                 'old_status' => 'submitted',
                 'new_status' => 'under_review',
                 'changed_by' => Auth::id(),
-                'comment' => 'Dosen pembimbing dan penguji telah ditetapkan oleh Kaprodi.',
+                'comment' => 'Dosen penilai telah ditetapkan oleh Kaprodi.',
             ]);
         }
     }

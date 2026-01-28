@@ -20,7 +20,7 @@
             <span class="fw-bold"><i class="bi bi-journal-text me-2 text-primary"></i>Daftar Draft Proposal</span>
         </div>
         <div class="card-body p-0">
-            @if($submissions->count() > 0)
+            @if ($submissions->count() > 0)
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead>
@@ -33,11 +33,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($submissions as $submission)
+                            @foreach ($submissions as $submission)
                                 <tr>
                                     <td class="ps-3">
                                         <div class="fw-semibold text-dark">{{ $submission->title }}</div>
-                                        <div class="text-muted smaller-text">{{ $submission->research_field ?? 'Umum' }}</div>
+                                        <div class="text-muted smaller-text">{{ $submission->research_field ?? 'Umum' }}
+                                        </div>
                                     </td>
                                     <td>{{ $submission->supervisor?->name ?? 'Belum Ditentukan' }}</td>
                                     <td>
@@ -45,61 +46,55 @@
                                             {{ $submission->getStatusLabel() }}
                                         </span>
                                     </td>
-                                    <td>{{ $submission->submission_date?->format('d M Y') ?? '-' }}</td>
+                                    <td>{{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
                                     <td class="text-end pe-3">
-                                        <button type="button" class="btn btn-sm btn-outline-primary px-3" data-bs-toggle="modal" data-bs-target="#assignModal{{ $submission->id }}">
+                                        <button type="button" class="btn btn-sm btn-outline-primary px-3"
+                                            data-bs-toggle="modal" data-bs-target="#assignModal{{ $submission->id }}">
                                             <i class="bi bi-person-plus"></i> Atur Dosen
                                         </button>
                                     </td>
                                 </tr>
 
                                 <!-- Assign Modal -->
-                                <div class="modal fade" id="assignModal{{ $submission->id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal fade" id="assignModal{{ $submission->id }}" tabindex="-1"
+                                    aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
-                                            <form action="{{ route('kaprodi.submissions.assign-lecturers', $submission->id) }}" method="POST">
+                                            <form
+                                                action="{{ route('kaprodi.submissions.assign-lecturers', $submission->id) }}"
+                                                method="POST">
                                                 @csrf
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title">Atur Dosen - {{ Str::limit($submission->title, 30) }}</h5>
-                                                    <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#assignModal{{ $submission->id }}"></button>
+                                                    <h5 class="modal-title">Atur Dosen Penilai -
+                                                        {{ Str::limit($submission->title, 30) }}</h5>
+                                                    <button type="button" class="btn-close"
+                                                        data-bs-dismiss="modal"></button>
                                                 </div>
                                                 <div class="modal-body text-start">
                                                     <div class="mb-3">
-                                                        <label class="form-label">Dosen Pembimbing</label>
-                                                        <select name="supervisor_id" class="form-select" required>
-                                                            <option value="">Pilih Pembimbing</option>
-                                                            @foreach($lecturers as $lecturer)
-                                                                <option value="{{ $lecturer->id }}" {{ $submission->supervisor_id == $lecturer->id ? 'selected' : '' }}>
+                                                        <label class="form-label">Dosen Penilai <span
+                                                                class="text-danger">*</span></label>
+                                                        <select name="assessor_ids[]" class="form-select" multiple
+                                                            size="6" required>
+                                                            @php
+                                                                $currentAssessorIds = $submission->assessments
+                                                                    ->pluck('evaluator_id')
+                                                                    ->toArray();
+                                                            @endphp
+                                                            @foreach ($lecturers as $lecturer)
+                                                                <option value="{{ $lecturer->id }}"
+                                                                    {{ in_array($lecturer->id, $currentAssessorIds) ? 'selected' : '' }}>
                                                                     {{ $lecturer->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Dosen Penguji 1</label>
-                                                        <select name="examiner_1_id" class="form-select" required>
-                                                            <option value="">Pilih Penguji 1</option>
-                                                            @foreach($lecturers as $lecturer)
-                                                                <option value="{{ $lecturer->id }}" {{ $submission->assessments->where('evaluator_type', 'examiner_1')->first()?->evaluator_id == $lecturer->id ? 'selected' : '' }}>
-                                                                    {{ $lecturer->name }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Dosen Penguji 2</label>
-                                                        <select name="examiner_2_id" class="form-select" required>
-                                                            <option value="">Pilih Penguji 2</option>
-                                                            @foreach($lecturers as $lecturer)
-                                                                <option value="{{ $lecturer->id }}" {{ $submission->assessments->where('evaluator_type', 'examiner_2')->first()?->evaluator_id == $lecturer->id ? 'selected' : '' }}>
-                                                                    {{ $lecturer->name }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
+                                                        <div class="form-text">Tahan Ctrl (Cmd di Mac) untuk memilih
+                                                            beberapa dosen.</div>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Batal</button>
                                                     <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                                 </div>
                                             </form>

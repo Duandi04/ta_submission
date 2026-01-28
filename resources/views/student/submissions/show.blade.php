@@ -4,9 +4,10 @@
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <h1 class="h2">Detail Pengajuan</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group me-2">
+        <h1 class="h2 mb-0">Detail Pengajuan</h1>
+        <div class="btn-toolbar mb-2 mb-md-0 d-flex align-items-center">
+            @include('partials.record-navigation', ['route' => 'student.submissions.show'])
+            <div class="ms-3 btn-group">
                 @if ($submission->canBeEditedByStudent())
                     <a href="{{ route('student.submissions.edit', $submission) }}" class="btn btn-warning">
                         <i class="bi bi-pencil"></i> Edit
@@ -50,12 +51,12 @@
                         </tr>
                         <tr>
                             <th>Tanggal Pengajuan</th>
-                            <td>: {{ $submission->submission_date?->format('d F Y') ?? '-' }}</td>
+                            <td>: {{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
                         </tr>
                         @if ($submission->defense_date)
                             <tr>
                                 <th>Tanggal Sidang</th>
-                                <td>: {{ $submission->defense_date->format('d F Y') }}</td>
+                                <td>: {{ $submission->defense_date->format('d/m/Y') }}</td>
                             </tr>
                         @endif
                         @if ($submission->final_score)
@@ -156,7 +157,7 @@
                                             <div>
                                                 <h6 class="mb-0 smaller-text fw-bold">{{ $file->file_name }}</h6>
                                                 <small class="text-muted smaller-extra">
-                                                    {{ $file->created_at->format('d M Y H:i') }} •
+                                                    {{ $file->created_at->format('d/m/Y H:i') }} •
                                                     {{ $file->getFormattedFileSize() }}
                                                 </small>
                                             </div>
@@ -256,7 +257,7 @@
                                             <td>{{ $assessment->evaluator->name }}</td>
                                             <td>{{ $assessment->getEvaluatorTypeLabel() }}</td>
                                             <td><strong>{{ $assessment->total_score }}</strong></td>
-                                            <td>{{ $assessment->submitted_at->format('d M Y') }}</td>
+                                            <td>{{ $assessment->submitted_at->format('d/m/Y') }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -284,7 +285,7 @@
                                     <div>
                                         <strong>{{ ucfirst(str_replace('_', ' ', $status->new_status)) }}</strong><br>
                                         <small class="text-muted">
-                                            {{ $status->created_at->format('d M Y H:i') }}<br>
+                                            {{ $status->created_at->format('d/m/Y H:i') }}<br>
                                             oleh {{ $status->changer->hasRole('mahasiswa') ? 'Mahasiswa' : 'Dosen/Admin' }}
                                         </small>
                                         @if ($status->comment)

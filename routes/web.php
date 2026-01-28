@@ -5,11 +5,14 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Student\SubmissionController as StudentSubmissionController;
 use App\Http\Controllers\Supervisor\SubmissionController as SupervisorSubmissionController;
 use App\Http\Controllers\Coordinator\SubmissionController as CoordinatorSubmissionController;
+use App\Http\Controllers\Coordinator\ReportController as CoordinatorReportController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\ConfigurationController;
 use App\Http\Controllers\Admin\FacultyController;
 use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\LecturerController;
 use App\Http\Controllers\Examiner\AssessmentController;
 use App\Http\Controllers\Kaprodi\KaprodiController;
 use App\Http\Controllers\ProfileController;
@@ -57,12 +60,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/students', [CoordinatorSubmissionController::class, 'index'])->name('students.index');
         Route::get('/students/{student}', [CoordinatorSubmissionController::class, 'show'])->name('submissions.show'); // Adjust this as needed
 
-        Route::get('/reports', function () {
-            $submissions = \App\Models\ThesisSubmission::with(['student', 'supervisor'])
-                ->latest()
-                ->paginate(15);
-            return view('coordinator.reports.index', compact('submissions'));
-        })->name('reports.index');
+        Route::get('/reports', [CoordinatorReportController::class, 'index'])->name('reports.index');
     });
 
     // Kaprodi routes
@@ -83,6 +81,8 @@ Route::middleware('auth')->group(function () {
     // Admin routes
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::resource('users', UserController::class);
+        Route::resource('students', StudentController::class);
+        Route::resource('lecturers', LecturerController::class);
         Route::resource('faculties', FacultyController::class);
         Route::resource('program-studis', ProgramStudiController::class);
         Route::get('/configuration', [ConfigurationController::class, 'index'])->name('configuration.index');

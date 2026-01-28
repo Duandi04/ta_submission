@@ -16,6 +16,8 @@ class DashboardService
 
         if ($user->hasRole('admin')) {
             $stats = $this->getAdminStats();
+        } elseif ($user->hasRole('kaprodi')) {
+            $stats = $this->getKaprodiStats($user);
         } elseif ($user->hasRole('koordinator')) {
             $stats = $this->getCoordinatorStats();
         } elseif ($user->hasRole('dosen_pembimbing')) {

@@ -99,7 +99,7 @@
                                                 {{ $submission->getStatusLabel() }}
                                             </span>
                                         </td>
-                                        <td>{{ $submission->created_at->format('d M Y') }}</td>
+                                        <td>{{ $submission->created_at->format('d/m/Y') }}</td>
                                         <td class="text-end px-3">
                                             <a href="{{ route('student.submissions.show', $submission) }}"
                                                 class="btn btn-sm btn-outline-primary px-3">
@@ -226,7 +226,7 @@
                                                 </span>
                                             </td>
                                             <td class="pe-3 text-end small text-muted">
-                                                {{ $submission->created_at->format('d/m/y') }}</td>
+                                                {{ $submission->created_at->format('d/m/Y') }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -234,6 +234,111 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    @endrole
+
+    @role('kaprodi')
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="stats-card stats-primary">
+                    <div class="stats-icon-wrapper"><i class="bi bi-people"></i></div>
+                    <div>
+                        <h6>Total Mahasiswa</h6>
+                        <h2>{{ $stats['total_students'] ?? 0 }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card stats-info">
+                    <div class="stats-icon-wrapper"><i class="bi bi-file-earmark-text"></i></div>
+                    <div>
+                        <h6>Total Pengajuan</h6>
+                        <h2>{{ $stats['total_submissions'] ?? 0 }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card stats-warning">
+                    <div class="stats-icon-wrapper"><i class="bi bi-hourglass-split"></i></div>
+                    <div>
+                        <h6>Menunggu Review</h6>
+                        <h2>{{ $stats['pending_submissions'] ?? 0 }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card stats-success">
+                    <div class="stats-icon-wrapper"><i class="bi bi-check2-circle"></i></div>
+                    <div>
+                        <h6>Disetujui</h6>
+                        <h2>{{ $stats['approved_submissions'] ?? 0 }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center bg-white py-3">
+                <div class="d-flex align-items-center gap-2 fw-bold">
+                    <i class="bi bi-journal-text text-primary"></i>
+                    <span>Pengajuan Menunggu Penunjukan Dosen Penilai</span>
+                </div>
+                <a href="{{ route('kaprodi.students.index') }}" class="btn btn-sm btn-light border text-primary px-3">
+                    Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @php
+                    $pendingSubmissions = \App\Models\ThesisSubmission::where('status', 'submitted')
+                        ->whereHas('student', function ($q) {
+                            $q->where('program_studi_id', auth()->user()->program_studi_id);
+                        })
+                        ->with('student')
+                        ->latest()
+                        ->take(5)
+                        ->get();
+                @endphp
+                @if ($pendingSubmissions->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th class="ps-3">Mahasiswa</th>
+                                    <th>Judul</th>
+                                    <th>Tanggal</th>
+                                    <th class="text-end pe-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($pendingSubmissions as $submission)
+                                    <tr>
+                                        <td class="ps-3">
+                                            <div class="fw-semibold text-dark">{{ $submission->student->name }}</div>
+                                            <div class="text-muted smaller-text">{{ $submission->student->nim_nip }}</div>
+                                        </td>
+                                        <td>
+                                            <div class="text-truncate" style="max-width: 250px;">{{ $submission->title }}
+                                            </div>
+                                        </td>
+                                        <td>{{ $submission->created_at->format('d/m/Y') }}</td>
+                                        <td class="text-end pe-3">
+                                            <a href="{{ route('kaprodi.students.show', $submission->student_id) }}"
+                                                class="btn btn-sm btn-outline-primary px-3">
+                                                <i class="bi bi-person-plus"></i> Atur Dosen
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="text-center py-5">
+                        <i class="bi bi-check-circle text-success fs-1 mb-3 d-block"></i>
+                        <h6 class="fw-bold text-muted">Tidak ada pengajuan yang menunggu.</h6>
+                    </div>
+                @endif
             </div>
         </div>
     @endrole

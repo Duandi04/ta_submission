@@ -19,9 +19,32 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
-                                <th class="ps-3">Nama Program Studi</th>
+                                <th class="ps-3" style="width: 50px;">No</th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'name', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
+                                        class="text-dark text-decoration-none">
+                                        Nama Program Studi
+                                        @if (request('sort_by') == 'name')
+                                            <i
+                                                class="bi bi-sort-{{ request('sort_order') == 'asc' ? 'alpha-down' : 'alpha-up' }}"></i>
+                                        @else
+                                            <i class="bi bi-hash text-muted small"></i>
+                                        @endif
+                                    </a>
+                                </th>
                                 <th>Fakultas</th>
-                                <th>Kode</th>
+                                <th>
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'code', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
+                                        class="text-dark text-decoration-none">
+                                        Kode
+                                        @if (request('sort_by') == 'code')
+                                            <i
+                                                class="bi bi-sort-{{ request('sort_order') == 'asc' ? 'numeric-down' : 'numeric-up' }}"></i>
+                                        @else
+                                            <i class="bi bi-hash text-muted small"></i>
+                                        @endif
+                                    </a>
+                                </th>
                                 <th>Jumlah Mahasiswa/Dosen</th>
                                 <th class="text-end pe-3">Aksi</th>
                             </tr>
@@ -29,22 +52,34 @@
                         <tbody>
                             @forelse($programStudis as $prodi)
                                 <tr>
-                                    <td class="ps-3 fw-semibold">{{ $prodi->name }}</td>
+                                    <td class="ps-3 text-muted">
+                                        {{ $loop->iteration + ($programStudis->currentPage() - 1) * $programStudis->perPage() }}
+                                    </td>
+                                    <td class="fw-semibold">
+                                        <a href="{{ route('admin.program-studis.show', $prodi) }}"
+                                            class="text-decoration-none text-dark">
+                                            {{ $prodi->name }}
+                                        </a>
+                                    </td>
                                     <td>{{ $prodi->faculty->name }}</td>
                                     <td><span class="badge bg-light text-dark border">{{ $prodi->code }}</span></td>
                                     <td>{{ $prodi->users_count }}</td>
                                     <td class="text-end pe-3">
                                         <div class="btn-group">
-                                            <a href="{{ route('admin.program-studis.edit', $prodi) }}"
-                                                class="btn btn-sm btn-outline-secondary">
+                                            <a href="{{ route('admin.program-studis.show', array_merge(['program_studi' => $prodi->id], request()->query())) }}"
+                                                class="btn btn-sm btn-outline-info" title="Detail">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{{ route('admin.program-studis.edit', array_merge(['program_studi' => $prodi->id], request()->query())) }}"
+                                                class="btn btn-sm btn-outline-warning" title="Edit">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <form action="{{ route('admin.program-studis.destroy', $prodi) }}" method="POST"
-                                                class="d-inline">
+                                            <form action="{{ route('admin.program-studis.destroy', $prodi) }}"
+                                                method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm-delete
-                                                    data-confirm-message="Hapus program studi ini?">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    data-confirm-delete data-confirm-message="Hapus program studi ini?">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
@@ -53,7 +88,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-5">
+                                    <td colspan="6" class="text-center py-5">
                                         <p class="text-muted mb-0">Belum ada data program studi.</p>
                                     </td>
                                 </tr>
