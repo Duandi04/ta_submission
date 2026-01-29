@@ -104,7 +104,7 @@ class SubmissionService
      */
     protected function uploadFile(ThesisSubmission $submission, UploadedFile $file, string $type): void
     {
-        $path = $file->store('submissions/' . $submission->id, 'public');
+        $path = $file->store('submissions/' . $submission->id, 'local');
 
         $submission->files()->create([
             'file_name' => $file->getClientOriginalName(),

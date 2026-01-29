@@ -20,8 +20,14 @@ class FileDownloadController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        if ($user->hasRole('mahasiswa') && $submission->student_id !== $user->id) {
-            abort(403);
+        // Check if user has elevated privileges
+        $hasElevatedAccess = $user->hasAnyRole(['dosen', 'admin', 'kaprodi', 'koordinator']);
+
+        // If not elevated and is a student, enforce ownership
+        if (!$hasElevatedAccess && $user->hasRole('mahasiswa')) {
+            if ((int) $submission->student_id !== (int) $user->id) {
+                abort(403);
+            }
         }
 
         // Generate custom filename
@@ -31,14 +37,14 @@ class FileDownloadController extends Controller
 
         // Sanitize title for filename
         $safeTitle = Str::limit(Str::slug($title, ' '), 50);
-        
+
         $customFilename = sprintf('[%s] %s.%s', $studentName, $safeTitle, $extension);
 
-        if (!Storage::disk('public')->exists($file->file_path)) {
+        if (!Storage::disk('local')->exists($file->file_path)) {
             abort(404, 'File tidak ditemukan di server.');
         }
 
-        return Storage::disk('public')->download($file->file_path, $customFilename);
+        return Storage::disk('local')->download($file->file_path, $customFilename);
     }
 
     /**
@@ -51,21 +57,28 @@ class FileDownloadController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        // Students can only preview their own files
-        if ($user->hasRole('mahasiswa') && $submission->student_id !== $user->id) {
-            abort(403);
+        // Check if user has elevated privileges
+        $hasElevatedAccess = $user->hasAnyRole(['dosen', 'admin', 'kaprodi', 'koordinator']);
+
+        // If not elevated and is a student, enforce ownership
+        if (!$hasElevatedAccess && $user->hasRole('mahasiswa')) {
+            if ((int) $submission->student_id !== (int) $user->id) {
+                abort(403);
+            }
         }
 
-        if (!Storage::disk('public')->exists($file->file_path)) {
+        if (!Storage::disk('local')->exists($file->file_path)) {
             abort(404, 'File tidak ditemukan di server.');
         }
 
-        $path = Storage::disk('public')->path($file->file_path);
+        $path = Storage::disk('local')->path($file->file_path);
         $mimeType = $file->mime_type ?? 'application/octet-stream';
 
         return response()->file($path, [
             'Content-Type' => $mimeType,
             'Content-Disposition' => 'inline; filename="' . $file->file_name . '"',
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            'Pragma' => 'no-cache',
         ]);
     }
 }
