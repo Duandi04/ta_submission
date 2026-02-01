@@ -21,6 +21,12 @@ class KaprodiController extends Controller
         return view('kaprodi.students.index', compact('students'));
     }
 
+    public function submissions()
+    {
+        $submissions = $this->kaprodiService->getAllSubmissions();
+        return view('kaprodi.submissions.index', compact('submissions'));
+    }
+
     public function studentDetails(int $studentId)
     {
         $student = \App\Models\User::findOrFail($studentId);

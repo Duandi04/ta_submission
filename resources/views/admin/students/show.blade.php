@@ -22,15 +22,8 @@
         <div class="col-md-4">
             <div class="card border-0 shadow-sm text-center p-4 mb-4">
                 <div class="mb-3">
-                    @if ($student->profile_photo)
-                        <img src="{{ asset('storage/' . $student->profile_photo) }}" class="rounded-circle img-thumbnail"
-                            style="width: 150px; height: 150px; object-fit: cover;">
-                    @else
-                        <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center"
-                            style="width: 150px; height: 150px;">
-                            <i class="bi bi-person text-secondary display-1"></i>
-                        </div>
-                    @endif
+                    <img src="{{ $student->profile_photo_url }}" class="rounded-circle img-thumbnail shadow-sm"
+                         style="width: 150px; height: 150px; object-fit: cover;">
                 </div>
                 <h4 class="fw-bold mb-1">{{ $student->name }}</h4>
                 <p class="text-muted mb-3">{{ $student->nim_nip ?: 'NIM Belum Diatur' }}</p>

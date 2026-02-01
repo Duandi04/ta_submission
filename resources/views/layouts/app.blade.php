@@ -166,6 +166,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('kaprodi.submissions.*') ? 'active' : '' }}"
+                            href="{{ route('kaprodi.submissions.index') }}">
+                            <i class="bi bi-file-earmark-text-fill"></i>
+                            <span>Daftar Pengajuan</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('kaprodi.rubrics.*') ? 'active' : '' }}"
                             href="{{ route('kaprodi.rubrics.index') }}">
                             <i class="bi bi-clipboard-data-fill"></i>
@@ -188,6 +195,13 @@
                             href="{{ route('admin.lecturers.index') }}">
                             <i class="bi bi-person-badge-fill"></i>
                             <span>Kelola Dosen</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.submissions.*') ? 'active' : '' }}"
+                            href="{{ route('admin.submissions.index') }}">
+                            <i class="bi bi-file-earmark-text-fill"></i>
+                            <span>Daftar Pengajuan</span>
                         </a>
                     </li>
                     <li class="nav-item">

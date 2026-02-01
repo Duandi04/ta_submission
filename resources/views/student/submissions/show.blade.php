@@ -123,7 +123,7 @@
                                             </div>
                                         </div>
                                         <div class="btn-group">
-                                            <a href="{{ Storage::url($file->file_path) }}"
+                                            <a href="{{ route('files.preview', $file) }}"
                                                 class="btn btn-sm btn-outline-primary border-0" target="_blank">
                                                 <i class="bi bi-eye"></i>
                                             </a>
@@ -163,7 +163,7 @@
                                             </div>
                                         </div>
                                         <div class="btn-group">
-                                            <a href="{{ Storage::url($file->file_path) }}"
+                                            <a href="{{ route('files.preview', $file) }}"
                                                 class="btn btn-sm btn-outline-primary border-0" target="_blank">
                                                 <i class="bi bi-eye"></i>
                                             </a>
@@ -216,7 +216,7 @@
                                 <h6 class="mb-3"><i class="bi bi-eye"></i> Pratinjau Proposal (PDF)</h6>
                                 <div class="ratio ratio-16x9 border rounded overflow-hidden shadow-sm"
                                     style="height: 600px;">
-                                    <iframe src="{{ Storage::url($proposalFile->file_path) }}#toolbar=0"
+                                    <iframe src="{{ route('files.preview', $proposalFile) }}#toolbar=0"
                                         title="PDF Preview"></iframe>
                                 </div>
                                 <div class="mt-2 text-center">

@@ -20,6 +20,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'nim_nip' => 'ADM001',
                 'phone' => '081122334455',
+                'profile_photo' => 'profile-photos/admin.png',
                 'is_active' => true,
             ]
         );
@@ -33,6 +34,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'nim_nip' => 'KOR001',
                 'phone' => '081122334466',
+                'profile_photo' => 'profile-photos/lecturer.png',
                 'is_active' => true,
             ]
         );
@@ -52,6 +54,7 @@ class UserSeeder extends Seeder
                     'password' => Hash::make('password'),
                     'nim_nip' => 'KPD' . strtoupper($prodiCode) . '001',
                     'phone' => '081' . rand(100000000, 999999999),
+                    'profile_photo' => 'profile-photos/lecturer.png',
                     'is_active' => true,
                     'program_studi_id' => $prodi->id,
                 ]
@@ -67,6 +70,7 @@ class UserSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'nim_nip' => 'DSN' . strtoupper($prodiCode) . '00' . $i,
                         'phone' => '082' . rand(100000000, 999999999),
+                        'profile_photo' => 'profile-photos/lecturer.png',
                         'is_active' => true,
                         'program_studi_id' => $prodi->id,
                     ]
@@ -84,6 +88,7 @@ class UserSeeder extends Seeder
                         'nim_nip' => date('Y') . $prodi->id . str_pad($i, 4, '0', STR_PAD_LEFT),
                         'phone' => '085' . rand(100000000, 999999999),
                         'address' => "Alamat Mahasiswa {$i} Prodi {$prodi->name}",
+                        'profile_photo' => 'profile-photos/student.png',
                         'is_active' => true,
                         'program_studi_id' => $prodi->id,
                     ]

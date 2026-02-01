@@ -44,7 +44,9 @@ class FileDownloadController extends Controller
             abort(404, 'File tidak ditemukan di server.');
         }
 
-        return Storage::disk('local')->download($file->file_path, $customFilename);
+        $path = Storage::disk('local')->path($file->file_path);
+
+        return response()->download($path, $customFilename);
     }
 
     /**
@@ -79,6 +81,40 @@ class FileDownloadController extends Controller
             'Content-Disposition' => 'inline; filename="' . $file->file_name . '"',
             'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
             'Pragma' => 'no-cache',
+        ]);
+    }
+
+    /**
+     * Download or Preview user profile photo.
+     */
+    public function profilePhoto(\App\Models\User $user)
+    {
+        // Any authenticated user can see other users' profile photos
+        // We rely on the 'auth' middleware on the route
+
+        if (!$user->profile_photo) {
+            return redirect(asset('images/default-avatar.png'));
+        }
+
+        if (!Storage::disk('local')->exists($user->profile_photo)) {
+            return redirect(asset('images/default-avatar.png'));
+        }
+
+        $path = Storage::disk('local')->path($user->profile_photo);
+        // Guess mime type based on extension
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        $mimeTypes = [
+            'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
+        ];
+        $contentType = $mimeTypes[strtolower($extension)] ?? 'application/octet-stream';
+
+        return response()->file($path, [
+            'Content-Type' => $contentType,
+            'Cache-Control' => 'public, max-age=86400', // Cache for 1 day
         ]);
     }
 }

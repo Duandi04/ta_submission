@@ -34,16 +34,10 @@
                                     class="badge bg-danger rounded-pill px-3 shadow-sm border border-light">Non-Aktif</span>
                             @endif
                         </div>
-                        @if ($user->profile_photo)
-                            <img src="{{ Storage::url($user->profile_photo) }}"
-                                class="rounded-circle img-thumbnail shadow-lg mb-3"
+                        <div class="text-center mb-3">
+                            <img src="{{ $user->profile_photo_url }}" class="rounded-circle img-thumbnail shadow-lg"
                                 style="width: 120px; height: 120px; object-fit: cover;">
-                        @else
-                            <div class="bg-white text-primary rounded-circle d-inline-flex align-items-center justify-content-center shadow-lg mb-3"
-                                style="width: 120px; height: 120px;">
-                                <i class="bi bi-person-fill" style="font-size: 4rem;"></i>
-                            </div>
-                        @endif
+                        </div>
                         <h4 class="text-white fw-bold mb-0">{{ $user->name }}</h4>
                         <p class="text-white-50 mb-0">{{ $user->email }}</p>
                     </div>

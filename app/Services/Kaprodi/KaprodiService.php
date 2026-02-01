@@ -29,6 +29,25 @@ class KaprodiService
     }
 
     /**
+     * Get all submissions (scoped to prodi).
+     */
+    public function getAllSubmissions(int $perPage = 15)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $prodiId = $user->program_studi_id;
+
+        return ThesisSubmission::with(['student', 'student.programStudi', 'files']) // files needed for listing? maybe "latest file"
+            ->when($prodiId, function ($query) use ($prodiId) {
+                return $query->whereHas('student', function ($q) use ($prodiId) {
+                    $q->where('program_studi_id', $prodiId);
+                });
+            })
+            ->latest()
+            ->paginate($perPage);
+    }
+
+    /**
      * Get settings for Kaprodi.
      */
     public function getSettings()

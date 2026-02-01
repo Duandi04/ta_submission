@@ -11,10 +11,26 @@ use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
+use Illuminate\Support\Facades\Storage;
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles, SoftDeletes, LogsActivity;
+    
+    /**
+     * Get the profile photo URL.
+     *
+     * @return string
+     */
+    public function getProfilePhotoUrlAttribute(): string
+    {
+        if ($this->profile_photo) {
+            return route('users.photo', $this->id);
+        }
+
+        return asset('images/default-avatar.png');
+    }
 
     /**
      * The attributes that are mass assignable.

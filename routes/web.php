@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\LecturerController;
+use App\Http\Controllers\Admin\SubmissionController as AdminSubmissionController;
 use App\Http\Controllers\Examiner\AssessmentController;
 use App\Http\Controllers\Kaprodi\KaprodiController;
 use App\Http\Controllers\ProfileController;
@@ -69,6 +70,7 @@ Route::middleware('auth')->group(function () {
     // Kaprodi routes
     Route::middleware('role:kaprodi')->prefix('kaprodi')->name('kaprodi.')->group(function () {
         Route::get('/students', [KaprodiController::class, 'index'])->name('students.index');
+        Route::get('/submissions', [KaprodiController::class, 'submissions'])->name('submissions.index');
         Route::get('/students/{student}', [KaprodiController::class, 'studentDetails'])->name('students.show');
         Route::get('/submissions/{submission}', [KaprodiController::class, 'submissionShow'])->name('submissions.show');
         Route::get('/assessments/{assessment}', [KaprodiController::class, 'assessmentShow'])->name('assessments.show');
@@ -86,6 +88,8 @@ Route::middleware('auth')->group(function () {
     // Admin routes
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::resource('users', UserController::class);
+        Route::get('/submissions', [AdminSubmissionController::class, 'index'])->name('submissions.index');
+        Route::get('/submissions/{submission}', [AdminSubmissionController::class, 'show'])->name('submissions.show');
         Route::resource('students', StudentController::class);
         Route::resource('lecturers', LecturerController::class);
         Route::resource('faculties', FacultyController::class);
@@ -104,4 +108,7 @@ Route::middleware('auth')->group(function () {
     // Custom Download and Preview routes
     Route::get('/files/{file}/download', [\App\Http\Controllers\FileDownloadController::class, 'download'])->name('files.download');
     Route::get('/files/{file}/preview', [\App\Http\Controllers\FileDownloadController::class, 'preview'])->name('files.preview');
+    
+    // Secure Profile Photo Route
+    Route::get('/users/{user}/photo', [\App\Http\Controllers\FileDownloadController::class, 'profilePhoto'])->name('users.photo');
 });

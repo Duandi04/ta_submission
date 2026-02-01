@@ -64,7 +64,15 @@ This project has been refactored to ensure high maintainability and scalability:
    php artisan migrate --seed
    ```
 
-5. **Run the Application**
+5. **Storage Configuration**
+   
+   - **For Submission Files**: No action required. These are stored in `storage/app/private` and served securely via the application.
+   - **For Public Assets (e.g., Profile Photos)**: Run the following command to create a symbolic link:
+     ```bash
+     php artisan storage:link
+     ```
+
+6. **Run the Application**
 
    ```bash
    php artisan serve

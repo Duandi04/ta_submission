@@ -130,7 +130,7 @@
 
         <div class="col-lg-4">
             @php
-                $latestFile = $assessment->submission->getLatestFile();
+                $latestFile = $assessment->thesisSubmission->getLatestFile();
             @endphp
             @if ($latestFile)
                 <div class="card border-0 shadow-sm mb-4">
