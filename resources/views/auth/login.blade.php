@@ -22,9 +22,7 @@
     </style>
     <div class="login-card">
         <div class="login-header">
-            <div class="icon-wrapper">
-                <i class="bi bi-mortarboard-fill"></i>
-            </div>
+            <img src="{{ url(\App\Models\Setting::getValue('app_logo', 'images/logo_uvers.webp')) }}" alt="Logo" class="mb-4 dynamic-logo" style="height: 120px; object-fit: contain;">
             <h1>{{ \App\Models\Setting::getValue('campus_name', 'Sistem Pengajuan TA') }}</h1>
             <p>Masuk ke akun Anda untuk melanjutkan</p>
         </div>

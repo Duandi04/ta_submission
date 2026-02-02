@@ -19,7 +19,7 @@ class SettingSeeder extends Seeder
         \App\Models\Setting::updateOrCreate(
             ['key' => 'campus_name'],
             [
-                'value' => 'Universitas Teknologi Nasional',
+                'value' => 'Universitas Universal',
                 'description' => 'Nama institusi kampus'
             ]
         );

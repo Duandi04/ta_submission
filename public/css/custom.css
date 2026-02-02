@@ -30,8 +30,36 @@
     --bg-body: #0f172a;
     --bg-surface: #1e293b;
     --text-main: #f1f5f9;
-    --text-muted: #94a3b8;
+    --text-muted: #cbd5e1;
     --border-color: #334155;
+    
+    /* Bootstrap Overrides for Dark Mode */
+    .text-dark {
+        color: #f1f5f9 !important;
+    }
+    
+    .bg-light {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+    }
+    
+    .bg-white {
+        background-color: var(--bg-surface) !important;
+        color: var(--text-main) !important;
+    }
+
+    .text-muted {
+        color: #94a3b8 !important;
+    }
+
+    .border {
+        border-color: #334155 !important;
+    }
+
+    /* Dynamic Logo Filter for Dark Mode */
+    .dynamic-logo {
+        filter: brightness(0) invert(1);
+    }
 }
 
 /* Page Load Initialization */

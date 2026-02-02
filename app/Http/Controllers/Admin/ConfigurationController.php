@@ -16,12 +16,23 @@ class ConfigurationController extends Controller
 
     public function update(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'campus_name' => 'required|string|max:255',
+            'app_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
-        foreach ($data as $key => $value) {
-            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+        // Update campus_name
+        Setting::updateOrCreate(['key' => 'campus_name'], ['value' => $request->campus_name]);
+
+        // Handle File Upload
+        if ($request->hasFile('app_logo')) {
+            $file = $request->file('app_logo');
+            $filename = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images'), $filename);
+            
+            // Delete old logo if it exists and isn't a default one (Optional, skipped for simplicity)
+
+            Setting::updateOrCreate(['key' => 'app_logo'], ['value' => 'images/' . $filename]);
         }
 
         return back()->with('success', 'Konfigurasi sistem berhasil diperbarui.');

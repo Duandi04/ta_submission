@@ -28,6 +28,39 @@
             --primary-500: #0284c7;
             --primary-600: #0369a1;
             --primary-700: #075985;
+            
+            --bg-gradient-start: var(--primary-light);
+            --bg-gradient-middle: #f0f9ff;
+            --bg-gradient-end: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(186, 230, 253, 0.5);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --input-bg: #f8fafc;
+        }
+
+        [data-bs-theme="dark"] {
+            --primary-light: #0c4a6e;
+            --primary-100: #082f49;
+            --primary-200: #0c4a6e;
+            --primary-300: #075985;
+            --primary-400: #0369a1; /* Adjusted for visibility */
+            --primary-500: #0284c7;
+            --primary-600: #38bdf8; /* Lighter for dark mode hover */
+            --primary-700: #7dd3fc;
+            
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-middle: #1e293b;
+            --bg-gradient-end: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --card-border: rgba(56, 189, 248, 0.2);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --input-bg: #0f172a;
+        }
+
+        [data-bs-theme="dark"] .dynamic-logo {
+            filter: brightness(0) invert(1);
         }
 
         * {
@@ -39,7 +72,8 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
-            background: linear-gradient(135deg, var(--primary-light) 0%, #f0f9ff 50%, #ffffff 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-middle) 50%, var(--bg-gradient-end) 100%);
+            color: var(--text-main);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -52,14 +86,14 @@
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--card-bg);
             backdrop-filter: blur(20px);
             border-radius: 24px;
             box-shadow:
                 0 4px 6px -1px rgba(0, 0, 0, 0.05),
                 0 10px 15px -3px rgba(0, 0, 0, 0.08),
                 0 20px 25px -5px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(186, 230, 253, 0.5);
+            border: 1px solid var(--card-border);
             overflow: hidden;
         }
 
@@ -144,17 +178,19 @@
             height: auto;
             font-size: 0.95rem;
             transition: all 0.3s ease;
-            background: #f8fafc;
+            background: var(--input-bg);
+            color: var(--text-main);
         }
 
         .form-floating .form-control:focus {
             border-color: var(--primary-400);
             box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
-            background: white;
+            background: var(--card-bg);
+            color: var(--text-main);
         }
 
         .form-floating label {
-            color: #64748b;
+            color: var(--text-muted);
             font-weight: 500;
         }
 
@@ -175,7 +211,7 @@
         }
 
         .form-check-label {
-            color: #475569;
+            color: var(--text-muted);
             font-weight: 500;
             margin-left: 0.5rem;
         }
@@ -339,6 +375,16 @@
     </style>
 
     @stack('styles')
+    
+    <script>
+        // Immediate Theme Initialization
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const theme = savedTheme || systemTheme;
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
 </head>
 
 <body>
@@ -349,12 +395,40 @@
         <div class="shape shape-3"></div>
     </div>
 
+    <!-- Theme Toggle Button -->
+    <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
+        <button class="btn btn-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-2" 
+                id="themeToggle" 
+                style="width: 45px; height: 45px; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main);">
+            <i class="bi bi-moon-stars-fill fs-5"></i>
+        </button>
+    </div>
+
     <div class="login-container">
         @yield('content')
     </div>
 
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('themeToggle');
+            const icon = toggleBtn.querySelector('i');
+            const html = document.documentElement;
+
+            // Set initial icon
+            const currentTheme = html.getAttribute('data-bs-theme');
+            icon.className = currentTheme === 'dark' ? 'bi bi-sun-fill fs-5' : 'bi bi-moon-stars-fill fs-5';
+
+            toggleBtn.addEventListener('click', () => {
+                const newTheme = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                icon.className = newTheme === 'dark' ? 'bi bi-sun-fill fs-5' : 'bi bi-moon-stars-fill fs-5';
+            });
+        });
+    </script>
 
     @stack('scripts')
 </body>

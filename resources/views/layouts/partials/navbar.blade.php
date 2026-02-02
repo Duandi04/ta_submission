@@ -2,7 +2,7 @@
         <div class="container-fluid">
             <div class="d-flex align-items-center">
                 <a class="navbar-brand me-4 d-flex align-items-center" href="{{ route('dashboard') }}">
-                    <i class="bi bi-mortarboard-fill me-2 fs-4"></i>
+                    <img src="{{ url(\App\Models\Setting::getValue('app_logo', 'images/logo_uvers.webp')) }}" alt="Logo" height="40" class="me-2 rounded dynamic-logo">
                     <span>{{ \App\Models\Setting::getValue('campus_name', 'Sistem TA') }}</span>
                 </a>
                 <button class="sidebar-toggle" id="sidebarToggle">

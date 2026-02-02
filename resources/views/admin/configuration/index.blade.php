@@ -14,7 +14,7 @@
                     <span class="fw-bold"><i class="bi bi-gear-fill me-2 text-primary"></i>Pengaturan Umum</span>
                 </div>
                 <div class="card-body p-4">
-                    <form action="{{ route('admin.configuration.update') }}" method="POST">
+                    <form action="{{ route('admin.configuration.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="mb-3">
                             <label for="campus_name" class="form-label">Nama Kampus / Institusi</label>
@@ -25,6 +25,17 @@
                             @error('campus_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="app_logo" class="form-label">Upload Logo Aplikasi</label>
+                            @if(isset($settings['app_logo']))
+                                <div class="mb-2">
+                                    <img src="{{ url($settings['app_logo']) }}" alt="Current Logo" class="img-thumbnail" style="max-height: 80px;">
+                                </div>
+                            @endif
+                            <input type="file" class="form-control @error('app_logo') is-invalid @enderror"
+                                id="app_logo" name="app_logo" accept="image/*">
+                            <div class="form-text">Format: JPG, PNG, WEBP. Maksimal 2MB. Logo saat ini: {{ $settings['app_logo'] ?? 'Default' }}</div>
                         </div>
                         <div class="d-grid mt-4">
                             <button type="submit" class="btn btn-primary shadow-none">

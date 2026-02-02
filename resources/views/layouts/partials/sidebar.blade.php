@@ -81,13 +81,7 @@
                             <span>Kelola Dosen</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.submissions.*') ? 'active' : '' }}"
-                            href="{{ route('admin.submissions.index') }}">
-                            <i class="bi bi-file-earmark-text-fill"></i>
-                            <span>Daftar Pengajuan</span>
-                        </a>
-                    </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.students.*') ? 'active' : '' }}"
                             href="{{ route('admin.students.index') }}">
@@ -102,6 +96,15 @@
                             <span>Semua Pengguna</span>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.submissions.*') ? 'active' : '' }}"
+                            href="{{ route('admin.submissions.index') }}">
+                            <i class="bi bi-file-earmark-text-fill"></i>
+                            <span>Daftar Pengajuan</span>
+                        </a>
+                    </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.faculties.*') ? 'active' : '' }}"
                             href="{{ route('admin.faculties.index') }}">
