@@ -11,7 +11,7 @@
                     <i class="bi bi-filter"></i> Filter Status
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="{{ route('supervisor.submissions.index') }}">Semua</a></li>
+                    <li><a class="dropdown-item" href="{{ route('dosen.submissions.index') }}">Semua</a></li>
                     <li><a class="dropdown-item" href="?status=submitted">Submitted</a></li>
                     <li><a class="dropdown-item" href="?status=under_review">Under Review</a></li>
                     <li><a class="dropdown-item" href="?status=approved">Approved</a></li>
@@ -89,7 +89,7 @@
                                     <td>{{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
                                     <td>
                                         <div class="btn-group btn-group-sm">
-                                            <a href="{{ route('supervisor.submissions.show', $submission) }}"
+                                            <a href="{{ route('dosen.submissions.show', $submission) }}"
                                                 class="btn btn-primary" title="Detail">
                                                 <i class="bi bi-eye"></i>
                                             </a>

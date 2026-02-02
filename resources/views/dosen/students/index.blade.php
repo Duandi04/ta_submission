@@ -20,7 +20,7 @@
                             <h5 class="card-title fw-bold mb-1">{{ $student->name }}</h5>
                             <p class="text-muted small mb-3">{{ $student->nim_nip }}</p>
                             <div class="d-grid">
-                                <a href="{{ route('supervisor.students.show', $student) }}" class="btn btn-primary shadow-none">
+                                <a href="{{ route('dosen.students.show', $student) }}" class="btn btn-primary shadow-none">
                                     Lihat Draft
                                 </a>
                             </div>

@@ -11,11 +11,11 @@
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             @if (!$assessment->is_submitted)
-                <a href="{{ route('examiner.assessments.edit', $assessment) }}" class="btn btn-warning me-2">
+                <a href="{{ route('dosen.assessments.edit', $assessment) }}" class="btn btn-warning me-2">
                     <i class="bi bi-pencil"></i> Edit
                 </a>
             @endif
-            <a href="{{ route('examiner.assessments.index') }}" class="btn btn-secondary">
+            <a href="{{ route('dosen.assessments.index') }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>
@@ -138,7 +138,7 @@
                     </div>
                     <div class="card-body">
                         <p class="small text-muted">Setelah disubmit, penilaian tidak dapat diubah lagi.</p>
-                        <form action="{{ route('examiner.assessments.submit', $assessment) }}" method="POST">
+                        <form action="{{ route('dosen.assessments.submit', $assessment) }}" method="POST">
                             @csrf
                             <button type="submit" class="btn btn-success w-100"
                                 onclick="return confirm('Apakah Anda yakin ingin submit penilaian ini? Penilaian yang sudah disubmit tidak dapat diubah.')">

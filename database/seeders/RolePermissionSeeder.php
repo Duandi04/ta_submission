@@ -60,17 +60,8 @@ class RolePermissionSeeder extends Seeder
         $admin = Role::firstOrCreate(['name' => 'admin']);
         $admin->givePermissionTo(Permission::all());
 
-        $koordinator = Role::firstOrCreate(['name' => 'koordinator']);
-        $koordinator->syncPermissions([
-            'view users',
-            'view submissions',
-            'approve submissions',
-            'reject submissions',
-            'view assessments',
-            'view comments',
-            'view activity logs',
-            'view reports',
-        ]);
+        // $koordinator = Role::firstOrCreate(['name' => 'koordinator']);
+        // $koordinator->syncPermissions([...]); // REMOVED
 
         $kaprodi = Role::firstOrCreate(['name' => 'kaprodi']);
         $kaprodi->syncPermissions([

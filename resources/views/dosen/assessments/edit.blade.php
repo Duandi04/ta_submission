@@ -9,13 +9,13 @@
             <p class="text-muted small mb-0">{{ $submission->student->name }} - {{ $submission->title }}</p>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('examiner.assessments.show', $assessment) }}" class="btn btn-secondary">
+            <a href="{{ route('dosen.assessments.show', $assessment) }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>
     </div>
 
-    <form action="{{ route('examiner.assessments.update', $assessment) }}" method="POST">
+    <form action="{{ route('dosen.assessments.update', $assessment) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -156,7 +156,7 @@
                         <button type="submit" class="btn btn-primary w-100 mb-2">
                             <i class="bi bi-save me-1"></i> Simpan Draft
                         </button>
-                        <a href="{{ route('examiner.assessments.show', $assessment) }}"
+                        <a href="{{ route('dosen.assessments.show', $assessment) }}"
                             class="btn btn-outline-secondary w-100">
                             <i class="bi bi-x-circle me-1"></i> Batal
                         </a>

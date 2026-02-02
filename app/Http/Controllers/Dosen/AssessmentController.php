@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Examiner;
+namespace App\Http\Controllers\Dosen;
 
 use App\Http\Controllers\Controller;
 use App\Models\Assessment;
 use App\Models\ThesisSubmission;
 use App\Services\Examiner\AssessmentService;
 use Illuminate\Http\Request;
+use App\Models\Rubric; // Added Rubric model
+use Illuminate\Support\Facades\Auth;
 
 class AssessmentController extends Controller
 {
@@ -17,26 +19,32 @@ class AssessmentController extends Controller
 
     public function index()
     {
-        $assessments = $this->assessmentService->getExaminerAssessments();
+        $evaluatorId = Auth::id(); // Assuming evaluatorId is current authenticated user's ID
+        $assessments = Assessment::where('evaluator_id', $evaluatorId)
+            ->with(['thesisSubmission.student', 'thesisSubmission'])
+            ->latest()
+            ->paginate(10);
 
-        return view('examiner.assessments.index', compact('assessments'));
+        return view('dosen.assessments.index', compact('assessments'));
     }
 
     public function create(Request $request)
     {
-        $submission = ThesisSubmission::findOrFail($request->submission_id);
+        $submissionId = $request->query('submission_id');
+        $submission = ThesisSubmission::with('student', 'files')->findOrFail($submissionId);
 
         $existing = $this->assessmentService->findExistingAssessment($submission->id);
 
         if ($existing) {
             return redirect()
-                ->route('examiner.assessments.edit', $existing)
+                ->route('dosen.assessments.edit', $existing) // Changed route to dosen
                 ->with('info', 'Anda sudah memiliki penilaian untuk pengajuan ini.');
         }
 
-        $criteria = $this->assessmentService->getCriteria();
+        // Get active rubric
+        $rubric = Rubric::where('is_active', true)->firstOrFail();
 
-        return view('examiner.assessments.create', compact('submission', 'criteria'));
+        return view('dosen.assessments.create', compact('submission', 'rubric')); // Changed view to dosen and compact rubric
     }
 
     public function store(Request $request)
@@ -61,28 +69,31 @@ class AssessmentController extends Controller
         $assessment = $this->assessmentService->create($validated, $validated['scores']);
 
         return redirect()
-            ->route('examiner.assessments.show', $assessment)
+            ->route('dosen.assessments.show', $assessment) // Changed route to dosen
             ->with('success', 'Penilaian berhasil disimpan sebagai draft!');
     }
 
     public function show(Assessment $assessment)
     {
-        abort_if($assessment->evaluator_id !== auth()->id(), 403);
+        abort_if($assessment->evaluator_id !== Auth::id(), 403);
 
-        $assessment->load(['thesisSubmission.student', 'scores.criterion']);
-
-        return view('examiner.assessments.show', compact('assessment'));
+        $assessment->load(['thesisSubmission.student', 'thesisSubmission.files', 'scores.criterion']); // Added thesisSubmission.files
+        return view('dosen.assessments.show', compact('assessment')); // Changed view to dosen
     }
 
     public function edit(Assessment $assessment)
     {
+        // Add authorization check
+        // if (!$assessment->canBeEditedBy(auth()->user())) abort(403);
         abort_if(!$this->assessmentService->canEdit($assessment), 403, 'Penilaian yang sudah disubmit tidak dapat diedit.');
 
-        $assessment->load(['scores']);
-        $criteria = $this->assessmentService->getCriteriaForAssessment($assessment);
-        $submission = $assessment->thesisSubmission;
+        $assessment->load(['thesisSubmission.student', 'scores']); // Added thesisSubmission.student
+        // If rubric format might verify, we could load it, but usually we use snapshot if existing?
+        // But for editing we might default to snapshot.
+        $criteria = $this->assessmentService->getCriteriaForAssessment($assessment); // Kept original logic for criteria
+        $submission = $assessment->thesisSubmission; // Kept original logic for submission
 
-        return view('examiner.assessments.edit', compact('assessment', 'submission', 'criteria'));
+        return view('dosen.assessments.edit', compact('assessment', 'submission', 'criteria')); // Changed view to dosen, kept submission and criteria
     }
 
     public function update(Request $request, Assessment $assessment)
@@ -101,7 +112,7 @@ class AssessmentController extends Controller
         $this->assessmentService->update($assessment, $validated, $validated['scores']);
 
         return redirect()
-            ->route('examiner.assessments.show', $assessment)
+            ->route('dosen.assessments.show', $assessment)
             ->with('success', 'Penilaian berhasil diperbarui!');
     }
 
@@ -112,13 +123,13 @@ class AssessmentController extends Controller
         $this->assessmentService->delete($assessment);
 
         return redirect()
-            ->route('examiner.assessments.index')
+            ->route('dosen.assessments.index')
             ->with('success', 'Penilaian berhasil dihapus!');
     }
 
     public function submit(Assessment $assessment)
     {
-        abort_if($assessment->evaluator_id !== auth()->id(), 403);
+        abort_if($assessment->evaluator_id !== Auth::id(), 403);
         abort_if($assessment->is_submitted, 403, 'Penilaian sudah disubmit.');
 
         $assessment->update([
@@ -127,7 +138,7 @@ class AssessmentController extends Controller
         ]);
 
         return redirect()
-            ->route('examiner.assessments.show', $assessment)
+            ->route('dosen.assessments.show', $assessment)
             ->with('success', 'Penilaian berhasil disubmit!');
     }
 }

@@ -3,9 +3,6 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Student\SubmissionController as StudentSubmissionController;
-use App\Http\Controllers\Supervisor\SubmissionController as SupervisorSubmissionController;
-use App\Http\Controllers\Coordinator\SubmissionController as CoordinatorSubmissionController;
-use App\Http\Controllers\Coordinator\ReportController as CoordinatorReportController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\ConfigurationController;
 use App\Http\Controllers\Admin\FacultyController;
@@ -14,7 +11,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\LecturerController;
 use App\Http\Controllers\Admin\SubmissionController as AdminSubmissionController;
-use App\Http\Controllers\Examiner\AssessmentController;
+use App\Http\Controllers\Dosen\AssessmentController;
+use App\Http\Controllers\Dosen\SubmissionController as DosenSubmissionController;
 use App\Http\Controllers\Kaprodi\KaprodiController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -38,33 +36,16 @@ Route::middleware('auth')->group(function () {
         Route::resource('submissions', StudentSubmissionController::class);
     });
 
-    // Dosen / Supervisor routes
-    Route::middleware('role:dosen|kaprodi')->prefix('dosen')->group(function () {
-        Route::name('supervisor.')->group(function () {
-            Route::get('/students', [SupervisorSubmissionController::class, 'index'])->name('students.index');
-            Route::get('/students/{student}', [SupervisorSubmissionController::class, 'studentDetails'])->name('students.show');
-            Route::get('/submissions/{submission}', [SupervisorSubmissionController::class, 'show'])->name('submissions.show');
-        });
-        
-        // Examiner specific routes inside dosen group (no supervisor prefix)
-        Route::resource('assessments', AssessmentController::class)->names([
-            'index' => 'examiner.assessments.index',
-            'create' => 'examiner.assessments.create',
-            'store' => 'examiner.assessments.store',
-            'show' => 'examiner.assessments.show',
-            'edit' => 'examiner.assessments.edit',
-            'update' => 'examiner.assessments.update',
-            'destroy' => 'examiner.assessments.destroy',
-        ]);
-        Route::post('assessments/{assessment}/submit', [AssessmentController::class, 'submit'])->name('examiner.assessments.submit');
-    });
+    // Dosen routes (merges Supervisor & Examiner)
+    Route::middleware('role:dosen|kaprodi')->prefix('dosen')->name('dosen.')->group(function () {
+        // Supervision Routes
+        Route::get('/students', [DosenSubmissionController::class, 'index'])->name('students.index');
+        Route::get('/students/{student}', [DosenSubmissionController::class, 'studentDetails'])->name('students.show');
+        Route::get('/submissions/{submission}', [DosenSubmissionController::class, 'show'])->name('submissions.show');
 
-    // Coordinator routes
-    Route::middleware('role:koordinator')->prefix('coordinator')->name('coordinator.')->group(function () {
-        Route::get('/students', [CoordinatorSubmissionController::class, 'index'])->name('students.index');
-        Route::get('/students/{student}', [CoordinatorSubmissionController::class, 'show'])->name('submissions.show'); // Adjust this as needed
-
-        Route::get('/reports', [CoordinatorReportController::class, 'index'])->name('reports.index');
+        // Assessment Routes
+        Route::resource('assessments', AssessmentController::class);
+        Route::post('assessments/{assessment}/submit', [AssessmentController::class, 'submit'])->name('assessments.submit');
     });
 
     // Kaprodi routes

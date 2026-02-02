@@ -20,6 +20,18 @@
     --text-main: #1e293b;
     --text-muted: #64748b;
     --bg-body: #f8fafc;
+    --bg-surface: #ffffff;
+}
+
+[data-bs-theme="dark"] {
+    --primary-blue-light: #0c4a6e;
+    --primary-blue-subtle: #082f49;
+    
+    --bg-body: #0f172a;
+    --bg-surface: #1e293b;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
 }
 
 /* Page Load Initialization */
@@ -63,7 +75,7 @@ body {
 
 /* Navbar */
 .navbar {
-    background: white !important;
+    background: var(--bg-surface) !important;
     border-bottom: 1px solid var(--border-color);
     height: 60px;
     padding: 0 1.25rem;
@@ -98,7 +110,7 @@ body {
 #sidebar {
     width: var(--sidebar-width);
     height: 100vh;
-    background: white;
+    background: var(--bg-surface);
     border-right: 1px solid var(--border-color);
     position: fixed;
     top: 0;
@@ -200,7 +212,7 @@ body {
 
 /* Cards */
 .card {
-    background: white;
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     box-shadow: none;
@@ -208,7 +220,7 @@ body {
 }
 
 .card-header {
-    background: white;
+    background: var(--bg-surface);
     padding: 1rem 1.25rem;
     border-bottom: 1px solid var(--border-color);
     font-weight: 600;
@@ -218,7 +230,7 @@ body {
 .stats-card {
     padding: 1.25rem;
     border-radius: 12px;
-    background: white;
+    background: var(--bg-surface);
     border: 1px solid var(--border-color);
     height: 100%;
 }
@@ -265,7 +277,7 @@ body {
 }
 
 .table thead th {
-    background: #f8fafc;
+    background: var(--bg-body);
     color: var(--text-muted);
     font-weight: 600;
     font-size: 0.75rem;
@@ -276,7 +288,7 @@ body {
 
 .table tbody td {
     padding: 1rem 1.25rem;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-color);
 }
 
 /* Badges */
@@ -336,7 +348,7 @@ body {
 }
 
 .pagination .page-item.disabled .page-link {
-    background-color: #f8fafc;
+    background-color: var(--bg-body);
     color: #cbd5e1;
 }
 

@@ -26,19 +26,8 @@ class UserSeeder extends Seeder
         );
         $admin->syncRoles(['admin']);
 
-        // Core Koordinator User
-        $koordinator = User::updateOrCreate(
-            ['email' => 'koordinator@ta.test'],
-            [
-                'name' => 'Dr. Budi Santoso (Koordinator)',
-                'password' => Hash::make('password'),
-                'nim_nip' => 'KOR001',
-                'phone' => '081122334466',
-                'profile_photo' => 'profile-photos/lecturer.png',
-                'is_active' => true,
-            ]
-        );
-        $koordinator->syncRoles(['koordinator']);
+        // Core Koordinator User - REMOVED
+        // ...
 
         // Balanced users for each Program Studi
         $programStudis = ProgramStudi::all();

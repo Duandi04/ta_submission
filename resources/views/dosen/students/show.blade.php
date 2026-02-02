@@ -9,7 +9,7 @@
             <p class="text-muted small mb-0">{{ $student->name }} ({{ $student->nim_nip }})</p>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('supervisor.students.index') }}" class="btn btn-secondary">
+            <a href="{{ route('dosen.students.index') }}" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>
@@ -45,7 +45,7 @@
                                     </td>
                                     <td>{{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
                                     <td class="text-end pe-3">
-                                        <a href="{{ route('supervisor.submissions.show', $submission) }}"
+                                        <a href="{{ route('dosen.submissions.show', $submission) }}"
                                             class="btn btn-sm btn-outline-primary px-3">
                                             Detail & Nilai
                                         </a>

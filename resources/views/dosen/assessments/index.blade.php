@@ -59,11 +59,11 @@
                                         </td>
                                         <td class="text-end pe-3">
                                             <div class="btn-group">
-                                                <a href="{{ route('examiner.assessments.show', $assessment) }}" class="btn btn-sm btn-outline-primary" title="Lihat">
+                                                <a href="{{ route('dosen.assessments.show', $assessment) }}" class="btn btn-sm btn-outline-primary" title="Lihat">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
                                                 @if(!$assessment->is_submitted)
-                                                    <a href="{{ route('examiner.assessments.edit', $assessment) }}" class="btn btn-sm btn-outline-warning" title="Edit">
+                                                    <a href="{{ route('dosen.assessments.edit', $assessment) }}" class="btn btn-sm btn-outline-warning" title="Edit">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
                                                 @endif
