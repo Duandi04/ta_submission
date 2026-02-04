@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
 class ProgramStudi extends Model
 {
-    use LogsActivity;
+    use HasFactory, LogsActivity;
     protected $fillable = ['name', 'code', 'faculty_id'];
 
     public function getActivitylogOptions(): LogOptions

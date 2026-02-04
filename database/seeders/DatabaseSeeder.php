@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             SettingSeeder::class,
             RubricSeeder::class,
+            ThesisSubmissionSeeder::class,
         ]);
     }
 }

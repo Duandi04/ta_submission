@@ -17,12 +17,14 @@ class SubmissionController extends Controller
     public function index()
     {
         $lecturerId = Auth::id();
-        $submissions = ThesisSubmission::where('supervisor_id', $lecturerId)
-            ->with(['student'])
-            ->latest()
-            ->paginate(10);
+        
+        // Get unique students who have submissions supervised by this lecturer
+        $students = \App\Models\User::whereHas('thesisSubmissions', function($query) use ($lecturerId) {
+            $query->where('supervisor_id', $lecturerId);
+        })
+        ->paginate(12);
             
-        return view('dosen.students.index', compact('submissions'));
+        return view('dosen.students.index', compact('students'));
     }
 
     public function studentDetails(int $studentId)

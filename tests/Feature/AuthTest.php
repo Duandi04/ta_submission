@@ -25,7 +25,6 @@ class AuthTest extends TestCase
 
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
-        $this->withoutMiddleware();
         $user = User::factory()->create([
             'is_active' => true,
         ]);
@@ -69,7 +68,7 @@ class AuthTest extends TestCase
 
     public function test_users_can_logout(): void
     {
-        $this->withoutMiddleware();
+        /** @var User $user */
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->post(route('logout'));

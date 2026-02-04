@@ -22,6 +22,7 @@ class AdminUserTest extends TestCase
 
     public function test_admin_can_view_users_index(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->create();
         $admin->assignRole('admin');
 
@@ -33,9 +34,10 @@ class AdminUserTest extends TestCase
 
     public function test_admin_can_create_user(): void
     {
-        $this->withoutMiddleware();
+        /** @var User $admin */
         $admin = User::factory()->create();
         $admin->assignRole('admin');
+        $prodi = \App\Models\ProgramStudi::factory()->create();
 
         $response = $this->actingAs($admin)->post(route('admin.users.store'), [
             'name' => 'New User',
@@ -43,6 +45,10 @@ class AdminUserTest extends TestCase
             'password' => 'password',
             'password_confirmation' => 'password',
             'role' => 'mahasiswa',
+            'nim_nip' => '123456789',
+            'phone' => '08123456789',
+            'address' => 'Test Address',
+            'program_studi_id' => $prodi->id,
             'is_active' => true,
         ]);
 
@@ -52,17 +58,23 @@ class AdminUserTest extends TestCase
 
     public function test_admin_can_update_user(): void
     {
-        $this->withoutMiddleware();
+        /** @var User $admin */
         $admin = User::factory()->create();
         $admin->assignRole('admin');
 
-        $user = User::factory()->create();
+        $prodi = \App\Models\ProgramStudi::factory()->create();
+        /** @var User $user */
+        $user = User::factory()->create(['program_studi_id' => $prodi->id]);
         $user->assignRole('mahasiswa');
 
         $response = $this->actingAs($admin)->put(route('admin.users.update', $user), [
             'name' => 'Updated Name',
             'email' => $user->email,
             'role' => 'mahasiswa',
+            'nim_nip' => $user->nim_nip,
+            'phone' => '08123456789',
+            'address' => 'Updated Address',
+            'program_studi_id' => $prodi->id,
             'is_active' => true,
         ]);
 
@@ -75,21 +87,22 @@ class AdminUserTest extends TestCase
 
     public function test_admin_can_delete_user(): void
     {
-        $this->withoutMiddleware();
+        /** @var User $admin */
         $admin = User::factory()->create();
         $admin->assignRole('admin');
 
+        /** @var User $user */
         $user = User::factory()->create();
 
         $response = $this->actingAs($admin)->delete(route('admin.users.destroy', $user));
 
         $response->assertRedirect(route('admin.users.index'));
-        $this->assertSoftDeleted($user);
+        $this->assertSoftDeleted('users', ['id' => $user->id]);
     }
 
     public function test_admin_cannot_delete_self(): void
     {
-        $this->withoutMiddleware();
+        /** @var User $admin */
         $admin = User::factory()->create();
         $admin->assignRole('admin');
 
@@ -101,6 +114,7 @@ class AdminUserTest extends TestCase
 
     public function test_non_admin_cannot_access_user_management(): void
     {
+        /** @var User $user */
         $user = User::factory()->create();
         $user->assignRole('mahasiswa');
 

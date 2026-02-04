@@ -98,7 +98,6 @@ Password for all accounts: `password`
 | Role | Email |
 | :--- | :--- |
 | **Administrator** | `admin@ta.test` |
-| **Koordinator** | `koordinator@ta.test` |
 | **Kaprodi** | `kaprodi@ta.test` |
 | **Dosen** | `dosen@ta.test` |
 | **Mahasiswa** | `mahasiswa@ta.test` |
