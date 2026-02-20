@@ -17,7 +17,6 @@ class Assessment extends Model
         'evaluator_id',
         'evaluator_type',
         'rubric_id',
-        'rubric_snapshot',
         'total_score',
         'comments',
         'strengths',
@@ -33,7 +32,6 @@ class Assessment extends Model
             'total_score' => 'decimal:2',
             'is_submitted' => 'boolean',
             'submitted_at' => 'datetime',
-            'rubric_snapshot' => 'array',
         ];
     }
 

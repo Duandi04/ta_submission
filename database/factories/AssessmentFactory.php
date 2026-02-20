@@ -57,7 +57,6 @@ class AssessmentFactory extends Factory
             'evaluator_id' => User::factory(),
             'evaluator_type' => fake()->randomElement(['supervisor', 'examiner_1', 'examiner_2']),
             'rubric_id' => null,
-            'rubric_snapshot' => null,
             'total_score' => null,
             'comments' => null,
             'strengths' => null,
@@ -73,7 +72,7 @@ class AssessmentFactory extends Factory
      */
     public function submitted(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'total_score' => fake()->randomFloat(2, 65, 100),
             'comments' => fake()->randomElement(self::$comments),
             'strengths' => fake()->randomElement(self::$strengths),
@@ -89,7 +88,7 @@ class AssessmentFactory extends Factory
      */
     public function draft(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'total_score' => null,
             'comments' => null,
             'is_submitted' => false,
@@ -102,7 +101,7 @@ class AssessmentFactory extends Factory
      */
     public function supervisor(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'evaluator_type' => 'supervisor',
         ]);
     }
@@ -112,7 +111,7 @@ class AssessmentFactory extends Factory
      */
     public function examiner1(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'evaluator_type' => 'examiner_1',
         ]);
     }
@@ -122,7 +121,7 @@ class AssessmentFactory extends Factory
      */
     public function examiner2(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'evaluator_type' => 'examiner_2',
         ]);
     }
@@ -132,7 +131,7 @@ class AssessmentFactory extends Factory
      */
     public function forEvaluator(User $evaluator): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'evaluator_id' => $evaluator->id,
         ]);
     }
@@ -142,7 +141,7 @@ class AssessmentFactory extends Factory
      */
     public function forThesis(ThesisSubmission $thesis): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'thesis_submission_id' => $thesis->id,
         ]);
     }
@@ -156,7 +155,6 @@ class AssessmentFactory extends Factory
             $rubricData = $rubric ?? Rubric::first();
             return [
                 'rubric_id' => $rubricData?->id,
-                'rubric_snapshot' => $rubricData?->criteria,
             ];
         });
     }

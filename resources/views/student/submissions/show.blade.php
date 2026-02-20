@@ -186,8 +186,8 @@
                         <div class="modal fade" id="uploadRevisionModal" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <form action="{{ route('student.submissions.revision', $submission->id) }}"
-                                        method="POST" enctype="multipart/form-data">
+                                    <form action="{{ route('student.submissions.revision', $submission->id) }}" method="POST"
+                                        enctype="multipart/form-data">
                                         @csrf
                                         <div class="modal-header">
                                             <h5 class="modal-title">Unggah File Revisi</h5>
@@ -195,10 +195,53 @@
                                                 aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label class="form-label">Pilih File Revisi (PDF/Doc/Docx)</label>
-                                                <input type="file" name="revision_file" class="form-control" required>
-                                                <small class="text-muted">Maksimal 10MB</small>
+                                            <div class="mb-4">
+                                                <label class="form-label d-block">Metode Upload <span
+                                                        class="text-danger">*</span></label>
+                                                <div class="btn-group w-100" role="group">
+                                                    <input type="radio" class="btn-check" name="upload_type"
+                                                        id="rev_upload_local" value="local" checked autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="rev_upload_local">Lokal</label>
+
+                                                    <input type="radio" class="btn-check" name="upload_type"
+                                                        id="rev_upload_drive" value="drive" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="rev_upload_drive">Drive</label>
+                                                </div>
+                                            </div>
+
+                                            <div id="rev_local_section">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Pilih File Revisi (PDF/Doc/Docx)</label>
+                                                    <input type="file" name="revision_file" id="revision_file"
+                                                        class="form-control">
+                                                    <small class="text-muted">Maksimal 10MB</small>
+                                                </div>
+                                            </div>
+
+                                            <div id="rev_drive_section" style="display: none;">
+                                                <div class="mb-3">
+                                                    <label class="form-label">File dari Google Drive <span
+                                                            class="text-danger">*</span></label>
+                                                    <div class="d-grid">
+                                                        <button type="button" id="google_picker_btn"
+                                                            class="btn btn-outline-dark">
+                                                            <i class="bi bi-google me-2"></i> Pilih dari Drive
+                                                        </button>
+                                                    </div>
+                                                    <div id="selected_drive_file" class="mt-2 p-2 border rounded bg-light"
+                                                        style="display: none;">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div class="text-truncate me-2">
+                                                                <i class="bi bi-file-earmark-text me-2"></i>
+                                                                <span id="drive_file_name" class="fw-medium small"></span>
+                                                            </div>
+                                                            <button type="button" id="clear_drive_selection"
+                                                                class="btn btn-sm btn-link text-danger p-0">Batal</button>
+                                                        </div>
+                                                    </div>
+                                                    <input type="hidden" name="google_file_id" id="google_file_id">
+                                                    <input type="hidden" name="google_access_token" id="google_access_token">
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -214,8 +257,7 @@
                         @if ($proposalFile && str_contains($proposalFile->mime_type, 'pdf'))
                             <div class="pdf-preview-container mt-4">
                                 <h6 class="mb-3"><i class="bi bi-eye"></i> Pratinjau Proposal (PDF)</h6>
-                                <div class="ratio ratio-16x9 border rounded overflow-hidden shadow-sm"
-                                    style="height: 600px;">
+                                <div class="ratio ratio-16x9 border rounded overflow-hidden shadow-sm" style="height: 600px;">
                                     <iframe src="{{ route('files.preview', $proposalFile) }}#toolbar=0"
                                         title="PDF Preview"></iframe>
                                 </div>
@@ -319,8 +361,7 @@
                                             <small class="fw-semibold">{{ $activity->causer?->name ?? 'System' }}</small>
                                             <p class="mb-0 small text-muted">{{ $activity->description }}</p>
                                         </div>
-                                        <small
-                                            class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
+                                        <small class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
                                     </div>
                                 </li>
                             @endforeach
@@ -377,3 +418,121 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        const GOOGLE_CLIENT_ID = "{{ env('GOOGLE_CLIENT_ID') }}";
+        const GOOGLE_API_KEY = "{{ env('GOOGLE_API_KEY') }}";
+        const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
+
+        let tokenClient;
+        let accessToken = null;
+        let pickerApiLoaded = false;
+        let gapiLoaded = false;
+
+        // Toggle logic for revision modal
+        document.querySelectorAll('input[name="upload_type"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'local') {
+                    document.getElementById('rev_local_section').style.display = 'block';
+                    document.getElementById('rev_drive_section').style.display = 'none';
+                    document.getElementById('revision_file').required = true;
+                } else {
+                    document.getElementById('rev_local_section').style.display = 'none';
+                    document.getElementById('rev_drive_section').style.display = 'block';
+                    document.getElementById('revision_file').required = false;
+                }
+            });
+        });
+
+        function gapiLoaded_callback() {
+            gapi.load('picker', () => {
+                pickerApiLoaded = true;
+            });
+        }
+
+        function gisLoaded_callback() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: GOOGLE_CLIENT_ID,
+                scope: SCOPES,
+                callback: (path) => {
+                    if (path.error !== undefined) {
+                        throw (path);
+                    }
+                    accessToken = path.access_token;
+                    document.getElementById('google_access_token').value = accessToken;
+                    createPicker();
+                },
+            });
+            gapiLoaded = true;
+        }
+
+        window.onload = function () {
+            gapiLoaded_callback();
+            gisLoaded_callback();
+        };
+
+        const googlePickerBtn = document.getElementById('google_picker_btn');
+        if (googlePickerBtn) {
+            googlePickerBtn.addEventListener('click', () => {
+                if (!GOOGLE_CLIENT_ID || !GOOGLE_API_KEY) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Konfigurasi Google Belum Lengkap',
+                        text: 'Silakan atur GOOGLE_CLIENT_ID dan GOOGLE_API_KEY di file .env'
+                    });
+                    return;
+                }
+
+                if (accessToken === null) {
+                    tokenClient.requestAccessToken({ prompt: 'consent' });
+                } else {
+                    createPicker();
+                }
+            });
+        }
+
+        function createPicker() {
+            const view = new google.picker.View(google.picker.ViewId.DOCS);
+            view.setMimeTypes("application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+
+            const picker = new google.picker.PickerBuilder()
+                .enableFeature(google.picker.Feature.NAV_HIDDEN)
+                .setDeveloperKey(GOOGLE_API_KEY)
+                .setAppId(GOOGLE_CLIENT_ID)
+                .setOAuthToken(accessToken)
+                .addView(view)
+                .setCallback(pickerCallback)
+                .build();
+            picker.setVisible(true);
+        }
+
+        function pickerCallback(data) {
+            if (data.action == google.picker.Action.PICKED) {
+                const doc = data.docs[0];
+                const fileId = doc.id;
+                const fileName = doc.name;
+
+                document.getElementById('google_file_id').value = fileId;
+                document.getElementById('drive_file_name').innerText = fileName;
+                document.getElementById('selected_drive_file').style.display = 'block';
+                document.getElementById('google_picker_btn').classList.add('btn-success');
+                document.getElementById('google_picker_btn').classList.remove('btn-outline-dark');
+                document.getElementById('google_picker_btn').innerHTML = '<i class="bi bi-check-circle me-2"></i> File Terpilih';
+            }
+        }
+
+        const clearBtn = document.getElementById('clear_drive_selection');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                document.getElementById('google_file_id').value = '';
+                document.getElementById('selected_drive_file').style.display = 'none';
+                document.getElementById('google_picker_btn').classList.remove('btn-success');
+                document.getElementById('google_picker_btn').classList.add('btn-outline-dark');
+                document.getElementById('google_picker_btn').innerHTML = '<i class="bi bi-google me-2"></i> Pilih dari Drive';
+            });
+        }
+    </script>
+@endpush

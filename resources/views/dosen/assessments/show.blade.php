@@ -7,7 +7,8 @@
         <div>
             <h1 class="h2">Detail Penilaian</h1>
             <p class="text-muted small mb-0">{{ $assessment->thesisSubmission->student->name }} -
-                {{ $assessment->thesisSubmission->title }}</p>
+                {{ $assessment->thesisSubmission->title }}
+            </p>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             @if (!$assessment->is_submitted)
@@ -21,128 +22,140 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white py-3 border-0">
-                    <span class="fw-bold"><i class="bi bi-file-text me-2 text-primary"></i>Informasi Pengajuan</span>
-                </div>
-                <div class="card-body">
-                    <table class="table table-borderless">
-                        <tr>
-                            <th width="180">Mahasiswa</th>
-                            <td>: <strong>{{ $assessment->thesisSubmission->student->name }}</strong>
-                                ({{ $assessment->thesisSubmission->student->nim_nip }})</td>
-                        </tr>
-                        <tr>
-                            <th>Judul</th>
-                            <td>: {{ $assessment->thesisSubmission->title }}</td>
-                        </tr>
-                        <tr>
-                            <th>Bidang Penelitian</th>
-                            <td>: {{ $assessment->thesisSubmission->research_field ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Status Submission</th>
-                            <td>: <span
-                                    class="badge bg-{{ $assessment->thesisSubmission->getStatusBadgeClass() }}">{{ $assessment->thesisSubmission->getStatusLabel() }}</span>
-                            </td>
-                        </tr>
-                    </table>
+    @php
+        $submission = $assessment->thesisSubmission;
+        $latestFile = $submission->getLatestFile();
+    @endphp
 
-                    <hr>
-                    <h6 class="fw-bold">Abstrak</h6>
-                    <p class="text-muted" style="white-space: pre-line;">{{ $assessment->thesisSubmission->abstract }}</p>
-                </div>
-            </div>
-
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white py-3 border-0">
-                    <span class="fw-bold"><i class="bi bi-clipboard-check me-2 text-success"></i>Detail Penilaian</span>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <p class="mb-1 text-muted small">Tipe Penilaian</p>
-                            <p class="fw-semibold">{{ $assessment->getEvaluatorTypeLabel() }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p class="mb-1 text-muted small">Status</p>
-                            @if ($assessment->is_submitted)
-                                <span class="badge bg-success-subtle text-success border border-success-subtle"><i
-                                        class="bi bi-check-circle me-1"></i>Sudah Disubmit</span>
-                            @else
-                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle"><i
-                                        class="bi bi-clock me-1"></i>Draft</span>
-                            @endif
-                        </div>
-                    </div>
-
-                    @if ($assessment->scores && $assessment->scores->count() > 0)
-                        <hr>
-                        <h6 class="fw-bold mb-3">Nilai per Kriteria</h6>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Kriteria</th>
-                                        <th class="text-center" width="100">Bobot</th>
-                                        <th class="text-center" width="100">Nilai</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($assessment->scores as $score)
-                                        <tr>
-                                            <td>{{ $score->criterion->name ?? 'N/A' }}</td>
-                                            <td class="text-center">{{ $score->criterion->weight ?? 0 }}%</td>
-                                            <td class="text-center fw-bold">{{ $score->score }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+    <div class="row g-4">
+        {{-- Left Column: PDF Preview --}}
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 85px; height: calc(100vh - 120px);">
+                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-file-earmark-pdf me-2 text-danger"></i>Pratinjau Dokumen</span>
+                    @if ($latestFile)
+                        <a href="{{ route('files.download', $latestFile) }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-download"></i>
+                        </a>
                     @endif
-
-                    @if ($assessment->comments || $assessment->strengths || $assessment->weaknesses || $assessment->recommendations)
-                        <hr>
-                        <h6 class="fw-bold mb-3">Komentar & Feedback</h6>
-                        @if ($assessment->comments)
-                            <p class="mb-2"><strong>Komentar:</strong> {{ $assessment->comments }}</p>
-                        @endif
-                        @if ($assessment->strengths)
-                            <p class="mb-2"><strong>Kelebihan:</strong> {{ $assessment->strengths }}</p>
-                        @endif
-                        @if ($assessment->weaknesses)
-                            <p class="mb-2"><strong>Kelemahan:</strong> {{ $assessment->weaknesses }}</p>
-                        @endif
-                        @if ($assessment->recommendations)
-                            <p class="mb-2"><strong>Rekomendasi:</strong> {{ $assessment->recommendations }}</p>
-                        @endif
+                </div>
+                <div class="card-body p-0 h-100">
+                    @if ($latestFile && Str::endsWith(strtolower($latestFile->file_name), '.pdf'))
+                        <iframe src="{{ route('files.preview', $latestFile) }}#toolbar=0" width="100%" height="100%"
+                            style="border: none;"></iframe>
+                    @else
+                        <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                            <i class="bi bi-file-earmark-restricted fs-1 mb-2"></i>
+                            <p>Pratinjau tidak tersedia untuk format file ini.</p>
+                        </div>
                     @endif
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4">
+        {{-- Right Column: Assessment Detail --}}
+        <div class="col-lg-5">
             <div class="card border-0 shadow-sm bg-primary text-white mb-4">
                 <div class="card-body text-center">
-                    <h6 class="mb-1 opacity-75">Total Nilai</h6>
-                    <h1 class="mb-0 fw-bold">{{ number_format($assessment->total_score ?? 0, 1) }}</h1>
+                    <h6 class="mb-1 opacity-75 small">Total Nilai</h6>
+                    <h2 class="mb-0 fw-bold">{{ number_format($assessment->total_score ?? 0, 1) }}</h2>
                 </div>
             </div>
 
-            @if (!$assessment->is_submitted)
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white py-3 border-0">
-                        <span class="fw-bold"><i class="bi bi-send me-2 text-success"></i>Submit Penilaian</span>
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold"><i class="bi bi-clipboard-check me-2 text-success"></i>Detail
+                            Penilaian</span>
                     </div>
+                </div>
+                <div class="card-body px-0 py-2">
+                    @if ($assessment->scores && $assessment->scores->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr class="small">
+                                        <th class="ps-3">Kriteria</th>
+                                        <th class="text-center" width="70">Bobot</th>
+                                        <th class="text-center" width="70">Nilai</th>
+                                        <th class="text-center" width="80">Kontribusi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($assessment->scores as $score)
+                                        @php
+                                            $contribution = ($score->score * $score->weight) / 100;
+                                        @endphp
+                                        <tr class="small">
+                                            <td class="ps-3">
+                                                <div class="fw-semibold">{{ $score->criterion_name }}</div>
+                                                @if($score->criterion_description)
+                                                    <div class="text-muted extra-small">
+                                                        {{ Str::limit($score->criterion_description, 60) }}</div>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">{{ number_format($score->weight, 0) }}%</td>
+                                            <td class="text-center">{{ number_format($score->score, 1) }}</td>
+                                            <td class="text-center fw-bold">{{ number_format($contribution, 1) }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="px-3 py-2">
+                            <div class="alert alert-warning mb-0 small">
+                                <i class="bi bi-exclamation-triangle me-1"></i> Data skor tidak tersedia.
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            @if ($assessment->comments || $assessment->strengths || $assessment->weaknesses || $assessment->recommendations)
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3 border-0">
+                        <span class="fw-bold"><i class="bi bi-chat-left-text me-2 text-info"></i>Feedback</span>
+                    </div>
+                    <div class="card-body py-2">
+                        @if ($assessment->comments)
+                            <div class="mb-3">
+                                <label class="form-label small text-muted mb-1">Komentar Umum</label>
+                                <p class="small mb-0">{{ $assessment->comments }}</p>
+                            </div>
+                        @endif
+                        @if ($assessment->strengths)
+                            <div class="mb-3">
+                                <label class="form-label small text-success mb-1">Kelebihan</label>
+                                <p class="small mb-0">{{ $assessment->strengths }}</p>
+                            </div>
+                        @endif
+                        @if ($assessment->weaknesses)
+                            <div class="mb-3">
+                                <label class="form-label small text-danger mb-1">Kelemahan</label>
+                                <p class="small mb-0">{{ $assessment->weaknesses }}</p>
+                            </div>
+                        @endif
+                        @if ($assessment->recommendations)
+                            <div class="mb-2">
+                                <label class="form-label small text-primary mb-1">Rekomendasi</label>
+                                <p class="small mb-0">{{ $assessment->recommendations }}</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
+            @if (!$assessment->is_submitted)
+                <div class="card border-0 shadow-sm border-start border-4 border-success">
                     <div class="card-body">
-                        <p class="small text-muted">Setelah disubmit, penilaian tidak dapat diubah lagi.</p>
+                        <h6 class="fw-bold text-success mb-2">Finalisasi Penilaian</h6>
+                        <p class="small text-muted mb-3">Setelah disubmit, penilaian tidak dapat diubah lagi.</p>
                         <form action="{{ route('dosen.assessments.submit', $assessment) }}" method="POST">
                             @csrf
                             <button type="submit" class="btn btn-success w-100"
                                 onclick="return confirm('Apakah Anda yakin ingin submit penilaian ini? Penilaian yang sudah disubmit tidak dapat diubah.')">
-                                <i class="bi bi-send me-1"></i> Submit Penilaian
+                                <i class="bi bi-send-fill me-1"></i> Kirim Penilaian Final
                             </button>
                         </form>
                     </div>

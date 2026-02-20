@@ -234,17 +234,16 @@ class AssessmentTest extends TestCase
     }
 
     /**
-     * Test assessment with rubric snapshot
+     * Test assessment with rubric
      */
-    public function test_assessment_with_rubric_snapshot(): void
+    public function test_assessment_with_rubric(): void
     {
         $rubric = Rubric::first();
-        
+
         if ($rubric) {
             $assessment = Assessment::factory()->withRubric($rubric)->create();
 
             $this->assertEquals($rubric->id, $assessment->rubric_id);
-            $this->assertEquals($rubric->criteria, $assessment->rubric_snapshot);
         } else {
             $this->assertTrue(true); // Skip if no rubric
         }
@@ -271,7 +270,7 @@ class AssessmentTest extends TestCase
         $assessment = Assessment::factory()->submitted()->create();
 
         $indonesianWords = ['baik', 'penelitian', 'perlu', 'sudah', 'metodologi', 'implementasi', 'relevan', 'industri'];
-        
+
         $hasIndonesian = false;
         foreach ($indonesianWords as $word) {
             if (

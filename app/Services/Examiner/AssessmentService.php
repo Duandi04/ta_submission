@@ -40,26 +40,19 @@ class AssessmentService
         if ($assessment->rubric_snapshot) {
             // Convert snapshot array to a format compatible with the view
             // Assuming snapshot structure is list of criteria objects
-            return collect($assessment->rubric_snapshot)->map(function ($item, $index) {
-                // Determine if it looks like an object or array
-                $data = (array) $item;
-                $obj = new AssessmentCriterion(); // Using model as a DTO mostly
-                
-                // Use ID from snapshot if available, otherwise use index (0, 1, 2...)
-                $id = $data['id'] ?? $index;
-                
+            return $assessment->scores->map(function ($score) {
+                $obj = new AssessmentCriterion();
                 $obj->forceFill([
-                    'id' => $id, 
-                    'name' => $data['name'] ?? '',
-                    'description' => $data['description'] ?? '',
-                    'weight_percentage' => $data['weight'] ?? 0,
-                    // Map other fields if necessary
+                    'id' => $score->criterion_id,
+                    'name' => $score->criterion_name,
+                    'description' => $score->notes, // Or keep notes separate
+                    'weight_percentage' => $score->weight,
                 ]);
-                $obj->id = $id; // Force set ID
+                $obj->id = $score->criterion_id;
                 return $obj;
             });
         }
-        
+
         // Fallback for legacy assessments without snapshot
         return $this->getCriteria();
     }
@@ -77,12 +70,13 @@ class AssessmentService
     /**
      * Create a new assessment.
      */
-    public function create(array $data, array $scores): Assessment
+    public function create(ThesisSubmission $submission, array $data, array $scores): Assessment
     {
         $assessment = Assessment::create([
-            'thesis_submission_id' => $data['thesis_submission_id'],
+            'thesis_submission_id' => $submission->id,
             'evaluator_id' => Auth::id(),
             'evaluator_type' => $data['evaluator_type'],
+            'rubric_id' => $submission->rubric_id,
             'comments' => $data['comments'] ?? null,
             'strengths' => $data['strengths'] ?? null,
             'weaknesses' => $data['weaknesses'] ?? null,
@@ -142,31 +136,26 @@ class AssessmentService
         $totalScore = 0;
         $totalWeight = 0;
 
-        $criteria = $this->getCriteriaForAssessment($assessment);
-        $criteriaMap = $criteria->keyBy('id');
+        $rubric = $assessment->rubric;
+        $criteria = $rubric ? collect($rubric->criteria) : collect();
+        $criteriaMap = $criteria->keyBy(fn($c, $idx) => $c['id'] ?? $idx);
 
         foreach ($scores as $criterionKey => $score) {
-            // Find weight from the criteria snapshot/list
-            $weight = 0;
-            if ($criteriaMap->has($criterionKey)) {
-                $weight = $criteriaMap->get($criterionKey)->weight_percentage;
-            } else {
-                 // Fallback look up if using global ID and we are in legacy mode
-                 $criterion = AssessmentCriterion::find($criterionKey);
-                 if ($criterion) $weight = $criterion->weight_percentage;
-            }
+            $criterionData = $criteriaMap->get($criterionKey);
+            $name = $criterionData['name'] ?? 'Kriteria';
+            $description = $criterionData['description'] ?? null;
+            $weight = $criterionData['weight'] ?? 0;
 
-            if ($update) {
-                $assessment->scores()->updateOrCreate(
-                    ['criterion_id' => $criterionKey],
-                    ['score' => $score]
-                );
-            } else {
-                $assessment->scores()->create([
-                    'criterion_id' => $criterionKey,
+            $assessment->scores()->updateOrCreate(
+                ['criterion_id' => $criterionKey],
+                [
+                    'criterion_name' => $name,
+                    'criterion_description' => $description,
+                    'weight' => $weight,
                     'score' => $score,
-                ]);
-            }
+                    'notes' => $data['notes'][$criterionKey] ?? null
+                ]
+            );
 
             $totalScore += ($score * $weight / 100);
             $totalWeight += $weight;

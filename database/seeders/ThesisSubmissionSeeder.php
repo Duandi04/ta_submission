@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Assessment;
-use App\Models\Comment;
 use App\Models\ProgramStudi;
 use App\Models\Rubric;
 use App\Models\SubmissionFile;
@@ -34,7 +33,7 @@ class ThesisSubmissionSeeder extends Seeder
             'research_field' => 'Internet of Things',
             'status' => 'draft',
         ],
-        
+
         // SUBMITTED submissions (2)
         [
             'title' => 'Pengembangan Aplikasi Mobile E-Learning dengan Fitur Gamifikasi untuk Siswa Sekolah Menengah',
@@ -49,7 +48,7 @@ class ThesisSubmissionSeeder extends Seeder
             'status' => 'submitted',
         ],
 
-        // UNDER_REVIEW submissions (2)
+        // UNDER_REVIEW submissions (8)
         [
             'title' => 'Sistem Rekomendasi Wisata Daerah Berbasis Collaborative Filtering dan Content-Based Filtering',
             'abstract' => 'Sistem rekomendasi hybrid ini menggabungkan metode collaborative filtering dan content-based filtering untuk memberikan rekomendasi destinasi wisata yang personalized kepada pengguna. Data wisata diperoleh dari berbagai sumber termasuk review pengguna dan informasi geografis.',
@@ -62,57 +61,49 @@ class ThesisSubmissionSeeder extends Seeder
             'research_field' => 'Cyber Security',
             'status' => 'under_review',
         ],
-
-        // REVISION_REQUIRED submissions (2)
         [
             'title' => 'Deteksi Wajah Real-Time Menggunakan YOLO untuk Sistem Absensi Karyawan',
             'abstract' => 'Sistem deteksi wajah ini dikembangkan untuk mengotomatisasi proses absensi karyawan. Menggunakan algoritma YOLO (You Only Look Once) versi 5 dengan optimasi untuk perangkat edge. Sistem terintegrasi dengan database karyawan dan dapat mengenali wajah dalam berbagai kondisi pencahayaan.',
             'research_field' => 'Artificial Intelligence',
-            'status' => 'revision_required',
-            'notes' => 'Perbaiki bagian metodologi: jelaskan lebih detail preprocessing citra dan tambahkan perbandingan dengan metode face detection lain.',
+            'status' => 'under_review',
+            'notes' => 'Perbaiki bagian metodologi: jelaskan lebih detail preprocessing citra.',
         ],
         [
             'title' => 'Pengembangan Progressive Web App untuk Sistem Pemesanan Makanan Online UMKM',
             'abstract' => 'PWA ini dikembangkan untuk membantu UMKM kuliner dalam mengelola pesanan secara online. Fitur utama meliputi katalog menu, keranjang belanja, pembayaran online, dan tracking pesanan. Aplikasi dapat diakses offline dan diinstal layaknya aplikasi native.',
             'research_field' => 'Web Development',
-            'status' => 'revision_required',
-            'notes' => 'Tambahkan uji performa aplikasi dan bandingkan dengan native app. Sertakan hasil pengujian load testing.',
+            'status' => 'under_review',
+            'notes' => 'Tambahkan uji performa aplikasi dan bandingkan dengan native app.',
         ],
-
-        // APPROVED submissions (2)
         [
             'title' => 'Rancang Bangun Smart Home Berbasis IoT dengan Kontrol Suara dan Aplikasi Mobile',
             'abstract' => 'Penelitian ini menghasilkan prototype smart home yang dapat dikontrol melalui perintah suara dan aplikasi mobile. Sistem menggunakan ESP32 sebagai mikrokontroler utama dengan integrasi Google Assistant. Fitur meliputi kontrol lampu, AC, dan monitoring konsumsi listrik.',
             'research_field' => 'Internet of Things',
-            'status' => 'approved',
+            'status' => 'under_review',
         ],
         [
             'title' => 'Prediksi Harga Saham Menggunakan Long Short-Term Memory (LSTM) Neural Network',
             'abstract' => 'Model LSTM dikembangkan untuk memprediksi pergerakan harga saham di Bursa Efek Indonesia. Data historis 5 tahun digunakan untuk training dengan teknik sliding window. Hasil menunjukkan RMSE yang lebih rendah dibandingkan metode ARIMA tradisional.',
             'research_field' => 'Data Science',
-            'status' => 'approved',
+            'status' => 'under_review',
         ],
-
-        // SCHEDULED_FOR_DEFENSE submissions (2)
         [
             'title' => 'Sistem Informasi Geografis Pemetaan Fasilitas Kesehatan Berbasis WebGIS',
             'abstract' => 'WebGIS ini menyajikan informasi lokasi dan kapasitas fasilitas kesehatan di wilayah perkotaan. Fitur meliputi pencarian fasilitas terdekat, navigasi, dan informasi layanan. Dibangun menggunakan Leaflet.js dengan data dari OpenStreetMap.',
             'research_field' => 'Web Development',
-            'status' => 'scheduled_for_defense',
+            'status' => 'under_review',
         ],
         [
             'title' => 'Aplikasi Mobile Augmented Reality untuk Pembelajaran Anatomi Tubuh Manusia',
             'abstract' => 'Aplikasi AR ini dikembangkan sebagai media pembelajaran interaktif anatomi tubuh manusia. Pengguna dapat memindai gambar di buku untuk menampilkan model 3D organ tubuh. Dibangun menggunakan Unity dengan ARCore untuk platform Android.',
             'research_field' => 'Mobile Development',
-            'status' => 'scheduled_for_defense',
+            'status' => 'under_review',
         ],
-
-        // DEFENSE_IN_PROGRESS submissions (1)
         [
             'title' => 'Chatbot Berbasis Natural Language Processing untuk Layanan Informasi Akademik Universitas',
             'abstract' => 'Chatbot ini dikembangkan untuk menjawab pertanyaan seputar layanan akademik kampus secara otomatis. Menggunakan model Transformer dengan fine-tuning pada dataset FAQ akademik. Terintegrasi dengan sistem informasi akademik untuk memberikan informasi yang akurat.',
             'research_field' => 'Artificial Intelligence',
-            'status' => 'defense_in_progress',
+            'status' => 'under_review',
         ],
 
         // COMPLETED submissions (3)
@@ -154,7 +145,7 @@ class ThesisSubmissionSeeder extends Seeder
     public function run(): void
     {
         $programStudis = ProgramStudi::all();
-        
+
         if ($programStudis->isEmpty()) {
             $this->command->warn('No Program Studi found. Please run ProgramStudiSeeder first.');
             return;
@@ -164,7 +155,7 @@ class ThesisSubmissionSeeder extends Seeder
 
         foreach ($this->thesisData as $data) {
             $prodi = $programStudis->random();
-            
+
             // Get a student from this prodi
             $student = User::whereHas('roles', fn($q) => $q->where('name', 'mahasiswa'))
                 ->where('program_studi_id', $prodi->id)
@@ -208,10 +199,6 @@ class ThesisSubmissionSeeder extends Seeder
             // Create status history
             $this->createStatusHistory($thesis, $supervisor);
 
-            // Create comments for reviewed submissions
-            if (in_array($data['status'], ['under_review', 'revision_required', 'approved', 'scheduled_for_defense', 'defense_in_progress', 'completed'])) {
-                $this->createComments($thesis, $student, $supervisor);
-            }
 
             // Create assessments for completed submissions
             if ($data['status'] === 'completed') {
@@ -232,11 +219,7 @@ class ThesisSubmissionSeeder extends Seeder
         return match ($status) {
             'draft' => null,
             'submitted' => now()->subDays(rand(1, 7)),
-            'under_review' => now()->subDays(rand(7, 14)),
-            'revision_required' => now()->subDays(rand(14, 21)),
-            'approved' => now()->subDays(rand(21, 30)),
-            'scheduled_for_defense' => now()->subDays(rand(30, 45)),
-            'defense_in_progress' => now()->subMonths(2),
+            'under_review' => now()->subDays(rand(7, 21)),
             'completed' => now()->subMonths(rand(2, 6)),
             'cancelled' => now()->subMonths(rand(1, 3)),
             default => now(),
@@ -249,8 +232,6 @@ class ThesisSubmissionSeeder extends Seeder
     protected function getDefenseDate(string $status): ?\DateTime
     {
         return match ($status) {
-            'scheduled_for_defense' => now()->addDays(rand(7, 14)),
-            'defense_in_progress' => now(),
             'completed' => now()->subDays(rand(7, 30)),
             default => null,
         };
@@ -265,11 +246,7 @@ class ThesisSubmissionSeeder extends Seeder
             'draft' => ['draft'],
             'submitted' => ['draft', 'submitted'],
             'under_review' => ['draft', 'submitted', 'under_review'],
-            'revision_required' => ['draft', 'submitted', 'under_review', 'revision_required'],
-            'approved' => ['draft', 'submitted', 'under_review', 'approved'],
-            'scheduled_for_defense' => ['draft', 'submitted', 'under_review', 'approved', 'scheduled_for_defense'],
-            'defense_in_progress' => ['draft', 'submitted', 'under_review', 'approved', 'scheduled_for_defense', 'defense_in_progress'],
-            'completed' => ['draft', 'submitted', 'under_review', 'approved', 'scheduled_for_defense', 'defense_in_progress', 'completed'],
+            'completed' => ['draft', 'submitted', 'under_review', 'completed'],
             'cancelled' => ['draft', 'submitted', 'cancelled'],
         ];
 
@@ -296,37 +273,13 @@ class ThesisSubmissionSeeder extends Seeder
         return match ($status) {
             'draft' => 'Proposal baru dibuat.',
             'submitted' => 'Proposal telah diajukan untuk ditinjau.',
-            'under_review' => 'Sedang dalam proses peninjauan oleh pembimbing.',
-            'revision_required' => 'Diperlukan revisi sesuai catatan pembimbing.',
-            'approved' => 'Proposal disetujui, siap untuk dijadwalkan sidang.',
-            'scheduled_for_defense' => 'Sidang telah dijadwalkan.',
-            'defense_in_progress' => 'Sidang sedang berlangsung.',
-            'completed' => 'Sidang selesai dengan sukses. Selamat!',
+            'under_review' => 'Sedang dalam proses peninjauan dan penilaian.',
+            'completed' => 'Proses pengajuan selesai. Selamat!',
             'cancelled' => 'Pengajuan dibatalkan.',
             default => 'Status diubah.',
         };
     }
 
-    /**
-     * Create comments for thesis
-     */
-    protected function createComments(ThesisSubmission $thesis, User $student, User $supervisor): void
-    {
-        // Supervisor comment
-        $supervisorComment = Comment::factory()
-            ->forThesis($thesis)
-            ->fromUser($supervisor)
-            ->fromSupervisor()
-            ->create();
-
-        // Student reply
-        Comment::factory()
-            ->forThesis($thesis)
-            ->fromUser($student)
-            ->studentReply()
-            ->replyTo($supervisorComment)
-            ->create();
-    }
 
     /**
      * Create assessments for completed thesis
@@ -334,15 +287,16 @@ class ThesisSubmissionSeeder extends Seeder
     protected function createAssessments(ThesisSubmission $thesis, User $supervisor, ?Rubric $rubric): void
     {
         // Supervisor assessment
-        Assessment::factory()
+        $assessment = Assessment::factory()
             ->forThesis($thesis)
             ->forEvaluator($supervisor)
             ->supervisor()
             ->submitted()
             ->create([
                 'rubric_id' => $rubric?->id,
-                'rubric_snapshot' => $rubric?->criteria,
             ]);
+
+        $this->seedScores($assessment, $rubric);
 
         // Find other lecturers for examiner assessments
         $examiners = User::whereHas('roles', fn($q) => $q->whereIn('name', ['dosen', 'kaprodi']))
@@ -352,15 +306,45 @@ class ThesisSubmissionSeeder extends Seeder
             ->get();
 
         foreach ($examiners as $index => $examiner) {
-            Assessment::factory()
+            $eAssessment = Assessment::factory()
                 ->forThesis($thesis)
                 ->forEvaluator($examiner)
                 ->state(['evaluator_type' => $index === 0 ? 'examiner_1' : 'examiner_2'])
                 ->submitted()
                 ->create([
                     'rubric_id' => $rubric?->id,
-                    'rubric_snapshot' => $rubric?->criteria,
                 ]);
+
+            $this->seedScores($eAssessment, $rubric);
         }
+    }
+
+    /**
+     * Seed individual scores for an assessment
+     */
+    protected function seedScores(Assessment $assessment, ?Rubric $rubric): void
+    {
+        if (!$rubric || !isset($rubric->criteria)) {
+            return;
+        }
+
+        $totalScore = 0;
+        foreach ($rubric->criteria as $criterion) {
+            $scoreValue = rand(70, 95);
+            $weight = $criterion['weight'] ?? ($criterion['weight_percentage'] ?? 0);
+
+            \App\Models\AssessmentScore::create([
+                'assessment_id' => $assessment->id,
+                'criterion_name' => $criterion['name'],
+                'criterion_description' => $criterion['description'] ?? null,
+                'weight' => $weight,
+                'score' => $scoreValue,
+            ]);
+
+            $totalScore += ($scoreValue * $weight) / 100;
+        }
+
+        // Update assessment with the calculated total score
+        $assessment->update(['total_score' => $totalScore]);
     }
 }

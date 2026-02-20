@@ -6,12 +6,27 @@ use App\Models\SubmissionFile;
 use App\Models\ThesisSubmission;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\SubmissionFile>
  */
 class SubmissionFileFactory extends Factory
 {
+    /**
+     * Configure the factory.
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (SubmissionFile $file) {
+            $sourcePath = database_path('seeders/assets/dummy1.pdf');
+
+            if (File::exists($sourcePath)) {
+                Storage::disk('local')->put($file->file_path, File::get($sourcePath));
+            }
+        });
+    }
     /**
      * Define the model's default state.
      *
@@ -21,7 +36,7 @@ class SubmissionFileFactory extends Factory
     {
         $fileType = fake()->randomElement(['proposal', 'final_document', 'presentation', 'revision']);
         $fileName = $this->generateFileName($fileType);
-        
+
         return [
             'thesis_submission_id' => ThesisSubmission::factory(),
             'file_name' => $fileName,
@@ -40,7 +55,7 @@ class SubmissionFileFactory extends Factory
     {
         $timestamp = now()->format('YmdHis');
         $random = fake()->randomNumber(4, true);
-        
+
         return match ($type) {
             'proposal' => "proposal_{$timestamp}_{$random}.pdf",
             'final_document' => "dokumen_akhir_{$timestamp}_{$random}.pdf",
@@ -119,7 +134,7 @@ class SubmissionFileFactory extends Factory
      */
     public function forThesis(ThesisSubmission $thesis): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'thesis_submission_id' => $thesis->id,
         ]);
     }
@@ -129,7 +144,7 @@ class SubmissionFileFactory extends Factory
      */
     public function uploadedBy(User $user): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'uploaded_by' => $user->id,
         ]);
     }

@@ -67,7 +67,8 @@ class KaprodiController extends Controller
         ];
 
         $lecturers = $this->kaprodiService->getLecturers();
-        return view('kaprodi.submissions.show', compact('submission', 'lecturers', 'navigation'));
+        $rubrics = $this->kaprodiService->getRubrics();
+        return view('kaprodi.submissions.show', compact('submission', 'lecturers', 'navigation', 'rubrics'));
     }
 
     public function assessmentShow(\App\Models\Assessment $assessment)

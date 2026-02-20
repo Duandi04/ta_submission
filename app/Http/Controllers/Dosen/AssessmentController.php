@@ -41,8 +41,8 @@ class AssessmentController extends Controller
                 ->with('info', 'Anda sudah memiliki penilaian untuk pengajuan ini.');
         }
 
-        // Get active rubric
-        $rubric = Rubric::where('is_active', true)->firstOrFail();
+        // Get rubric assigned to submission
+        $rubric = $submission->rubric ?? Rubric::where('is_active', true)->firstOrFail();
 
         return view('dosen.assessments.create', compact('submission', 'rubric')); // Changed view to dosen and compact rubric
     }
@@ -51,7 +51,8 @@ class AssessmentController extends Controller
     {
         $validated = $request->validate([
             'thesis_submission_id' => 'required|exists:thesis_submissions,id',
-            'evaluator_type' => 'required|in:supervisor,examiner_1,examiner_2',
+            'rubric_id' => 'required|exists:rubrics,id',
+            'evaluator_type' => 'required|in:supervisor,examiner_1,examiner_2,assessor',
             'comments' => 'nullable',
             'strengths' => 'nullable',
             'weaknesses' => 'nullable',
@@ -66,7 +67,8 @@ class AssessmentController extends Controller
             return back()->withErrors(['error' => 'Anda sudah membuat penilaian untuk pengajuan ini.']);
         }
 
-        $assessment = $this->assessmentService->create($validated, $validated['scores']);
+        $submission = ThesisSubmission::findOrFail($validated['thesis_submission_id']);
+        $assessment = $this->assessmentService->create($submission, $validated, $validated['scores']);
 
         return redirect()
             ->route('dosen.assessments.show', $assessment) // Changed route to dosen

@@ -71,9 +71,9 @@ class ThesisSubmission extends Model
         return $this->hasMany(Assessment::class);
     }
 
-    public function comments()
+    public function rubric()
     {
-        return $this->hasMany(Comment::class);
+        return $this->belongsTo(Rubric::class);
     }
 
     /**
@@ -108,11 +108,6 @@ class ThesisSubmission extends Model
             'draft' => 'secondary',
             'submitted' => 'info',
             'under_review' => 'warning',
-            'revision_required' => 'danger',
-            'approved' => 'success',
-            'rejected' => 'dark',
-            'scheduled_for_defense' => 'primary',
-            'defense_in_progress' => 'warning',
             'completed' => 'success',
             'cancelled' => 'danger',
             default => 'secondary',
@@ -125,11 +120,6 @@ class ThesisSubmission extends Model
             'draft' => 'Draft',
             'submitted' => 'Sudah Diajukan',
             'under_review' => 'Sedang Ditinjau',
-            'revision_required' => 'Perlu Revisi',
-            'approved' => 'Disetujui',
-            'rejected' => 'Ditolak',
-            'scheduled_for_defense' => 'Dijadwalkan Sidang',
-            'defense_in_progress' => 'Sedang Sidang',
             'completed' => 'Selesai',
             'cancelled' => 'Dibatalkan',
             default => 'Tidak Diketahui',

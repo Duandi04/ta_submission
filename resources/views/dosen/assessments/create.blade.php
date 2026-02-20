@@ -15,127 +15,113 @@
         </div>
     </div>
 
-    <form action="{{ route('dosen.assessments.store') }}" method="POST">
-        @csrf
-        <input type="hidden" name="thesis_submission_id" value="{{ $submission->id }}">
+    @php
+        $latestFile = $submission->getLatestFile();
+    @endphp
 
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3 border-0">
-                        <span class="fw-bold"><i class="bi bi-file-text me-2 text-primary"></i>Informasi Pengajuan</span>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-borderless">
-                            <tr>
-                                <th width="180">Mahasiswa</th>
-                                <td>: <strong>{{ $submission->student->name }}</strong>
-                                    ({{ $submission->student->nim_nip }})</td>
-                            </tr>
-                            <tr>
-                                <th>Judul</th>
-                                <td>: {{ $submission->title }}</td>
-                            </tr>
-                            <tr>
-                                <th>Bidang Penelitian</th>
-                                <td>: {{ $submission->research_field ?? '-' }}</td>
-                            </tr>
-                        </table>
-
-                        @php
-                            $latestFile = $submission->getLatestFile();
-                        @endphp
-                        @if ($latestFile)
-                            <hr>
-                            <h6 class="fw-bold mb-2">Dokumen Utama</h6>
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-file-earmark-pdf text-danger fs-3 me-2"></i>
-                                <div class="flex-grow-1">
-                                    <p class="mb-0 fw-semibold">{{ $latestFile->file_name }}</p>
-                                    <small class="text-muted">{{ $latestFile->getFormattedFileSize() }}</small>
-                                </div>
-                                <a href="{{ route('files.preview', $latestFile) }}" target="_blank"
-                                    class="btn btn-sm btn-primary me-1">
-                                    <i class="bi bi-eye"></i> Preview
-                                </a>
-                                <a href="{{ route('files.download', $latestFile) }}"
-                                    class="btn btn-sm btn-outline-secondary">
-                                    <i class="bi bi-download"></i>
-                                </a>
-                            </div>
-                        @endif
-                    </div>
+    <div class="row g-4">
+        {{-- Left Column: PDF Preview --}}
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 85px; height: calc(100vh - 120px);">
+                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-file-earmark-pdf me-2 text-danger"></i>Pratinjau Dokumen</span>
+                    @if ($latestFile)
+                        <a href="{{ route('files.download', $latestFile) }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-download"></i>
+                        </a>
+                    @endif
                 </div>
+                <div class="card-body p-0 h-100">
+                    @if ($latestFile && Str::endsWith(strtolower($latestFile->file_name), '.pdf'))
+                        <iframe src="{{ route('files.preview', $latestFile) }}#toolbar=0" width="100%" height="100%"
+                            style="border: none;"></iframe>
+                    @else
+                        <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                            <i class="bi bi-file-earmark-restricted fs-1 mb-2"></i>
+                            <p>Pratinjau tidak tersedia untuk format file ini.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
 
-                {{-- Evaluator Role Selection --}}
-                @if(auth()->id() == $submission->supervisor_id)
-                    <input type="hidden" name="evaluator_type" value="supervisor">
-                @else
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-header bg-white py-3 border-0">
-                            <span class="fw-bold"><i class="bi bi-person-badge me-2 text-warning"></i>Peran Penilai</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label class="form-label">Anda menilai sebagai:</label>
-                                <select name="evaluator_type" class="form-select" required>
-                                    <option value="" disabled selected>Pilih Peran...</option>
-                                    <option value="examiner_1">Penguji 1</option>
-                                    <option value="examiner_2">Penguji 2</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                @endif
+        {{-- Right Column: Assessment Form --}}
+        <div class="col-lg-5">
+            <form action="{{ route('dosen.assessments.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="thesis_submission_id" value="{{ $submission->id }}">
+                <input type="hidden" name="rubric_id" value="{{ $rubric->id }}">
+
+                {{-- Evaluator Role Hidden Input --}}
+                <input type="hidden" name="evaluator_type" value="{{ auth()->id() == $submission->supervisor_id ? 'supervisor' : 'assessor' }}">
 
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white py-3 border-0">
-                        <span class="fw-bold"><i class="bi bi-clipboard-check me-2 text-success"></i>Penilaian</span>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold"><i class="bi bi-clipboard-check me-2 text-success"></i>Penilaian</span>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                {{ $rubric->name }}
+                            </span>
+                        </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body px-0 py-2">
                         @if ($rubric && count($rubric->criteria) > 0)
                             <div class="table-responsive">
-                                <table class="table table-bordered">
+                                <table class="table table-hover align-middle mb-0">
                                     <thead class="table-light">
-                                        <tr>
-                                            <th>Kriteria</th>
-                                            <th class="text-center" width="100">Bobot</th>
-                                            <th class="text-center" width="150">Nilai (0-100)</th>
+                                        <tr class="small">
+                                            <th class="ps-3">Kriteria</th>
+                                            <th class="text-center" width="70">Bobot</th>
+                                            <th class="text-center" width="90">Nilai</th>
+                                            <th class="text-center" width="80">Kontribusi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($rubric->criteria as $criterion)
                                             @php
-                                                // Handle array access because of JSON cast
                                                 $id = $criterion['id'] ?? $loop->index;
-                                                $name = $criterion['name'] ?? 'Kriteria ' . ($loop->iteration);
+                                                $name = $criterion['name'] ?? 'Kriteria ' . $loop->iteration;
                                                 $desc = $criterion['description'] ?? '';
-                                                $weight = $criterion['weight'] ?? $criterion['weight_percentage'] ?? 0;
+                                                $weight = $criterion['weight'] ?? ($criterion['weight_percentage'] ?? 0);
+                                                $oldScore = old('scores.' . $id);
+                                                $oldContribution = $oldScore ? ($oldScore * $weight) / 100 : 0;
                                             @endphp
-                                            <tr>
-                                                <td>
-                                                    <strong>{{ $name }}</strong>
+                                            <tr class="criterion-row" data-weight="{{ $weight }}">
+                                                <td class="ps-3">
+                                                    <div class="fw-semibold small">{{ $name }}</div>
                                                     @if ($desc)
-                                                        <br><small class="text-muted">{{ $desc }}</small>
+                                                        <div class="text-muted" style="font-size: 0.75rem;">
+                                                            {{ $desc }}</div>
                                                     @endif
                                                 </td>
-                                                <td class="text-center">{{ $weight }}%</td>
+                                                <td class="text-center small">{{ $weight }}%</td>
                                                 <td class="text-center">
                                                     <input type="number" name="scores[{{ $id }}]"
-                                                        class="form-control text-center" min="0" max="100"
-                                                        step="0.1"
-                                                        value="{{ old('scores.' . $id) }}"
-                                                        required>
+                                                        class="form-control form-control-sm text-center score-input"
+                                                        min="0" max="100" step="0.1"
+                                                        value="{{ $oldScore }}" required>
+                                                </td>
+                                                <td class="text-center small fw-bold contribution-cell">
+                                                    {{ number_format($oldContribution, 1) }}
                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <td colspan="3" class="text-end fw-bold ps-3">Total Nilai</td>
+                                            <td class="text-center fw-bold text-primary" id="total-score-display">
+                                                {{ number_format($rubric->criteria->sum(fn($c) => (old('scores.' . ($c['id'] ?? $loop->index), 0) * ($c['weight'] ?? ($c['weight_percentage'] ?? 0))) / 100), 1) }}
+                                            </td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         @else
-                            <div class="alert alert-warning">
-                                <i class="bi bi-exclamation-triangle me-1"></i> Belum ada rubrik penilaian yang aktif.
-                                Hubungi Kaprodi untuk mengatur rubrik.
+                            <div class="px-3 py-2">
+                                <div class="alert alert-warning mb-0 small">
+                                    <i class="bi bi-exclamation-triangle me-1"></i> Rubrik tidak valid.
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -143,48 +129,81 @@
 
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white py-3 border-0">
-                        <span class="fw-bold"><i class="bi bi-chat-left-text me-2 text-info"></i>Komentar & Feedback</span>
+                        <span class="fw-bold"><i class="bi bi-chat-left-text me-2 text-info"></i>Feedback</span>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label class="form-label">Komentar Umum</label>
-                            <textarea name="comments" class="form-control" rows="3" placeholder="Tuliskan komentar umum...">{{ old('comments') }}</textarea>
+                            <label class="form-label small">Komentar Umum</label>
+                            <textarea name="comments" class="form-control form-control-sm" rows="3"
+                                placeholder="Tuliskan komentar umum...">{{ old('comments') }}</textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Kelebihan</label>
-                            <textarea name="strengths" class="form-control" rows="2" placeholder="Tuliskan kelebihan dari pengajuan...">{{ old('strengths') }}</textarea>
+                            <label class="form-label small text-success">Kelebihan</label>
+                            <textarea name="strengths" class="form-control form-control-sm" rows="2"
+                                placeholder="Tuliskan kelebihan...">{{ old('strengths') }}</textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Kelemahan</label>
-                            <textarea name="weaknesses" class="form-control" rows="2" placeholder="Tuliskan kelemahan atau area perbaikan...">{{ old('weaknesses') }}</textarea>
+                            <label class="form-label small text-danger">Kelemahan</label>
+                            <textarea name="weaknesses" class="form-control form-control-sm" rows="2"
+                                placeholder="Tuliskan kelemahan...">{{ old('weaknesses') }}</textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Rekomendasi</label>
-                            <textarea name="recommendations" class="form-control" rows="2"
-                                placeholder="Tuliskan rekomendasi untuk perbaikan...">{{ old('recommendations') }}</textarea>
+                            <label class="form-label small text-primary">Rekomendasi</label>
+                            <textarea name="recommendations" class="form-control form-control-sm" rows="2"
+                                placeholder="Tuliskan rekomendasi...">{{ old('recommendations') }}</textarea>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
-                    <div class="card-header bg-white py-3 border-0">
-                        <span class="fw-bold"><i class="bi bi-save me-2 text-primary"></i>Simpan</span>
-                    </div>
-                    <div class="card-body">
-                        <p class="small text-muted">Simpan sebagai draft terlebih dahulu. Anda bisa submit setelah yakin
-                            dengan penilaian.</p>
-                        <button type="submit" class="btn btn-primary w-100 mb-2">
-                            <i class="bi bi-save me-1"></i> Simpan Draft
-                        </button>
-                        <a href="{{ route('dosen.submissions.show', $submission) }}"
-                            class="btn btn-outline-secondary w-100">
-                            <i class="bi bi-x-circle me-1"></i> Batal
-                        </a>
+                        <div class="mt-4 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary w-100 mb-2">
+                                <i class="bi bi-save me-1"></i> Simpan Draft Penilaian
+                            </button>
+                            <a href="{{ route('dosen.submissions.show', $submission) }}"
+                                class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-x-circle me-1"></i> Batal
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
-    </form>
+    </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const scoreInputs = document.querySelectorAll('.score-input');
+            const totalDisplay = document.getElementById('total-score-display');
+
+            function updateTotal() {
+                let total = 0;
+                document.querySelectorAll('.criterion-row').forEach(row => {
+                    const weight = parseFloat(row.dataset.weight) || 0;
+                    const score = parseFloat(row.querySelector('.score-input').value) || 0;
+                    total += (score * weight) / 100;
+                });
+                totalDisplay.textContent = total.toLocaleString('id-ID', {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1
+                });
+            }
+
+            scoreInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const row = this.closest('.criterion-row');
+                    const weight = parseFloat(row.dataset.weight) || 0;
+                    const score = parseFloat(this.value) || 0;
+                    const contribution = (score * weight) / 100;
+
+                    const contributionCell = row.querySelector('.contribution-cell');
+                    contributionCell.textContent = contribution.toLocaleString('id-ID', {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1
+                    });
+
+                    updateTotal();
+                });
+            });
+        });
+    </script>
+@endpush

@@ -10,8 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('assessments', function (Blueprint $table) {
-            $table->foreignId('rubric_id')->nullable()->after('evaluator_type')->constrained()->nullOnDelete();
+        Schema::table('thesis_submissions', function (Blueprint $column) {
+            $column->foreignId('rubric_id')->nullable()->after('supervisor_id')->constrained('rubrics')->onDelete('set null');
         });
     }
 
@@ -20,9 +20,9 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('assessments', function (Blueprint $table) {
-            $table->dropForeign(['rubric_id']);
-            $table->dropColumn('rubric_id');
+        Schema::table('thesis_submissions', function (Blueprint $column) {
+            $column->dropForeign(['rubric_id']);
+            $column->dropColumn('rubric_id');
         });
     }
 };

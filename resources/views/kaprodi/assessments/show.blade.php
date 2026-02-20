@@ -51,30 +51,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                // Reconstruct criteria from snapshot
-                                $criteriaSnapshot = collect($assessment->rubric_snapshot ?? []);
-                            @endphp
-
-                            @foreach ($criteriaSnapshot as $index => $criterionData)
+                            @foreach ($assessment->scores as $score)
                                 @php
-                                    $cData = (object) $criterionData;
-                                    // Use ID if available, otherwise use index (0, 1, 2...)
-                                    $cId = $cData->id ?? $index;
-
-                                    $scoreItem = $assessment->scores->where('criterion_id', $cId)->first();
-                                    $scoreVal = $scoreItem ? $scoreItem->score : 0;
-                                    $weight = $cData->weight ?? 0;
-                                    $contribution = ($scoreVal * $weight) / 100;
+                                    $contribution = ($score->score * $score->weight) / 100;
                                 @endphp
                                 <tr>
                                     <td>
-                                        <div class="fw-semibold">{{ $cData->name }}</div>
-                                        <small class="text-muted">{{ $cData->description ?? '' }}</small>
+                                        <div class="fw-bold">{{ $score->criterion_name }}</div>
+                                        @if ($score->criterion_description)
+                                            <div class="text-muted small">{{ $score->criterion_description }}</div>
+                                        @endif
                                     </td>
-                                    <td class="text-center">{{ $weight }}%</td>
-                                    <td class="text-center fw-bold">{{ number_format($scoreVal, 1) }}</td>
-                                    <td class="text-center fw-semibold">{{ number_format($contribution, 1) }}</td>
+                                    <td class="text-center">{{ number_format($score->weight, 0) }}%</td>
+                                    <td class="text-center">{{ number_format($score->score, 1) }}</td>
+                                    <td class="text-center fw-bold">{{ number_format($contribution, 1) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

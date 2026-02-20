@@ -35,12 +35,6 @@ class RolePermissionSeeder extends Seeder
             'edit assessments',
             'delete assessments',
 
-            // Comments
-            'view comments',
-            'create comments',
-            'edit comments',
-            'delete comments',
-
             // Activity logs
             'view activity logs',
 
@@ -70,7 +64,6 @@ class RolePermissionSeeder extends Seeder
             'approve submissions',
             'reject submissions',
             'view assessments',
-            'view comments',
             'view activity logs',
             'view reports',
             'manage settings',
@@ -85,8 +78,6 @@ class RolePermissionSeeder extends Seeder
             'view assessments',
             'create assessments',
             'edit assessments',
-            'view comments',
-            'create comments',
         ]);
 
         $mahasiswa = Role::firstOrCreate(['name' => 'mahasiswa']);
@@ -95,8 +86,6 @@ class RolePermissionSeeder extends Seeder
             'create submissions',
             'edit submissions',
             'view assessments',
-            'view comments',
-            'create comments',
         ]);
     }
 }

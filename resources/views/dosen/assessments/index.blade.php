@@ -18,7 +18,6 @@
                                     <th class="ps-3">No</th>
                                     <th>Mahasiswa</th>
                                     <th>Judul</th>
-                                    <th>Tipe</th>
                                     <th>Nilai</th>
                                     <th>Status</th>
                                     <th class="text-end pe-3">Aksi</th>
@@ -34,11 +33,6 @@
                                             <small class="text-muted">{{ $assessment->thesisSubmission->student->nim_nip }}</small>
                                         </td>
                                         <td>{{ Str::limit($assessment->thesisSubmission->title, 50) }}</td>
-                                        <td>
-                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
-                                                {{ $assessment->getEvaluatorTypeLabel() }}
-                                            </span>
-                                        </td>
                                         <td>
                                             @if($assessment->is_submitted)
                                                 <strong class="text-success">{{ $assessment->total_score }}</strong>

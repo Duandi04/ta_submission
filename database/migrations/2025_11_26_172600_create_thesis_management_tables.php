@@ -26,12 +26,36 @@ return new class extends Migration {
                 'rejected',
                 'scheduled_for_defense',
                 'defense_in_progress',
-                'completed'
+                'completed',
+                'cancelled'
             ])->default('draft');
             $table->date('submission_date')->nullable();
             $table->date('defense_date')->nullable();
             $table->text('notes')->nullable();
             $table->decimal('final_score', 5, 2)->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('thesis_statuses', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('thesis_submission_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('changed_by')->constrained('users')->cascadeOnDelete();
+            $table->string('old_status')->nullable();
+            $table->string('new_status');
+            $table->text('comment')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('submission_files', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('thesis_submission_id')->constrained()->cascadeOnDelete();
+            $table->string('file_name');
+            $table->string('file_path');
+            $table->string('file_type'); // proposal, final_document, presentation, revision
+            $table->integer('file_size');
+            $table->string('mime_type');
+            $table->foreignId('uploaded_by')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -42,6 +66,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::dropIfExists('submission_files');
+        Schema::dropIfExists('thesis_statuses');
         Schema::dropIfExists('thesis_submissions');
     }
 };

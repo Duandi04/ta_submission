@@ -17,7 +17,7 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles, SoftDeletes, LogsActivity;
-    
+
     /**
      * Get the profile photo URL.
      *
@@ -106,16 +106,6 @@ class User extends Authenticatable
     public function assessments()
     {
         return $this->hasMany(Assessment::class, 'evaluator_id');
-    }
-
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
-
-    public function notifications()
-    {
-        return $this->hasMany(Notification::class);
     }
 
     public function uploadedFiles()

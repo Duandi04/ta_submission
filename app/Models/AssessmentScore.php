@@ -12,6 +12,9 @@ class AssessmentScore extends Model
     protected $fillable = [
         'assessment_id',
         'criterion_id',
+        'criterion_name',
+        'criterion_description',
+        'weight',
         'score',
         'notes',
     ];

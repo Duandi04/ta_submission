@@ -56,8 +56,8 @@
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @endif
-                                        <a href="{{ route('files.download', $file) }}"
-                                            class="btn btn-sm btn-outline-secondary" title="Download">
+                                        <a href="{{ route('files.download', $file) }}" class="btn btn-sm btn-outline-secondary"
+                                            title="Download">
                                             <i class="bi bi-download"></i>
                                         </a>
                                     </li>
@@ -79,8 +79,8 @@
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @endif
-                                        <a href="{{ route('files.download', $file) }}"
-                                            class="btn btn-sm btn-outline-secondary" title="Download">
+                                        <a href="{{ route('files.download', $file) }}" class="btn btn-sm btn-outline-secondary"
+                                            title="Download">
                                             <i class="bi bi-download"></i>
                                         </a>
                                     </li>
@@ -118,13 +118,11 @@
                                             </td>
                                             <td class="text-center align-middle">
                                                 @if ($assessment->is_submitted)
-                                                    <span
-                                                        class="badge bg-success-subtle text-success border border-success-subtle">
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
                                                         <i class="bi bi-check-circle-fill me-1"></i>Selesai
                                                     </span>
                                                 @else
-                                                    <span
-                                                        class="badge bg-warning-subtle text-warning border border-warning-subtle">
+                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
                                                         <i class="bi bi-hourglass-split me-1"></i>Belum Dinilai
                                                     </span>
                                                 @endif
@@ -169,41 +167,28 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @php
-                                                                        $criteriaSnapshot = collect(
-                                                                            $assessment->rubric_snapshot ?? [],
-                                                                        );
-                                                                    @endphp
-                                                                    @foreach ($criteriaSnapshot as $index => $criterionData)
+                                                                    @foreach ($assessment->scores as $score)
                                                                         @php
-                                                                            $cData = (object) $criterionData;
-                                                                            $cId = $cData->id ?? $index;
-                                                                            $scoreItem = $assessment->scores
-                                                                                ->where('criterion_id', $cId)
-                                                                                ->first();
-                                                                            $scoreVal = $scoreItem
-                                                                                ? $scoreItem->score
-                                                                                : 0;
-                                                                            $weight = $cData->weight ?? 0;
-                                                                            $contribution = ($scoreVal * $weight) / 100;
+                                                                            $contribution = ($score->score * $score->weight) / 100;
                                                                         @endphp
                                                                         <tr>
                                                                             <td class="ps-3">
-                                                                                <span
-                                                                                    class="fw-semibold">{{ $cData->name }}</span>
-                                                                                @if (isset($cData->description))
+                                                                                <span class="fw-semibold">{{ $score->criterion_name }}</span>
+                                                                                @if ($score->criterion_description)
                                                                                     <div class="text-muted small fst-italic"
                                                                                         style="font-size: 0.8rem;">
-                                                                                        {{ Str::limit($cData->description, 100) }}
+                                                                                        {{ Str::limit($score->criterion_description, 100) }}
                                                                                     </div>
                                                                                 @endif
                                                                             </td>
-                                                                            <td class="text-center">{{ $weight }}%
+                                                                            <td class="text-center">{{ number_format($score->weight, 0) }}%
                                                                             </td>
                                                                             <td class="text-center">
-                                                                                {{ number_format($scoreVal, 1) }}</td>
+                                                                                {{ number_format($score->score, 1) }}
+                                                                            </td>
                                                                             <td class="text-center fw-bold">
-                                                                                {{ number_format($contribution, 1) }}</td>
+                                                                                {{ number_format($contribution, 1) }}
+                                                                            </td>
                                                                         </tr>
                                                                     @endforeach
                                                                 </tbody>
@@ -246,27 +231,22 @@
                         @foreach ($submission->assessments as $assessment)
                             @if ($assessment->is_submitted && ($assessment->comments || $assessment->strengths || $assessment->weaknesses))
                                 <div class="mb-4 pb-3 border-bottom last-no-border">
-                                    <h6 class="fw-bold">{{ $assessment->evaluator->name }} <span
-                                            class="text-muted small fw-normal">({{ $assessment->getEvaluatorTypeLabel() }})</span>
-                                    </h6>
+                                    <h6 class="fw-bold">{{ $assessment->evaluator->name }}</h6>
                                     @if ($assessment->strengths)
                                         <div class="mb-2">
-                                            <strong class="text-success small"><i
-                                                    class="bi bi-plus-circle me-1"></i>Kelebihan:</strong>
+                                            <strong class="text-success small"><i class="bi bi-plus-circle me-1"></i>Kelebihan:</strong>
                                             <p class="mb-1 small">{{ $assessment->strengths }}</p>
                                         </div>
                                     @endif
                                     @if ($assessment->weaknesses)
                                         <div class="mb-2">
-                                            <strong class="text-danger small"><i
-                                                    class="bi bi-dash-circle me-1"></i>Kekurangan:</strong>
+                                            <strong class="text-danger small"><i class="bi bi-dash-circle me-1"></i>Kekurangan:</strong>
                                             <p class="mb-1 small">{{ $assessment->weaknesses }}</p>
                                         </div>
                                     @endif
                                     @if ($assessment->comments)
                                         <div class="mb-0">
-                                            <strong class="text-secondary small"><i
-                                                    class="bi bi-chat-left-text me-1"></i>Catatan:</strong>
+                                            <strong class="text-secondary small"><i class="bi bi-chat-left-text me-1"></i>Catatan:</strong>
                                             <p class="mb-0 small">{{ $assessment->comments }}</p>
                                         </div>
                                     @endif
@@ -287,26 +267,27 @@
                         Penilai</span>
                 </div>
                 <div class="card-body">
-                    @if ($submission->status === 'under_review' || $submission->status === 'approved' || $submission->status === 'rejected')
-                        <div class="alert alert-info mb-0 alert-persistent">
-                            <i class="bi bi-info-circle me-1"></i> Dosen penilai sudah ditetapkan. Anda tidak dapat
-                            mengubahnya lagi karena proses penilaian sedang berlangsung atau sudah selesai.
-                        </div>
-                        <ul class="list-group list-group-flush mt-3">
-                            @foreach ($submission->assessments as $assessment)
-                                <li class="list-group-item bg-transparent">
-                                    <i class="bi bi-person-check text-success me-2"></i>
-                                    {{ $assessment->evaluator->name }}
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <form action="{{ route('kaprodi.submissions.assign-lecturers', $submission->id) }}"
-                            method="POST"
+                    @if ($submission->status === 'submitted')
+                        <form action="{{ route('kaprodi.submissions.assign-lecturers', $submission->id) }}" method="POST"
                             onsubmit="return confirm('Apakah Anda yakin ingin menyimpan perubahan? \n\nPERINGATAN: Setelah disimpan, Anda TIDAK DAPAT MENGUBAH dosen penilai lagi.')">
                             @csrf
                             <div class="mb-3">
-                                <label class="form-label">Dosen Penilai</label>
+                                <label class="form-label text-dark fw-semibold">Pilih Rubrik Penilaian</label>
+                                <select name="rubric_id" class="form-select @error('rubric_id') is-invalid @enderror" required>
+                                    <option value="" disabled selected>Pilih Rubrik...</option>
+                                    @foreach ($rubrics as $rubric)
+                                        <option value="{{ $rubric->id }}" {{ $submission->rubric_id == $rubric->id ? 'selected' : '' }}>
+                                            {{ $rubric->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('rubric_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-dark fw-semibold">Dosen Penilai</label>
                                 <select id="assessor-select" name="assessor_ids[]" multiple required
                                     placeholder="Pilih dosen penilai...">
                                     @php
@@ -315,8 +296,7 @@
                                             ->toArray();
                                     @endphp
                                     @foreach ($lecturers as $lecturer)
-                                        <option value="{{ $lecturer->id }}"
-                                            {{ in_array($lecturer->id, $currentAssessorIds) ? 'selected' : '' }}>
+                                        <option value="{{ $lecturer->id }}" {{ in_array($lecturer->id, $currentAssessorIds) ? 'selected' : '' }}>
                                             {{ $lecturer->name }}
                                         </option>
                                     @endforeach
@@ -331,6 +311,29 @@
                                 <i class="bi bi-save me-1"></i> Simpan Perubahan
                             </button>
                         </form>
+                    @elseif (in_array($submission->status, ['under_review', 'completed', 'cancelled']))
+                        <div class="alert alert-info mb-0 alert-persistent">
+                            <i class="bi bi-info-circle me-1"></i> Dosen penilai sudah ditetapkan. Anda tidak dapat
+                            mengubahnya lagi karena proses penilaian sedang berlangsung atau sudah selesai.
+                        </div>
+                        <ul class="list-group list-group-flush mt-3">
+                            @foreach ($submission->assessments as $assessment)
+                                <li class="list-group-item bg-transparent px-0 border-0 py-1">
+                                    <i class="bi bi-person-check text-success me-2"></i>
+                                    <span class="small">{{ $assessment->evaluator->name }}</span>
+                                    <span class="badge bg-secondary-subtle text-secondary float-end" style="font-size: 0.65rem;">
+                                        {{ $assessment->getEvaluatorTypeLabel() }}
+                                    </span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="text-center py-4">
+                            <i class="bi bi-hourglass-top text-muted fs-2 d-block mb-3"></i>
+                            <p class="text-muted small mb-0">Dosen penilai dapat diatur setelah mahasiswa mengajukan (submit)
+                                pengajuan ini.</p>
+                            <span class="badge bg-secondary mt-2">{{ $submission->getStatusLabel() }}</span>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -371,8 +374,7 @@
                                     <i class="bi bi-eye me-1"></i> Preview
                                 </a>
                             @endif
-                            <a href="{{ route('files.download', $latestFile) }}"
-                                class="btn btn-outline-secondary flex-grow-1">
+                            <a href="{{ route('files.download', $latestFile) }}" class="btn btn-outline-secondary flex-grow-1">
                                 <i class="bi bi-download me-1"></i> Download
                             </a>
                         </div>
@@ -395,12 +397,10 @@
                                 <li class="list-group-item">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
-                                            <small
-                                                class="fw-semibold text-dark">{{ $activity->causer?->name ?? 'System' }}</small>
+                                            <small class="fw-semibold text-dark">{{ $activity->causer?->name ?? 'System' }}</small>
                                             <p class="mb-0 small text-muted">{{ $activity->description }}</p>
                                         </div>
-                                        <small
-                                            class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
+                                        <small class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
                                     </div>
                                 </li>
                             @endforeach
@@ -418,7 +418,7 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             new TomSelect('#assessor-select', {
                 plugins: ['remove_button'],
                 persist: false,
