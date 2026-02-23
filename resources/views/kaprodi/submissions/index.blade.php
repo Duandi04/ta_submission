@@ -60,8 +60,14 @@
                                             {{ Str::limit($submission->research_field ?? 'Umum', 30) }}</div>
                                     </td>
                                     <td>
-                                        <div class="fw-medium">{{ $submission->student->name }}</div>
-                                        <div class="text-muted small">{{ $submission->student->nim_nip }}</div>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ $submission->student->profile_photo_url }}" class="rounded-circle me-2 shadow-sm" 
+                                                style="width: 32px; height: 32px; object-fit: cover;" alt="Avatar">
+                                            <div>
+                                                <div class="fw-medium">{{ $submission->student->name }}</div>
+                                                <div class="text-muted smaller-text">{{ $submission->student->nim_nip }}</div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
                                         <span
@@ -75,7 +81,7 @@
                                             {{ $submission->created_at->format('H:i') }}</div>
                                     </td>
                                     <td class="text-end pe-3">
-                                        <a href="{{ route('kaprodi.submissions.show', array_merge(['submissionId' => $submission->id], request()->query())) }}"
+                                        <a href="{{ route('kaprodi.submissions.show', array_merge(['submission' => $submission->id], request()->query())) }}"
                                             class="btn btn-sm btn-outline-primary px-3">
                                             Detail
                                         </a>

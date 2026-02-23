@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     // Dosen routes (merges Supervisor & Examiner)
     Route::middleware('role:dosen|kaprodi')->prefix('dosen')->name('dosen.')->group(function () {
         // Supervision Routes
+        Route::get('/submissions', [DosenSubmissionController::class, 'submissions'])->name('submissions.index');
         Route::get('/students', [DosenSubmissionController::class, 'index'])->name('students.index');
         Route::get('/students/{student}', [DosenSubmissionController::class, 'studentDetails'])->name('students.show');
         Route::get('/submissions/{submission}', [DosenSubmissionController::class, 'show'])->name('submissions.show');

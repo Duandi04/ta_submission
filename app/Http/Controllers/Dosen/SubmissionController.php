@@ -39,6 +39,20 @@ class SubmissionController extends Controller
         return view('dosen.students.index', compact('students'));
     }
 
+    public function submissions(Request $request)
+    {
+        $query = Auth::user()->supervisedTheses()
+            ->with(['student', 'files', 'assessments.evaluator']);
+
+        if ($status = $request->query('status')) {
+            $query->where('status', $status);
+        }
+
+        $submissions = $query->latest()->paginate(10)->withQueryString();
+
+        return view('dosen.submissions.index', compact('submissions'));
+    }
+
     public function studentDetails(int $studentId)
     {
         $student = \App\Models\User::findOrFail($studentId);

@@ -94,7 +94,11 @@
                                     </td>
                                     <td class="fw-mono small">{{ $student->nim_nip ?: '-' }}</td>
                                     <td>
-                                        <div class="fw-semibold">{{ $student->name }}</div>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ $student->profile_photo_url }}" class="rounded-circle me-2 shadow-sm"
+                                                style="width: 32px; height: 32px; object-fit: cover;" alt="Avatar">
+                                            <div class="fw-semibold">{{ $student->name }}</div>
+                                        </div>
                                     </td>
                                     <td>{{ $student->programStudi->name ?? '-' }}</td>
                                     <td class="text-muted small">{{ $student->email }}</td>

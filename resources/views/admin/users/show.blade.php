@@ -143,10 +143,7 @@
                                 data-bs-target="#pills-assessments" type="button" role="tab">Riwayat Penilaian</button>
                         </li>
                     @endif
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pills-activity-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-activity" type="button" role="tab">Aktivitas</button>
-                    </li>
+
                 </ul>
 
                 <div class="tab-content" id="pills-tabContent">
@@ -300,79 +297,7 @@
                         </div>
                     @endif
 
-                    <!-- Activity Tab -->
-                    <div class="tab-pane fade" id="pills-activity" role="tabpanel">
-                        <div class="card shadow border-0">
-                            <div class="card-body">
-                                <h5 class="fw-bold mb-4 border-bottom pb-2">Aktivitas Terakhir</h5>
-                                @if ($activities->count() > 0)
-                                    <div class="timeline-small mt-3">
-                                        @foreach ($activities as $activity)
-                                            <div class="item d-flex mb-4">
-                                                <div class="icon me-3">
-                                                    @if ($activity->event === 'created')
-                                                        <i class="bi bi-plus-circle-fill text-success"></i>
-                                                    @elseif($activity->event === 'updated')
-                                                        <i class="bi bi-pencil-fill text-warning"></i>
-                                                    @elseif($activity->event === 'deleted')
-                                                        <i class="bi bi-trash-fill text-danger"></i>
-                                                    @else
-                                                        <i class="bi bi-dot text-primary"
-                                                            style="font-size: 2rem; margin-top: -10px;"></i>
-                                                    @endif
-                                                </div>
-                                                <div class="content flex-grow-1 border-bottom pb-3">
-                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                        <span
-                                                            class="badge bg-light text-dark border">{{ $activity->description }}</span>
-                                                        <small
-                                                            class="text-muted">{{ $activity->created_at->format('d/m/Y H:i') }}</small>
-                                                    </div>
-                                                    <div class="small text-dark">
-                                                        @if ($activity->causer_id === $user->id)
-                                                            <strong>Anda</strong> melakukan tindakan pada
-                                                        @else
-                                                            <strong>{{ $activity->causer?->name ?? 'Sistem' }}</strong>
-                                                            melakukan tindakan pada
-                                                        @endif
-                                                        <span
-                                                            class="text-primary">{{ class_basename($activity->subject_type) }}</span>
-                                                    </div>
-                                                    @if (isset($activity->properties['attributes']))
-                                                        <div class="bg-light p-2 rounded mt-2 small">
-                                                            <ul class="list-unstyled mb-0">
-                                                                @foreach ($activity->properties['attributes'] as $key => $value)
-                                                                    @if (!in_array($key, ['updated_at', 'created_at', 'password']))
-                                                                        <li>
-                                                                            <span
-                                                                                class="text-muted">{{ ucfirst(str_replace('_', ' ', $key)) }}:</span>
-                                                                            @if (isset($activity->properties['old'][$key]))
-                                                                                <span
-                                                                                    class="text-danger text-decoration-line-through">{{ $activity->properties['old'][$key] }}</span>
-                                                                                <i class="bi bi-arrow-right mx-1"></i>
-                                                                            @endif
-                                                                            <span
-                                                                                class="text-success fw-bold">{{ $value }}</span>
-                                                                        </li>
-                                                                    @endif
-                                                                @endforeach
-                                                            </ul>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <div class="text-center py-5">
-                                        <i class="bi bi-clock-history text-muted display-1"></i>
-                                        <p class="mt-3 text-muted">Belum ada aktivitas yang tercatat untuk pengguna ini.
-                                        </p>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>

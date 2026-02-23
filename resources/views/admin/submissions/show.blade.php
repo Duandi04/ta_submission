@@ -246,36 +246,7 @@
                 </div>
             @endif
 
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3 border-0">
-                    <span class="fw-bold"><i class="bi bi-clock-history me-2 text-primary"></i>Riwayat
-                        Aktivitas</span>
-                </div>
-                <div class="card-body p-0">
-                    @php
-                        $activities = $submission->getActivityLogs();
-                    @endphp
-                    @if ($activities->count() > 0)
-                        <ul class="list-group list-group-flush">
-                            @foreach ($activities->take(8) as $activity)
-                                <li class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <small class="fw-semibold text-dark">{{ $activity->causer?->name ?? 'System' }}</small>
-                                            <p class="mb-0 small text-muted">{{ $activity->description }}</p>
-                                        </div>
-                                        <small class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <div class="text-center py-4 text-muted small">
-                            Belum ada riwayat aktivitas.
-                        </div>
-                    @endif
-                </div>
-            </div>
+
         </div>
     </div>
 @endsection

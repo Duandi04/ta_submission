@@ -31,10 +31,10 @@
                             <td>: {{ $submission->supervisor->name ?? '-' }}</td>
                         </tr>
                         @if($submission->supervisor_2_id)
-                        <tr>
-                            <th>Pembimbing 2</th>
-                            <td>: {{ $submission->supervisor2->name }}</td>
-                        </tr>
+                            <tr>
+                                <th>Pembimbing 2</th>
+                                <td>: {{ $submission->supervisor2->name }}</td>
+                            </tr>
                         @endif
                         <tr>
                             <th>Judul</th>
@@ -63,7 +63,7 @@
                     <h6><i class="bi bi-file-text"></i> Abstrak</h6>
                     <p class="text-justify">{{ $submission->abstract }}</p>
 
-                    @endif
+
                 </div>
             </div>
 
@@ -72,7 +72,8 @@
                     <i class="bi bi-search me-2"></i><strong>Analisis Kesamaan Judul (Orisinalitas)</strong>
                 </div>
                 <div class="card-body">
-                    <p class="small text-muted mb-3">Sistem menemukan pengajuan lain dengan judul serupa. Gunakan data ini untuk mengevaluasi keaslian topik.</p>
+                    <p class="small text-muted mb-3">Sistem menemukan pengajuan lain dengan judul serupa. Gunakan data ini
+                        untuk mengevaluasi keaslian topik.</p>
                     <div class="table-responsive">
                         <table class="table table-sm table-hover align-middle mb-0">
                             <thead>
@@ -90,6 +91,9 @@
                 </div>
             </div>
 
+        </div>
+
+        <div class="col-md-4">
             <div class="card mb-3">
                 <div class="card-header">
                     <i class="bi bi-paperclip"></i> File Pengajuan
@@ -163,73 +167,6 @@
                     @endif
                 </div>
             </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-header bg-success text-white">
-                    <i class="bi bi-check-circle"></i> Tindakan
-                </div>
-                <div class="card-body">
-                    <p class="small text-muted">Berikan feedback untuk mahasiswa Anda:</p>
-
-                    <form action="#" method="POST">
-                        @csrf
-                        <div class="mb-3">
-                            <label class="form-label">Ubah Status</label>
-                            <select class="form-select" name="status">
-                                <option value="under_review">Sedang Direview</option>
-                                <option value="revision_required">Perlu Revisi</option>
-                                <option value="approved">Disetujui</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Catatan</label>
-                            <textarea class="form-control" name="notes" rows="4"
-                                placeholder="Berikan catatan atau feedback..."></textarea>
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-check-circle"></i> Simpan
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <i class="bi bi-clock-history"></i> Riwayat Status
-                </div>
-                <div class="card-body">
-                    @if ($submission->statuses->count() > 0)
-                        <div class="timeline">
-                            @foreach ($submission->statuses->sortByDesc('created_at')->take(5) as $status)
-                                <div class="timeline-item">
-                                    <div class="timeline-icon">
-                                        <i class="bi bi-circle-fill"></i>
-                                    </div>
-                                    <div>
-                                        <strong>{{ ucfirst(str_replace('_', ' ', $status->new_status)) }}</strong><br>
-                                        <small class="text-muted">
-                                            {{ $status->created_at->format('d/m/Y H:i') }}<br>
-                                            oleh {{ $status->changer->name }}
-                                        </small>
-                                        @if ($status->comment)
-                                            <p class="mt-1 mb-0 small">{{ $status->comment }}</p>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="text-muted text-center small mb-0">Belum ada riwayat.</p>
-                    @endif
-                </div>
-            </div>
-
             @php
                 $latestFile = $submission->getLatestFile();
             @endphp
@@ -262,35 +199,7 @@
                 </div>
             @endif
 
-            <div class="card">
-                <div class="card-header">
-                    <i class="bi bi-activity"></i> Riwayat Aktivitas Mahasiswa
-                </div>
-                <div class="card-body p-0">
-                    @php
-                        $activities = $submission->getActivityLogs();
-                    @endphp
-                    @if ($activities->count() > 0)
-                        <ul class="list-group list-group-flush">
-                            @foreach ($activities->take(8) as $activity)
-                                <li class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <small class="fw-semibold text-dark">{{ $activity->causer?->name ?? 'System' }}</small>
-                                            <p class="mb-0 small text-muted">{{ $activity->description }}</p>
-                                        </div>
-                                        <small class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <div class="text-center py-4 text-muted small">
-                            Belum ada riwayat aktivitas.
-                        </div>
-                    @endif
-                </div>
-            </div>
+
         </div>
     </div>
 @endsection

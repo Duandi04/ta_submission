@@ -317,69 +317,6 @@
         </div>
 
         <div class="col-md-4">
-            <!-- Status Timeline -->
-            <div class="card mb-3">
-                <div class="card-header">
-                    <i class="bi bi-clock-history"></i> Riwayat Status
-                </div>
-                <div class="card-body">
-                    @if ($submission->statuses->count() > 0)
-                        <div class="timeline">
-                            @foreach ($submission->statuses->sortByDesc('created_at') as $status)
-                                <div class="timeline-item">
-                                    <div class="timeline-icon">
-                                        <i class="bi bi-circle-fill"></i>
-                                    </div>
-                                    <div>
-                                        <strong>{{ ucfirst(str_replace('_', ' ', $status->new_status)) }}</strong><br>
-                                        <small class="text-muted">
-                                            {{ $status->created_at->format('d/m/Y H:i') }}<br>
-                                            oleh {{ $status->changer->hasRole('mahasiswa') ? 'Mahasiswa' : 'Dosen/Admin' }}
-                                        </small>
-                                        @if ($status->comment)
-                                            <p class="mt-1 mb-0 small">{{ $status->comment }}</p>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="text-muted text-center">Belum ada riwayat status.</p>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Activity Log -->
-            <div class="card mb-3">
-                <div class="card-header">
-                    <i class="bi bi-activity"></i> Riwayat Aktivitas
-                </div>
-                <div class="card-body p-0">
-                    @php
-                        $activities = $submission->getActivityLogs();
-                    @endphp
-                    @if ($activities->count() > 0)
-                        <ul class="list-group list-group-flush">
-                            @foreach ($activities->take(8) as $activity)
-                                <li class="list-group-item py-2">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <small class="fw-semibold">{{ $activity->causer?->name ?? 'System' }}</small>
-                                            <p class="mb-0 small text-muted">{{ $activity->description }}</p>
-                                        </div>
-                                        <small class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <div class="text-center py-4 text-muted small">
-                            Belum ada riwayat aktivitas.
-                        </div>
-                    @endif
-                </div>
-            </div>
-
             <!-- Submit Button (Only for Draft) -->
             @if ($submission->status === 'draft')
                 <div class="card border-success mb-3">

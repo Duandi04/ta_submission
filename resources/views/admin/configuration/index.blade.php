@@ -13,37 +13,12 @@
                 <div class="card-header bg-white py-3 border-0">
                     <span class="fw-bold"><i class="bi bi-gear-fill me-2 text-primary"></i>Pengaturan Umum</span>
                 </div>
-                <div class="card-body p-4">
-                    <form action="{{ route('admin.configuration.update') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="campus_name" class="form-label">Nama Kampus / Institusi</label>
-                            <input type="text" class="form-control @error('campus_name') is-invalid @enderror"
-                                id="campus_name" name="campus_name"
-                                value="{{ old('campus_name', $settings['campus_name'] ?? 'Sistem TA') }}" required>
-                            <div class="form-text">Nama ini akan muncul di Navbar, Halaman Login, dan Judul Halaman.</div>
-                            @error('campus_name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="app_logo" class="form-label">Upload Logo Aplikasi</label>
-                            @if(isset($settings['app_logo']))
-                                <div class="mb-2">
-                                    <img src="{{ url($settings['app_logo']) }}" alt="Current Logo" class="img-thumbnail" style="max-height: 80px;">
-                                </div>
-                            @endif
-                            <input type="file" class="form-control @error('app_logo') is-invalid @enderror"
-                                id="app_logo" name="app_logo" accept="image/*">
-                            <div class="form-text">Format: JPG, PNG, WEBP. Maksimal 2MB. Logo saat ini: {{ $settings['app_logo'] ?? 'Default' }}</div>
-                        </div>
-                        <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-primary shadow-none">
-                                <i class="bi bi-save me-1"></i> Simpan Perubahan
-                            </button>
-                        </div>
-                    </form>
+                <div class="card-body p-4 text-center">
+                    <i class="bi bi-info-circle fs-1 text-muted mb-3 d-block"></i>
+                    <p>Pengaturan identitas aplikasi saat ini dikunci oleh sistem.</p>
+                    <p class="small text-muted mb-0">Hubungi pengembang untuk perubahan logo atau nama institusi.</p>
                 </div>
+
             </div>
         </div>
 

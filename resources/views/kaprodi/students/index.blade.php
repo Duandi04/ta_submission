@@ -42,8 +42,14 @@
                             @forelse($students as $student)
                                 <tr>
                                     <td class="ps-3">
-                                        <div class="fw-semibold text-dark">{{ $student->name }}</div>
-                                        <div class="text-muted small">{{ $student->email }}</div>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ $student->profile_photo_url }}" class="rounded-circle me-2 shadow-sm"
+                                                style="width: 32px; height: 32px; object-fit: cover;" alt="Avatar">
+                                            <div>
+                                                <div class="fw-semibold text-dark">{{ $student->name }}</div>
+                                                <div class="text-muted small">{{ $student->email }}</div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>{{ $student->nim_nip }}</td>
                                     <td>
@@ -52,7 +58,7 @@
                                         </span>
                                     </td>
                                     <td class="text-end pe-3">
-                                        <a href="{{ route('kaprodi.students.show', array_merge(['studentId' => $student->id], request()->query())) }}"
+                                        <a href="{{ route('kaprodi.students.show', array_merge(['student' => $student->id], request()->query())) }}"
                                             class="btn btn-sm btn-outline-primary px-3">
                                             Lihat Draft
                                         </a>

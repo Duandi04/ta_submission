@@ -119,7 +119,13 @@
                             @forelse($users as $user)
                                 <tr>
                                     <td>{{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}</td>
-                                    <td>{{ $user->name }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ $user->profile_photo_url }}" class="rounded-circle me-2 shadow-sm" 
+                                                style="width: 32px; height: 32px; object-fit: cover;" alt="Avatar">
+                                            <span>{{ $user->name }}</span>
+                                        </div>
+                                    </td>
                                     <td>
                                         <div class="small fw-bold">{{ $user->email }}</div>
                                         <div class="text-muted small">NIM/NIP: {{ $user->nim_nip ?? '-' }}</div>

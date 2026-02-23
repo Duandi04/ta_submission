@@ -125,13 +125,6 @@
                     <span>Pengaturan Sistem</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('admin.activity-logs.*') ? 'active' : '' }}"
-                    href="{{ route('admin.activity-logs.index') }}">
-                    <i class="bi bi-clock-history"></i>
-                    <span>Log Aktivitas</span>
-                </a>
-            </li>
             @endrole
         </ul>
     </div>
