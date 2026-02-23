@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\ProgramStudi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 use App\Helpers\NavigationHelper;
 
@@ -17,9 +18,9 @@ class StudentController extends Controller
     {
         $students = User::role('mahasiswa')
             ->filterByRequest($request)
-            ->when($request->sort_by, function($q) use ($request) {
+            ->when($request->sort_by, function ($q) use ($request) {
                 $q->orderBy($request->sort_by, $request->sort_order ?: 'asc');
-            }, function($q) {
+            }, function ($q) {
                 $q->latest();
             })
             ->paginate(15);
@@ -39,7 +40,7 @@ class StudentController extends Controller
     {
         $validated = $request->validated();
 
-        $user = User::create([
+        $userData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
@@ -48,8 +49,13 @@ class StudentController extends Controller
             'address' => $validated['address'],
             'program_studi_id' => $validated['program_studi_id'],
             'is_active' => $request->boolean('is_active'),
-        ]);
+        ];
 
+        if ($request->hasFile('profile_photo')) {
+            $userData['profile_photo'] = $request->file('profile_photo')->store('profile-photos', 'local');
+        }
+
+        $user = User::create($userData);
         $user->assignRole('mahasiswa');
 
         return redirect()->route('admin.students.index')->with('success', 'Mahasiswa berhasil ditambahkan.');
@@ -57,28 +63,31 @@ class StudentController extends Controller
 
     public function show(Request $request, User $student)
     {
-        if (!$student->hasRole('mahasiswa')) abort(404);
-        
+        if (!$student->hasRole('mahasiswa'))
+            abort(404);
+
         $query = User::role('mahasiswa')->filterByRequest($request);
-        $navigation = NavigationHelper::getNavigation($student, $query, $request->sort_by, $request->sort_order);
+        $navigation = NavigationHelper::getNavigation($student, $query, $request->sort_by ?: 'created_at', $request->sort_order ?: 'desc');
 
         return view('admin.students.show', compact('student', 'navigation'));
     }
 
     public function edit(Request $request, User $student)
     {
-        if (!$student->hasRole('mahasiswa')) abort(404);
+        if (!$student->hasRole('mahasiswa'))
+            abort(404);
         $programStudis = ProgramStudi::all();
 
         $query = User::role('mahasiswa')->filterByRequest($request);
-        $navigation = NavigationHelper::getNavigation($student, $query, $request->sort_by, $request->sort_order);
+        $navigation = NavigationHelper::getNavigation($student, $query, $request->sort_by ?: 'created_at', $request->sort_order ?: 'desc');
 
         return view('admin.students.edit', compact('student', 'programStudis', 'navigation'));
     }
 
     public function update(UserRequest $request, User $student)
     {
-        if (!$student->hasRole('mahasiswa')) abort(404);
+        if (!$student->hasRole('mahasiswa'))
+            abort(404);
         $validated = $request->validated();
 
         $userData = [
@@ -95,6 +104,19 @@ class StudentController extends Controller
             $userData['password'] = Hash::make($validated['password']);
         }
 
+        // Handle profile photo
+        if ($request->boolean('remove_photo')) {
+            if ($student->profile_photo) {
+                Storage::disk('local')->delete($student->profile_photo);
+            }
+            $userData['profile_photo'] = null;
+        } elseif ($request->hasFile('profile_photo')) {
+            if ($student->profile_photo) {
+                Storage::disk('local')->delete($student->profile_photo);
+            }
+            $userData['profile_photo'] = $request->file('profile_photo')->store('profile-photos', 'local');
+        }
+
         $student->update($userData);
 
         return redirect()->route('admin.students.index')->with('success', 'Mahasiswa berhasil diperbarui.');
@@ -102,7 +124,8 @@ class StudentController extends Controller
 
     public function destroy(User $student)
     {
-        if (!$student->hasRole('mahasiswa')) abort(404);
+        if (!$student->hasRole('mahasiswa'))
+            abort(404);
         $student->delete();
         return redirect()->route('admin.students.index')->with('success', 'Mahasiswa berhasil dihapus.');
     }

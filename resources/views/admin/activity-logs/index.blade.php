@@ -12,40 +12,17 @@
         <div class="card-body">
             <form method="GET" action="{{ route('admin.activity-logs.index') }}">
                 <div class="row g-3">
-                    <div class="col-md-2">
+                    <div class="col-md-4">
                         <label class="form-label small">Dari</label>
                         <input type="date" class="form-control form-control-sm" name="date_from"
                             value="{{ request('date_from') }}" data-auto-submit>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-4">
                         <label class="form-label small">Sampai</label>
                         <input type="date" class="form-control form-control-sm" name="date_to"
                             value="{{ request('date_to') }}" data-auto-submit>
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label small">Event</label>
-                        <select class="form-select form-select-sm" name="log_name" data-auto-submit>
-                            <option value="">Semua</option>
-                            @foreach ($logNames as $name)
-                                <option value="{{ $name }}" {{ request('log_name') == $name ? 'selected' : '' }}>
-                                    {{ ucfirst($name) }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label small">Objek</label>
-                        <select class="form-select form-select-sm" name="subject_type" data-auto-submit>
-                            <option value="">Semua</option>
-                            @foreach ($subjectTypes as $type)
-                                <option value="{{ $type }}"
-                                    {{ request('subject_type') == $type ? 'selected' : '' }}>
-                                    {{ class_basename($type) }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-2">
+                    <div class="col-md-4">
                         <label class="form-label small">Pengguna</label>
                         <select class="form-select form-select-sm" name="user_id" data-auto-submit>
                             <option value="">Semua</option>
@@ -56,17 +33,6 @@
                                 </option>
                             @endforeach
                         </select>
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <div class="d-flex gap-1 w-100">
-                            <button type="submit" class="btn btn-sm btn-primary flex-grow-1">
-                                <i class="bi bi-search"></i>
-                            </button>
-                            <a href="{{ route('admin.activity-logs.index') }}"
-                                class="btn btn-sm btn-outline-secondary flex-grow-1">
-                                <i class="bi bi-x"></i>
-                            </a>
-                        </div>
                     </div>
                 </div>
             </form>

@@ -28,6 +28,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Similarity check (AJAX)
+    Route::post('/similarity/check', [\App\Http\Controllers\SimilarityController::class, 'check'])->name('similarity.check');
+
     // Student routes
     Route::middleware('role:mahasiswa')->prefix('student')->name('student.')->group(function () {
         Route::post('submissions/{submission}/revision', [StudentSubmissionController::class, 'storeRevision'])->name('submissions.revision');
@@ -85,11 +88,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::delete('/profile/photo', [ProfileController::class, 'removePhoto'])->name('profile.photo.remove');
 
     // Custom Download and Preview routes
     Route::get('/files/{file}/download', [\App\Http\Controllers\FileDownloadController::class, 'download'])->name('files.download');
     Route::get('/files/{file}/preview', [\App\Http\Controllers\FileDownloadController::class, 'preview'])->name('files.preview');
-    
+
     // Secure Profile Photo Route
     Route::get('/users/{user}/photo', [\App\Http\Controllers\FileDownloadController::class, 'profilePhoto'])->name('users.photo');
 });

@@ -8,7 +8,7 @@
         <div class="btn-toolbar mb-2 mb-md-0 d-flex align-items-center">
             @include('partials.record-navigation', ['route' => 'admin.users.edit'])
             <div class="ms-3">
-                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
+                <a href="{{ route('admin.users.index', request()->query()) }}" class="btn btn-outline-secondary shadow-none">
                     <i class="bi bi-arrow-left"></i> Kembali
                 </a>
             </div>
@@ -19,10 +19,13 @@
         <div class="col-md-8 mx-auto">
             <div class="card">
                 <div class="card-body">
-                    <form action="{{ route('admin.users.update', $user) }}" method="POST" class="needs-validation"
-                        novalidate>
+                    <form action="{{ route('admin.users.update', $user) }}" method="POST" enctype="multipart/form-data"
+                        class="needs-validation" novalidate>
                         @csrf
                         @method('PUT')
+
+                        {{-- Photo Upload --}}
+                        @include('partials.photo-upload', ['user' => $user])
 
                         <div class="mb-3">
                             <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>

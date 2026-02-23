@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -18,9 +19,9 @@ class UserController extends Controller
     {
         $users = User::with(['roles', 'programStudi'])
             ->filterByRequest($request)
-            ->when($request->sort_by, function($q) use ($request) {
+            ->when($request->sort_by, function ($q) use ($request) {
                 $q->orderBy($request->sort_by, $request->sort_order ?: 'asc');
-            }, function($q) {
+            }, function ($q) {
                 $q->latest();
             })
             ->paginate(15);
@@ -41,7 +42,7 @@ class UserController extends Controller
     {
         $validated = $request->validated();
 
-        $user = User::create([
+        $userData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
@@ -50,8 +51,13 @@ class UserController extends Controller
             'address' => $validated['address'],
             'program_studi_id' => $validated['program_studi_id'],
             'is_active' => $request->boolean('is_active'),
-        ]);
+        ];
 
+        if ($request->hasFile('profile_photo')) {
+            $userData['profile_photo'] = $request->file('profile_photo')->store('profile-photos', 'local');
+        }
+
+        $user = User::create($userData);
         $user->assignRole($validated['role']);
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
@@ -60,14 +66,14 @@ class UserController extends Controller
     public function show(Request $request, User $user)
     {
         $user->load(['roles', 'programStudi.faculty', 'thesisSubmissions', 'supervisedTheses', 'assessments.thesisSubmission.student']);
-        
-        $activities = \Spatie\Activitylog\Models\Activity::where(function($q) use ($user) {
-                $q->where('causer_id', $user->id)
-                  ->where('causer_type', User::class);
-            })
-            ->orWhere(function($q) use ($user) {
+
+        $activities = \Spatie\Activitylog\Models\Activity::where(function ($q) use ($user) {
+            $q->where('causer_id', $user->id)
+                ->where('causer_type', User::class);
+        })
+            ->orWhere(function ($q) use ($user) {
                 $q->where('subject_id', $user->id)
-                  ->where('subject_type', User::class);
+                    ->where('subject_type', User::class);
             })
             ->latest()
             ->take(20)
@@ -84,7 +90,7 @@ class UserController extends Controller
     {
         $roles = Role::all();
         $programStudis = ProgramStudi::all();
-        
+
         $query = User::filterByRequest($request);
         $navigation = NavigationHelper::getNavigation($user, $query, $request->sort_by ?: 'created_at', $request->sort_order ?: 'desc');
 
@@ -107,6 +113,19 @@ class UserController extends Controller
 
         if (!empty($validated['password'])) {
             $userData['password'] = Hash::make($validated['password']);
+        }
+
+        // Handle profile photo
+        if ($request->boolean('remove_photo')) {
+            if ($user->profile_photo) {
+                Storage::disk('local')->delete($user->profile_photo);
+            }
+            $userData['profile_photo'] = null;
+        } elseif ($request->hasFile('profile_photo')) {
+            if ($user->profile_photo) {
+                Storage::disk('local')->delete($user->profile_photo);
+            }
+            $userData['profile_photo'] = $request->file('profile_photo')->store('profile-photos', 'local');
         }
 
         $user->update($userData);

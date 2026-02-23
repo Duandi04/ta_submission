@@ -36,6 +36,18 @@
                                     class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('title') is-invalid @enderror" id="title"
                                 name="title" value="{{ old('title') }}" required maxlength="255">
+                            <div id="similarity-results" class="mt-2" style="display: none;">
+                                <div class="card border-warning bg-light">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title text-warning small mb-2">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> Judul Serupa Ditemukan:
+                                        </h6>
+                                        <ul id="similar-titles-list" class="list-unstyled mb-0 small">
+                                            <!-- Similar titles will be injected here -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                             @error('title')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -287,6 +299,52 @@
             document.getElementById('google_picker_btn').classList.remove('btn-success');
             document.getElementById('google_picker_btn').classList.add('btn-outline-dark');
             document.getElementById('google_picker_btn').innerHTML = '<i class="bi bi-google me-2"></i> Hubungkan ke Google Drive';
+        });
+
+        // Similarity Check logic
+        const titleInput = document.getElementById('title');
+        const similarityResults = document.getElementById('similarity-results');
+        const similarTitlesList = document.getElementById('similar-titles-list');
+        let similarityTimeout = null;
+
+        titleInput.addEventListener('input', () => {
+            clearTimeout(similarityTimeout);
+            const title = titleInput.value.trim();
+
+            if (title.length < 5) {
+                similarityResults.style.display = 'none';
+                return;
+            }
+
+            similarityTimeout = setTimeout(() => {
+                fetch('{{ route('similarity.check') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ title: title })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.count > 0) {
+                            similarTitlesList.innerHTML = '';
+                            data.data.forEach(item => {
+                                const li = document.createElement('li');
+                                li.className = 'mb-1 d-flex justify-content-between align-items-center';
+                                li.innerHTML = `
+                                    <span>${item.title} <span class="text-muted">(${item.student})</span></span>
+                                    <span class="badge bg-warning text-dark">${item.similarity}%</span>
+                                `;
+                                similarTitlesList.appendChild(li);
+                            });
+                            similarityResults.style.display = 'block';
+                        } else {
+                            similarityResults.style.display = 'none';
+                        }
+                    })
+                    .catch(error => console.error('Error checking similarity:', error));
+            }, 500); // 500ms debounce
         });
     </script>
 @endpush

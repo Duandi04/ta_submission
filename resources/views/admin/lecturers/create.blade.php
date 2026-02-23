@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 class="h2">Tambah Dosen Baru</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('admin.lecturers.index') }}" class="btn btn-secondary">
+            <a href="{{ route('admin.lecturers.index', request()->query()) }}" class="btn btn-outline-secondary shadow-none text-nowrap">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>

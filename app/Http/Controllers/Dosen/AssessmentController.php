@@ -17,13 +17,30 @@ class AssessmentController extends Controller
     ) {
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $evaluatorId = Auth::id(); // Assuming evaluatorId is current authenticated user's ID
-        $assessments = Assessment::where('evaluator_id', $evaluatorId)
-            ->with(['thesisSubmission.student', 'thesisSubmission'])
-            ->latest()
-            ->paginate(10);
+        $evaluatorId = Auth::id();
+        $query = Assessment::where('evaluator_id', $evaluatorId)
+            ->with(['thesisSubmission.student', 'thesisSubmission']);
+
+        // Search by student name or NIM
+        if ($search = $request->query('search')) {
+            $query->whereHas('thesisSubmission.student', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('nim_nip', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by status (draft / submitted)
+        if ($status = $request->query('status')) {
+            if ($status === 'submitted') {
+                $query->where('is_submitted', true);
+            } elseif ($status === 'draft') {
+                $query->where('is_submitted', false);
+            }
+        }
+
+        $assessments = $query->latest()->paginate(10)->withQueryString();
 
         return view('dosen.assessments.index', compact('assessments'));
     }

@@ -278,13 +278,130 @@
             </div>
         </div>
 
+        {{-- Segmented Student Lists --}}
+        <div class="row g-4 mb-4">
+            {{-- Sudah Mengumpulkan --}}
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-white py-3 border-0">
+                        <div class="d-flex align-items-center gap-2 fw-bold">
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                            <span>Sudah Mengumpulkan</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">{{ $stats['submitted_students_count'] ?? 0 }}</span>
+                        </div>
+                        <a href="{{ route('kaprodi.submissions.index') }}" class="btn btn-sm btn-light border text-primary px-3">
+                            Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    <div class="card-body p-0">
+                        @if(($stats['submitted_students'] ?? collect())->count() > 0)
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="ps-3">Mahasiswa</th>
+                                            <th>Status</th>
+                                            <th class="text-end pe-3">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($stats['submitted_students'] as $student)
+                                            <tr>
+                                                <td class="ps-3">
+                                                    <div class="fw-semibold text-dark">{{ $student->name }}</div>
+                                                    <div class="text-muted smaller-text">{{ $student->nim_nip }}</div>
+                                                </td>
+                                                <td>
+                                                    @if($student->thesisSubmissions->first())
+                                                        <span class="badge bg-{{ $student->thesisSubmissions->first()->getStatusBadgeClass() }} smallest-badge">
+                                                            {{ $student->thesisSubmissions->first()->getStatusLabel() }}
+                                                        </span>
+                                                    @endif
+                                                </td>
+                                                <td class="text-end pe-3">
+                                                    <a href="{{ route('kaprodi.students.show', $student->id) }}"
+                                                        class="btn btn-sm btn-outline-primary px-3">
+                                                        Detail
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-center py-4">
+                                <i class="bi bi-inbox text-muted fs-3 d-block mb-2"></i>
+                                <span class="text-muted small">Belum ada mahasiswa yang mengumpulkan.</span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            {{-- Belum Mengumpulkan --}}
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-white py-3 border-0">
+                        <div class="d-flex align-items-center gap-2 fw-bold">
+                            <i class="bi bi-exclamation-circle-fill text-danger"></i>
+                            <span>Belum Mengumpulkan</span>
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ $stats['not_submitted_students_count'] ?? 0 }}</span>
+                        </div>
+                        <a href="{{ route('kaprodi.students.index') }}" class="btn btn-sm btn-light border text-primary px-3">
+                            Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    <div class="card-body p-0">
+                        @if(($stats['not_submitted_students'] ?? collect())->count() > 0)
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="ps-3">Mahasiswa</th>
+                                            <th>NIM</th>
+                                            <th class="text-end pe-3">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($stats['not_submitted_students'] as $student)
+                                            <tr>
+                                                <td class="ps-3">
+                                                    <div class="fw-semibold text-dark">{{ $student->name }}</div>
+                                                </td>
+                                                <td>
+                                                    <span class="text-muted small">{{ $student->nim_nip }}</span>
+                                                </td>
+                                                <td class="text-end pe-3">
+                                                    <a href="{{ route('kaprodi.students.show', $student->id) }}"
+                                                        class="btn btn-sm btn-outline-secondary px-3">
+                                                        Detail
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-center py-4">
+                                <i class="bi bi-check-all text-success fs-3 d-block mb-2"></i>
+                                <span class="text-muted small">Semua mahasiswa sudah mengumpulkan!</span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Pending Submissions Awaiting Lecturer Assignment --}}
         <div class="card border-0 shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center bg-white py-3">
                 <div class="d-flex align-items-center gap-2 fw-bold">
                     <i class="bi bi-journal-text text-primary"></i>
                     <span>Pengajuan Menunggu Penunjukan Dosen Penilai</span>
                 </div>
-                <a href="{{ route('kaprodi.students.index') }}" class="btn btn-sm btn-light border text-primary px-3">
+                <a href="{{ route('kaprodi.submissions.index', ['status' => 'submitted']) }}" class="btn btn-sm btn-light border text-primary px-3">
                     Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>

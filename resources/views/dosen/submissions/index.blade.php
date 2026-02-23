@@ -20,99 +20,105 @@
         </div>
     </div>
 
-    @if($submissions->count() > 0)
-        <div class="row mb-3">
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="mb-0">{{ $submissions->total() }}</h3>
-                        <small class="text-muted">Total Bimbingan</small>
+    <div id="ajax-container">
+        @if($submissions->count() > 0)
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <div class="card text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="mb-0 fw-bold">{{ $submissions->total() }}</h3>
+                            <small class="text-muted">Total Bimbingan</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="mb-0 fw-bold text-primary">{{ auth()->user()->supervisedTheses()->where('status', 'submitted')->count() }}</h3>
+                            <small class="text-muted">Perlu Review</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="mb-0 fw-bold text-warning">{{ auth()->user()->supervisedTheses()->where('status', 'under_review')->count() }}</h3>
+                            <small class="text-muted">Sedang Direview</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="mb-0 fw-bold text-success">{{ auth()->user()->supervisedTheses()->where('status', 'completed')->count() }}</h3>
+                            <small class="text-muted">Selesai</small>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="mb-0">{{ auth()->user()->supervisedTheses()->where('status', 'submitted')->count() }}</h3>
-                        <small class="text-muted">Perlu Review</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="mb-0">{{ auth()->user()->supervisedTheses()->where('status', 'under_review')->count() }}</h3>
-                        <small class="text-muted">Sedang Direview</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 class="mb-0">{{ auth()->user()->supervisedTheses()->where('status', 'completed')->count() }}</h3>
-                        <small class="text-muted">Selesai</small>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Mahasiswa</th>
-                                <th>Judul</th>
-                                <th>Bidang</th>
-                                <th>Status</th>
-                                <th>Tanggal Submit</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($submissions as $submission)
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
                                 <tr>
-                                    <td>{{ $loop->iteration + ($submissions->currentPage() - 1) * $submissions->perPage() }}</td>
-                                    <td>
-                                        <strong>{{ $submission->student->name }}</strong>
-                                        <br><small class="text-muted">{{ $submission->student->nim_nip }}</small>
-                                    </td>
-                                    <td>{{ Str::limit($submission->title, 50) }}</td>
-                                    <td>{{ $submission->research_field ?? '-' }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ $submission->getStatusBadgeClass() }}">
-                                            {{ $submission->getStatusLabel() }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm">
+                                    <th class="ps-3">No</th>
+                                    <th>Mahasiswa</th>
+                                    <th>Judul</th>
+                                    <th>Bidang</th>
+                                    <th>Status</th>
+                                    <th>Tanggal Submit</th>
+                                    <th class="text-end pe-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($submissions as $submission)
+                                    <tr>
+                                        <td class="ps-3">{{ $loop->iteration + ($submissions->currentPage() - 1) * $submissions->perPage() }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="{{ $submission->student->profile_photo_url }}" class="rounded-circle me-2"
+                                                    style="width: 32px; height: 32px; object-fit: cover;" alt="">
+                                                <div>
+                                                    <div class="fw-bold">{{ $submission->student->name }}</div>
+                                                    <div class="text-muted small">{{ $submission->student->nim_nip }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ Str::limit($submission->title, 50) }}</td>
+                                        <td>{{ $submission->research_field ?? '-' }}</td>
+                                        <td>
+                                            <span class="badge bg-soft-{{ $submission->getStatusBadgeClass() }} text-{{ $submission->getStatusBadgeClass() }} border border-{{ $submission->getStatusBadgeClass() }}-subtle">
+                                                {{ $submission->getStatusLabel() }}
+                                            </span>
+                                        </td>
+                                        <td class="text-muted small">{{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
+                                        <td class="text-end pe-3">
                                             <a href="{{ route('dosen.submissions.show', $submission) }}"
-                                                class="btn btn-primary" title="Detail">
+                                                class="btn btn-sm btn-outline-primary" title="Detail">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="mt-3">
-            {{ $submissions->links() }}
-        </div>
-    @else
-        <div class="card">
-            <div class="card-body text-center py-5">
-                <i class="bi bi-inbox empty-state-icon"></i>
-                <h4 class="mt-3">Belum Ada Mahasiswa Bimbingan</h4>
-                <p class="text-muted">Anda belum ditugaskan membimbing mahasiswa.</p>
+            <div class="mt-3">
+                {{ $submissions->appends(request()->query())->links() }}
             </div>
-        </div>
-    @endif
+        @else
+            <div class="card border-0 shadow-sm py-5">
+                <div class="card-body text-center">
+                    <i class="bi bi-inbox empty-state-icon"></i>
+                    <h4 class="mt-3">Belum Ada Mahasiswa Bimbingan</h4>
+                    <p class="text-muted">Anda belum memiliki mahasiswa bimbingan yang sesuai dengan filter ini.</p>
+                </div>
+            </div>
+        @endif
+    </div>
 @endsection

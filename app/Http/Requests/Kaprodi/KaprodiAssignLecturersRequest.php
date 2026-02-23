@@ -25,6 +25,8 @@ class KaprodiAssignLecturersRequest extends FormRequest
             'assessor_ids' => 'required|array|min:1',
             'assessor_ids.*' => 'exists:users,id',
             'rubric_id' => 'required|exists:rubrics,id',
+            'supervisor_id' => 'required|exists:users,id',
+            'supervisor_2_id' => 'nullable|exists:users,id|different:supervisor_id',
         ];
     }
 }

@@ -10,7 +10,8 @@
         </div>
         <div class="btn-toolbar mb-2 mb-md-0 align-items-center">
             @include('partials.record-navigation', ['route' => 'admin.submissions.show'])
-            <a href="{{ route('admin.submissions.index') }}" class="btn btn-secondary ms-2">
+            <a href="{{ route('admin.submissions.index', request()->query()) }}"
+                class="btn btn-outline-secondary shadow-none">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>
@@ -56,8 +57,8 @@
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @endif
-                                        <a href="{{ route('files.download', $file) }}"
-                                            class="btn btn-sm btn-outline-secondary" title="Download">
+                                        <a href="{{ route('files.download', $file) }}" class="btn btn-sm btn-outline-secondary"
+                                            title="Download">
                                             <i class="bi bi-download"></i>
                                         </a>
                                     </li>
@@ -79,8 +80,8 @@
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @endif
-                                        <a href="{{ route('files.download', $file) }}"
-                                            class="btn btn-sm btn-outline-secondary" title="Download">
+                                        <a href="{{ route('files.download', $file) }}" class="btn btn-sm btn-outline-secondary"
+                                            title="Download">
                                             <i class="bi bi-download"></i>
                                         </a>
                                     </li>
@@ -117,13 +118,11 @@
                                             </td>
                                             <td class="text-center align-middle">
                                                 @if ($assessment->is_submitted)
-                                                    <span
-                                                        class="badge bg-success-subtle text-success border border-success-subtle">
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
                                                         <i class="bi bi-check-circle-fill me-1"></i>Selesai
                                                     </span>
                                                 @else
-                                                    <span
-                                                        class="badge bg-warning-subtle text-warning border border-warning-subtle">
+                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
                                                         <i class="bi bi-hourglass-split me-1"></i>Belum Dinilai
                                                     </span>
                                                 @endif
@@ -175,22 +174,19 @@
                                     </h6>
                                     @if ($assessment->strengths)
                                         <div class="mb-2">
-                                            <strong class="text-success small"><i
-                                                    class="bi bi-plus-circle me-1"></i>Kelebihan:</strong>
+                                            <strong class="text-success small"><i class="bi bi-plus-circle me-1"></i>Kelebihan:</strong>
                                             <p class="mb-1 small">{{ $assessment->strengths }}</p>
                                         </div>
                                     @endif
                                     @if ($assessment->weaknesses)
                                         <div class="mb-2">
-                                            <strong class="text-danger small"><i
-                                                    class="bi bi-dash-circle me-1"></i>Kekurangan:</strong>
+                                            <strong class="text-danger small"><i class="bi bi-dash-circle me-1"></i>Kekurangan:</strong>
                                             <p class="mb-1 small">{{ $assessment->weaknesses }}</p>
                                         </div>
                                     @endif
                                     @if ($assessment->comments)
                                         <div class="mb-0">
-                                            <strong class="text-secondary small"><i
-                                                    class="bi bi-chat-left-text me-1"></i>Catatan:</strong>
+                                            <strong class="text-secondary small"><i class="bi bi-chat-left-text me-1"></i>Catatan:</strong>
                                             <p class="mb-0 small">{{ $assessment->comments }}</p>
                                         </div>
                                     @endif
@@ -205,7 +201,7 @@
         </div>
 
         <div class="col-lg-4">
-           
+
             @if ($submission->final_score)
                 <div class="card border-0 shadow-sm bg-success-subtle mb-4">
                     <div class="card-body text-center">
@@ -242,8 +238,7 @@
                                     <i class="bi bi-eye me-1"></i> Preview
                                 </a>
                             @endif
-                            <a href="{{ route('files.download', $latestFile) }}"
-                                class="btn btn-outline-secondary flex-grow-1">
+                            <a href="{{ route('files.download', $latestFile) }}" class="btn btn-outline-secondary flex-grow-1">
                                 <i class="bi bi-download me-1"></i> Download
                             </a>
                         </div>
@@ -266,12 +261,10 @@
                                 <li class="list-group-item">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
-                                            <small
-                                                class="fw-semibold text-dark">{{ $activity->causer?->name ?? 'System' }}</small>
+                                            <small class="fw-semibold text-dark">{{ $activity->causer?->name ?? 'System' }}</small>
                                             <p class="mb-0 small text-muted">{{ $activity->description }}</p>
                                         </div>
-                                        <small
-                                            class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
+                                        <small class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
                                     </div>
                                 </li>
                             @endforeach

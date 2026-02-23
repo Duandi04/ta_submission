@@ -7,6 +7,30 @@
         <h1 class="h2">Penilaian Tugas Akhir</h1>
     </div>
 
+    {{-- Search & Filter Bar --}}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form action="{{ route('dosen.assessments.index') }}" method="GET" class="row g-3">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control"
+                               placeholder="Cari nama atau NIM mahasiswa..." value="{{ request('search') }}" data-auto-search>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <select name="status" class="form-select" onchange="this.form.submit()">
+                        <option value="">-- Semua Status --</option>
+                        <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                        <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Sudah Submit</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-secondary w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="ajax-container">
         @if($assessments->count() > 0)
             <div class="card border-0 shadow-sm">
@@ -78,8 +102,16 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center py-5">
                     <i class="bi bi-clipboard-data empty-state-icon text-muted" style="font-size: 4rem;"></i>
-                    <h4 class="mt-3">Belum Ada Penilaian</h4>
-                    <p class="text-muted">Anda belum ditugaskan untuk menilai tugas akhir apapun.</p>
+                    @if(request('search') || request('status'))
+                        <h4 class="mt-3">Tidak Ada Hasil</h4>
+                        <p class="text-muted">Tidak ditemukan penilaian yang sesuai dengan filter Anda.</p>
+                        <a href="{{ route('dosen.assessments.index') }}" class="btn btn-outline-primary mt-2">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Filter
+                        </a>
+                    @else
+                        <h4 class="mt-3">Belum Ada Penilaian</h4>
+                        <p class="text-muted">Anda belum ditugaskan untuk menilai tugas akhir apapun.</p>
+                    @endif
                 </div>
             </div>
         @endif

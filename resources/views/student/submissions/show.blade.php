@@ -38,9 +38,15 @@
                             <td>: {{ $submission->research_field ?? '-' }}</td>
                         </tr>
                         <tr>
-                            <th>Pembimbing</th>
-                            <td>: {{ $submission->supervisor?->name ?? 'Belum Ditentukan' }}</td>
+                            <th width="200">Pembimbing 1</th>
+                            <td>: {{ $submission->supervisor->name ?? 'Belum ditentukan' }}</td>
                         </tr>
+                        @if($submission->supervisor_2_id)
+                            <tr>
+                                <th>Pembimbing 2</th>
+                                <td>: {{ $submission->supervisor2->name }}</td>
+                            </tr>
+                        @endif
                         <tr>
                             <th>Status</th>
                             <td>:

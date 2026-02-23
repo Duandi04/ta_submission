@@ -27,12 +27,12 @@
         <div class="card-body">
             <form method="GET" action="{{ route('admin.users.index') }}" id="searchForm">
                 <div class="row g-3">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <input type="text" class="form-control" name="search" id="searchInput"
                             placeholder="Cari nama, email, atau NIM/NIP..." value="{{ request('search') }}"
                             data-auto-search>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <select class="form-select" name="program_studi_id" data-auto-submit>
                             <option value="">Semua Program Studi</option>
                             @foreach ($programStudis as $prodi)
@@ -43,7 +43,7 @@
                             @endforeach
                         </select>
                     </div>
-                    @if (request('role_group') == 'lecturer' || !request()->hasAny(['role', 'role_group']))
+                    @if (!request()->has('role_group') || request('role_group') == 'lecturer')
                         <div class="col-md-2">
                             <select class="form-select" name="role" data-auto-submit>
                                 <option value="">Semua Role</option>
@@ -65,14 +65,6 @@
                             </select>
                         </div>
                     @endif
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-search"></i> Cari
-                        </button>
-                        <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">
-                            <i class="bi bi-x-circle"></i> Reset
-                        </a>
-                    </div>
                 </div>
             </form>
         </div>

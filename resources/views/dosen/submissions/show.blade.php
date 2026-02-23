@@ -6,7 +6,8 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 class="h2">Review Pengajuan</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('dosen.students.index') }}" class="btn btn-secondary">
+            <a href="{{ route('dosen.submissions.index', request()->query()) }}"
+                class="btn btn-outline-secondary shadow-none">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>
@@ -25,6 +26,16 @@
                             <td>: <strong>{{ $submission->student->name }}</strong> ({{ $submission->student->nim_nip }})
                             </td>
                         </tr>
+                        <tr>
+                            <th>Pembimbing 1</th>
+                            <td>: {{ $submission->supervisor->name ?? '-' }}</td>
+                        </tr>
+                        @if($submission->supervisor_2_id)
+                        <tr>
+                            <th>Pembimbing 2</th>
+                            <td>: {{ $submission->supervisor2->name }}</td>
+                        </tr>
+                        @endif
                         <tr>
                             <th>Judul</th>
                             <td>: <strong>{{ $submission->title }}</strong></td>
@@ -52,12 +63,30 @@
                     <h6><i class="bi bi-file-text"></i> Abstrak</h6>
                     <p class="text-justify">{{ $submission->abstract }}</p>
 
-                    @if ($submission->notes)
-                        <div class="alert alert-info">
-                            <strong><i class="bi bi-sticky"></i> Catatan:</strong><br>
-                            {{ $submission->notes }}
-                        </div>
                     @endif
+                </div>
+            </div>
+
+            <div class="card mb-3 border-warning shadow-sm" id="similarity-analysis-card" style="display: none;">
+                <div class="card-header bg-warning text-dark py-2">
+                    <i class="bi bi-search me-2"></i><strong>Analisis Kesamaan Judul (Orisinalitas)</strong>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted mb-3">Sistem menemukan pengajuan lain dengan judul serupa. Gunakan data ini untuk mengevaluasi keaslian topik.</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Judul Pengajuan</th>
+                                    <th>Mahasiswa</th>
+                                    <th class="text-center">Persentase</th>
+                                </tr>
+                            </thead>
+                            <tbody id="similarity-results-body">
+                                <!-- Results injected here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -157,7 +186,8 @@
 
                         <div class="mb-3">
                             <label class="form-label">Catatan</label>
-                            <textarea class="form-control" name="notes" rows="4" placeholder="Berikan catatan atau feedback..."></textarea>
+                            <textarea class="form-control" name="notes" rows="4"
+                                placeholder="Berikan catatan atau feedback..."></textarea>
                         </div>
 
                         <div class="d-grid">
@@ -224,8 +254,7 @@
                                     <i class="bi bi-eye me-1"></i> Preview
                                 </a>
                             @endif
-                            <a href="{{ route('files.download', $latestFile) }}"
-                                class="btn btn-outline-secondary flex-grow-1">
+                            <a href="{{ route('files.download', $latestFile) }}" class="btn btn-outline-secondary flex-grow-1">
                                 <i class="bi bi-download me-1"></i> Download
                             </a>
                         </div>
@@ -247,12 +276,10 @@
                                 <li class="list-group-item">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
-                                            <small
-                                                class="fw-semibold text-dark">{{ $activity->causer?->name ?? 'System' }}</small>
+                                            <small class="fw-semibold text-dark">{{ $activity->causer?->name ?? 'System' }}</small>
                                             <p class="mb-0 small text-muted">{{ $activity->description }}</p>
                                         </div>
-                                        <small
-                                            class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
+                                        <small class="text-muted text-nowrap">{{ $activity->created_at->diffForHumans() }}</small>
                                     </div>
                                 </li>
                             @endforeach

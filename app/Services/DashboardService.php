@@ -59,11 +59,53 @@ class DashboardService
             });
         }
 
+        // Students who have submitted (non-draft)
+        $submittedStudents = User::role('mahasiswa')
+            ->when($prodiId, fn($q) => $q->where('program_studi_id', $prodiId))
+            ->whereHas('thesisSubmissions', function ($q) {
+                $q->whereNotIn('status', ['draft', 'cancelled']);
+            })
+            ->with([
+                'thesisSubmissions' => function ($q) {
+                    $q->whereNotIn('status', ['draft', 'cancelled'])->latest()->limit(1);
+                }
+            ])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Students who have NOT submitted (no submissions, or only draft/cancelled)
+        $notSubmittedStudents = User::role('mahasiswa')
+            ->when($prodiId, fn($q) => $q->where('program_studi_id', $prodiId))
+            ->where(function ($q) {
+                $q->whereDoesntHave('thesisSubmissions')
+                    ->orWhereDoesntHave('thesisSubmissions', function ($sq) {
+                        $sq->whereNotIn('status', ['draft', 'cancelled']);
+                    });
+            })
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Counts for the segmentation
+        $submittedStudentsCount = User::role('mahasiswa')
+            ->when($prodiId, fn($q) => $q->where('program_studi_id', $prodiId))
+            ->whereHas('thesisSubmissions', function ($q) {
+                $q->whereNotIn('status', ['draft', 'cancelled']);
+            })
+            ->count();
+
+        $notSubmittedStudentsCount = $allStudentsCount - $submittedStudentsCount;
+
         return [
             'total_students' => $allStudentsCount,
             'total_submissions' => $submissionQuery->count(),
             'pending_submissions' => $submissionQuery->clone()->where('status', 'submitted')->count(),
             'approved_submissions' => $submissionQuery->clone()->where('status', 'approved')->count(),
+            'submitted_students' => $submittedStudents,
+            'submitted_students_count' => $submittedStudentsCount,
+            'not_submitted_students' => $notSubmittedStudents,
+            'not_submitted_students_count' => $notSubmittedStudentsCount,
         ];
     }
 

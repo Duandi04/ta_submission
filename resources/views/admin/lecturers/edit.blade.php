@@ -8,7 +8,7 @@
         <div class="btn-toolbar mb-2 mb-md-0 d-flex align-items-center">
             @include('partials.record-navigation', ['route' => 'admin.lecturers.edit'])
             <div class="ms-3">
-                <a href="{{ route('admin.lecturers.index') }}" class="btn btn-secondary">
+                <a href="{{ route('admin.lecturers.index', request()->query()) }}" class="btn btn-outline-secondary shadow-none">
                     <i class="bi bi-arrow-left"></i> Kembali
                 </a>
             </div>
@@ -19,9 +19,12 @@
         <div class="col-md-8 mx-auto">
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
-                    <form action="{{ route('admin.lecturers.update', $lecturer) }}" method="POST">
+                    <form action="{{ route('admin.lecturers.update', $lecturer) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
+
+                        {{-- Photo Upload --}}
+                        @include('partials.photo-upload', ['user' => $lecturer])
 
                         <div class="mb-3">
                             <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>

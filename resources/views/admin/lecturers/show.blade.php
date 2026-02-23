@@ -8,7 +8,8 @@
         <div class="btn-toolbar mb-2 mb-md-0 d-flex align-items-center">
             @include('partials.record-navigation', ['route' => 'admin.lecturers.show'])
             <div class="ms-3 d-flex">
-                <a href="{{ route('admin.lecturers.index') }}" class="btn btn-outline-secondary shadow-none me-2">
+                <a href="{{ route('admin.lecturers.index', request()->query()) }}"
+                    class="btn btn-outline-secondary shadow-none">
                     <i class="bi bi-arrow-left"></i> Kembali
                 </a>
                 <a href="{{ route('admin.lecturers.edit', $lecturer) }}" class="btn btn-primary shadow-none">
@@ -23,7 +24,7 @@
             <div class="card border-0 shadow-sm text-center p-4 mb-4">
                 <div class="mb-3">
                     <img src="{{ $lecturer->profile_photo_url }}" class="rounded-circle img-thumbnail shadow-sm"
-                         style="width: 150px; height: 150px; object-fit: cover;">
+                        style="width: 150px; height: 150px; object-fit: cover;">
                 </div>
                 <h4 class="fw-bold mb-1">{{ $lecturer->name }}</h4>
                 <p class="text-muted mb-3">{{ $lecturer->nim_nip ?: 'NIP Belum Diatur' }}</p>
@@ -69,11 +70,25 @@
                 <div class="row">
                     <div class="col-sm-6 mb-4">
                         <label class="text-muted small d-block">Fakultas</label>
-                        <span class="fw-semibold">{{ $lecturer->programStudi->faculty->name ?? '-' }}</span>
+                        @if($lecturer->programStudi && $lecturer->programStudi->faculty)
+                            <a href="{{ route('admin.faculties.show', $lecturer->programStudi->faculty) }}"
+                                class="fw-semibold text-decoration-none">
+                                {{ $lecturer->programStudi->faculty->name }}
+                            </a>
+                        @else
+                            <span class="fw-semibold">-</span>
+                        @endif
                     </div>
                     <div class="col-sm-6 mb-4">
                         <label class="text-muted small d-block">Program Studi</label>
-                        <span class="fw-semibold text-primary">{{ $lecturer->programStudi->name ?? '-' }}</span>
+                        @if($lecturer->programStudi)
+                            <a href="{{ route('admin.program-studis.show', $lecturer->programStudi) }}"
+                                class="fw-semibold text-primary text-decoration-none">
+                                <i class="bi bi-mortarboard me-1"></i>{{ $lecturer->programStudi->name }}
+                            </a>
+                        @else
+                            <span class="fw-semibold">-</span>
+                        @endif
                     </div>
                 </div>
             </div>

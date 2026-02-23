@@ -8,7 +8,8 @@
         <div class="btn-toolbar mb-2 mb-md-0 d-flex align-items-center">
             @include('partials.record-navigation', ['route' => 'admin.students.show'])
             <div class="ms-3 d-flex">
-                <a href="{{ route('admin.students.index') }}" class="btn btn-outline-secondary shadow-none me-2">
+                <a href="{{ route('admin.students.index', request()->query()) }}"
+                    class="btn btn-outline-secondary shadow-none me-2">
                     <i class="bi bi-arrow-left"></i> Kembali
                 </a>
                 <a href="{{ route('admin.students.edit', $student) }}" class="btn btn-primary shadow-none">
@@ -23,7 +24,7 @@
             <div class="card border-0 shadow-sm text-center p-4 mb-4">
                 <div class="mb-3">
                     <img src="{{ $student->profile_photo_url }}" class="rounded-circle img-thumbnail shadow-sm"
-                         style="width: 150px; height: 150px; object-fit: cover;">
+                        style="width: 150px; height: 150px; object-fit: cover;">
                 </div>
                 <h4 class="fw-bold mb-1">{{ $student->name }}</h4>
                 <p class="text-muted mb-3">{{ $student->nim_nip ?: 'NIM Belum Diatur' }}</p>
@@ -63,11 +64,25 @@
                 <div class="row">
                     <div class="col-sm-6 mb-4">
                         <label class="text-muted small d-block">Fakultas</label>
-                        <span class="fw-semibold">{{ $student->programStudi->faculty->name ?? '-' }}</span>
+                        @if($student->programStudi && $student->programStudi->faculty)
+                            <a href="{{ route('admin.faculties.show', $student->programStudi->faculty) }}"
+                                class="fw-semibold text-decoration-none">
+                                {{ $student->programStudi->faculty->name }}
+                            </a>
+                        @else
+                            <span class="fw-semibold">-</span>
+                        @endif
                     </div>
                     <div class="col-sm-6 mb-4">
                         <label class="text-muted small d-block">Program Studi</label>
-                        <span class="fw-semibold text-primary">{{ $student->programStudi->name ?? '-' }}</span>
+                        @if($student->programStudi)
+                            <a href="{{ route('admin.program-studis.show', $student->programStudi) }}"
+                                class="fw-semibold text-primary text-decoration-none">
+                                <i class="bi bi-mortarboard me-1"></i>{{ $student->programStudi->name }}
+                            </a>
+                        @else
+                            <span class="fw-semibold">-</span>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -80,14 +95,14 @@
                 @if ($submissions->count() > 0)
                     <div class="list-group list-group-flush">
                         @foreach ($submissions as $submission)
-                            <a href="#" class="list-group-item list-group-item-action px-0">
+                            <a href="{{ route('admin.submissions.show', $submission) }}"
+                                class="list-group-item list-group-item-action px-0">
                                 <div class="d-flex w-100 justify-content-between">
                                     <h6 class="mb-1 text-primary">{{ $submission->title }}</h6>
                                     <small class="text-muted">{{ $submission->created_at->format('d/m/Y') }}</small>
                                 </div>
                                 <p class="mb-1 small text-muted text-truncate">{{ $submission->abstract }}</p>
-                                <span
-                                    class="badge bg-soft-secondary text-secondary border small">{{ $submission->status }}</span>
+                                <span class="badge bg-soft-secondary text-secondary border small">{{ $submission->status }}</span>
                             </a>
                         @endforeach
                     </div>

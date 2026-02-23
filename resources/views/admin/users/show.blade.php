@@ -13,7 +13,7 @@
                         <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-warning shadow-sm">
                             <i class="bi bi-pencil-square me-1"></i> Edit Pengguna
                         </a>
-                        <a href="{{ route('admin.users.index') }}" class="btn btn-secondary shadow-sm">
+                        <a href="{{ route('admin.users.index', request()->query()) }}" class="btn btn-outline-secondary shadow-none px-4">
                             <i class="bi bi-arrow-left me-1"></i> Kembali
                         </a>
                     </div>
@@ -58,8 +58,16 @@
                                 <div class="d-flex align-items-start">
                                     <i class="bi bi-mortarboard text-primary me-2 mt-1"></i>
                                     <div>
-                                        <div class="fw-bold">{{ $user->programStudi->name }}</div>
-                                        <div class="small text-muted">{{ $user->programStudi->faculty->name ?? '' }}</div>
+                                        <a href="{{ route('admin.program-studis.show', $user->programStudi) }}" class="fw-bold text-decoration-none">
+                                            {{ $user->programStudi->name }}
+                                        </a>
+                                        @if($user->programStudi->faculty)
+                                            <div class="small text-muted">
+                                                <a href="{{ route('admin.faculties.show', $user->programStudi->faculty) }}" class="text-muted text-decoration-none">
+                                                    {{ $user->programStudi->faculty->name }}
+                                                </a>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -212,7 +220,7 @@
                                                                 </span>
                                                             </td>
                                                             <td>
-                                                                <a href="{{ route('admin.thesis-submissions.show', $submission) }}"
+                                                                <a href="{{ route('admin.submissions.show', $submission) }}"
                                                                     class="btn btn-sm btn-outline-primary">Detail</a>
                                                             </td>
                                                         </tr>
@@ -244,7 +252,6 @@
                                                     <tr>
                                                         <th>Mahasiswa</th>
                                                         <th>Judul Laporan</th>
-                                                        <th>Tipe Mentor</th>
                                                         <th>Status Nilai</th>
                                                     </tr>
                                                 </thead>
@@ -263,10 +270,6 @@
                                                                 <div class="small text-truncate"
                                                                     style="max-width: 200px;">
                                                                     {{ $assessment->thesisSubmission->title }}</div>
-                                                            </td>
-                                                            <td>
-                                                                <span
-                                                                    class="badge bg-info-subtle text-info border border-info-subtle">{{ $assessment->getEvaluatorTypeLabel() }}</span>
                                                             </td>
                                                             <td>
                                                                 @if ($assessment->is_submitted)

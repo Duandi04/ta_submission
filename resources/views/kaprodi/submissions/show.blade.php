@@ -10,9 +10,9 @@
         </div>
         <div class="btn-toolbar mb-2 mb-md-0 align-items-center">
             @include('partials.record-navigation', ['route' => 'kaprodi.submissions.show'])
-            <a href="{{ route('kaprodi.students.show', $submission->student_id) }}" class="btn btn-secondary ms-2">
-                <i class="bi bi-arrow-left"></i> Kembali
-            </a>
+                <a href="{{ route('kaprodi.submissions.index', request()->query()) }}" class="btn btn-outline-secondary shadow-none">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
         </div>
     </div>
 
@@ -27,8 +27,13 @@
                     <p class="text-muted small mb-3">
                         <i class="bi bi-tag me-1"></i>{{ $submission->research_field ?? 'Umum' }}
                         <span class="mx-2">|</span>
-                        <span
-                            class="badge bg-{{ $submission->getStatusBadgeClass() }}">{{ $submission->getStatusLabel() }}</span>
+                        <span class="badge bg-{{ $submission->getStatusBadgeClass() }}">{{ $submission->getStatusLabel() }}</span>
+                        <span class="mx-2">|</span>
+                        <span class="text-muted small"><i class="bi bi-person-badge me-1"></i>P1: {{ $submission->supervisor->name ?? '-' }}</span>
+                        @if($submission->supervisor_2_id)
+                        <span class="mx-2">|</span>
+                        <span class="text-muted small"><i class="bi bi-person-badge me-1"></i>P2: {{ $submission->supervisor2->name }}</span>
+                        @endif
                     </p>
                     <hr>
                     <h6 class="fw-bold mb-2">Abstrak</h6>
@@ -88,6 +93,32 @@
                             </ul>
                         @endif
                     @endif
+                </div>
+            </div>
+
+                </div>
+            </div>
+
+            <div class="card border-warning shadow-sm mb-4" id="similarity-analysis-card" style="display: none;">
+                <div class="card-header bg-warning-subtle text-warning-emphasis py-3 border-0">
+                    <span class="fw-bold"><i class="bi bi-search me-2"></i>Analisis Kesamaan Judul (Orisinalitas)</span>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Ditemukan beberapa pengajuan dengan judul yang serupa dalam sistem.</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Judul Pengajuan</th>
+                                    <th>Mahasiswa</th>
+                                    <th class="text-center">Persentase</th>
+                                </tr>
+                            </thead>
+                            <tbody id="similarity-results-body">
+                                <!-- Results injected here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -286,6 +317,41 @@
                                 @enderror
                             </div>
 
+                            <hr class="my-3">
+
+                            <div class="mb-3">
+                                <label class="form-label text-dark fw-semibold">Pembimbing 1</label>
+                                <select name="supervisor_id" class="form-select @error('supervisor_id') is-invalid @enderror" required>
+                                    <option value="" disabled selected>Pilih Pembimbing 1...</option>
+                                    @foreach ($lecturers as $lecturer)
+                                        <option value="{{ $lecturer->id }}" {{ $submission->supervisor_id == $lecturer->id ? 'selected' : '' }}>
+                                            {{ $lecturer->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('supervisor_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-dark fw-semibold">Pembimbing 2</label>
+                                <select name="supervisor_2_id" class="form-select @error('supervisor_2_id') is-invalid @enderror">
+                                    <option value="">Pilih Pembimbing 2 (Opsional)...</option>
+                                    @foreach ($lecturers as $lecturer)
+                                        <option value="{{ $lecturer->id }}" {{ $submission->supervisor_2_id == $lecturer->id ? 'selected' : '' }}>
+                                            {{ $lecturer->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('supervisor_2_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="text-muted">Pembimbing 2 bersifat opsional.</small>
+                            </div>
+
+                            <hr class="my-3">
+
                             <div class="mb-3">
                                 <label class="form-label text-dark fw-semibold">Dosen Penilai</label>
                                 <select id="assessor-select" name="assessor_ids[]" multiple required
@@ -424,6 +490,38 @@
                 persist: false,
                 create: false,
             });
+
+            // Similarity Analysis for Kaprodi
+            const title = "{{ $submission->title }}";
+            const excludeId = "{{ $submission->id }}";
+            const resultsBody = document.getElementById('similarity-results-body');
+            const card = document.getElementById('similarity-analysis-card');
+
+            fetch('{{ route('similarity.check') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ title: title, exclude_id: excludeId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.count > 0) {
+                    resultsBody.innerHTML = '';
+                    data.data.forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><span class="fw-medium">${item.title}</span> <span class="badge bg-secondary ms-1 small" style="font-size: 0.6rem;">${item.status}</span></td>
+                            <td><small>${item.student}</small></td>
+                            <td class="text-center"><span class="badge bg-warning text-dark">${item.similarity}%</span></td>
+                        `;
+                        resultsBody.appendChild(tr);
+                    });
+                    card.style.display = 'block';
+                }
+            })
+            .catch(error => console.error('Error fetching similarity data:', error));
         });
     </script>
 @endpush

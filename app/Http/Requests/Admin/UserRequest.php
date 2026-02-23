@@ -34,6 +34,8 @@ class UserRequest extends FormRequest
             'role' => 'required|string|exists:roles,name',
             'program_studi_id' => 'required_if:role,mahasiswa,dosen,kaprodi|nullable|exists:program_studis,id',
             'is_active' => 'boolean',
+            'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'remove_photo' => 'nullable|boolean',
         ];
 
         return $rules;

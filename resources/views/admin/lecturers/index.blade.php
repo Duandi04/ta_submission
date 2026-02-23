@@ -19,15 +19,14 @@
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
                         <input type="text" name="search" class="form-control border-start-0 ps-0"
-                            placeholder="Cari nama, email, atau NIP..." value="{{ request('search') }}">
+                            placeholder="Cari nama, email, atau NIP..." value="{{ request('search') }}" data-auto-search>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <select name="program_studi_id" class="form-select" onchange="this.form.submit()">
+                    <select name="program_studi_id" class="form-select" data-auto-submit>
                         <option value="">-- Semua Program Studi --</option>
                         @foreach ($programStudis as $prodi)
-                            <option value="{{ $prodi->id }}"
-                                {{ request('program_studi_id') == $prodi->id ? 'selected' : '' }}>
+                            <option value="{{ $prodi->id }}" {{ request('program_studi_id') == $prodi->id ? 'selected' : '' }}>
                                 {{ $prodi->name }}
                             </option>
                         @endforeach
@@ -129,8 +128,8 @@
                                                 class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger"
-                                                    data-confirm-delete data-confirm-message="Hapus data dosen ini?">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm-delete
+                                                    data-confirm-message="Hapus data dosen ini?">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>

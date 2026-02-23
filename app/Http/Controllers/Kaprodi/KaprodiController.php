@@ -15,24 +15,45 @@ class KaprodiController extends Controller
     ) {
     }
 
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $students = $this->kaprodiService->getAllStudents();
+        $students = $this->kaprodiService->getAllStudents(
+            10,
+            $request->query('search'),
+            $request->query('sort_by', 'name'),
+            $request->query('sort_order', 'asc')
+        );
         return view('kaprodi.students.index', compact('students'));
     }
 
-    public function submissions()
+    public function submissions(\Illuminate\Http\Request $request)
     {
-        $submissions = $this->kaprodiService->getAllSubmissions();
+        $submissions = $this->kaprodiService->getAllSubmissions(
+            15,
+            $request->query('search'),
+            $request->query('status'),
+            $request->query('sort_by', 'created_at'),
+            $request->query('sort_order', 'desc')
+        );
         return view('kaprodi.submissions.index', compact('submissions'));
     }
 
-    public function studentDetails(int $studentId)
+    public function studentDetails(\Illuminate\Http\Request $request, int $studentId)
     {
         $student = \App\Models\User::findOrFail($studentId);
         $submissions = $this->kaprodiService->getStudentSubmissions($studentId);
         $lecturers = $this->kaprodiService->getLecturers();
-        return view('kaprodi.students.show', compact('student', 'submissions', 'lecturers'));
+
+        // Contextual navigation
+        $query = $this->kaprodiService->getStudentsQuery($request->search);
+        $navigation = \App\Helpers\NavigationHelper::getNavigation(
+            $student,
+            $query,
+            $request->sort_by ?: 'name',
+            $request->sort_order ?: 'asc'
+        );
+
+        return view('kaprodi.students.show', compact('student', 'submissions', 'lecturers', 'navigation'));
     }
 
     public function assignLecturers(KaprodiAssignLecturersRequest $request, int $submissionId)
@@ -47,24 +68,19 @@ class KaprodiController extends Controller
         }
     }
 
-    public function submissionShow(int $submissionId)
+    public function submissionShow(\Illuminate\Http\Request $request, int $submissionId)
     {
         $submission = \App\Models\ThesisSubmission::with(['student', 'files', 'assessments.evaluator', 'assessments.scores'])
             ->findOrFail($submissionId);
 
-        // Navigation logic
-        $prev = \App\Models\ThesisSubmission::where('id', '<', $submissionId)->orderBy('id', 'desc')->first();
-        $next = \App\Models\ThesisSubmission::where('id', '>', $submissionId)->orderBy('id', 'asc')->first();
-        $count = \App\Models\ThesisSubmission::count();
-        $position = \App\Models\ThesisSubmission::where('id', '<=', $submissionId)->count();
-
-        $navigation = [
-            'prev' => $prev?->id,
-            'next' => $next?->id,
-            'current' => $position,
-            'total' => $count,
-            'query' => []
-        ];
+        // Contextual navigation
+        $query = $this->kaprodiService->getSubmissionsQuery($request->search, $request->status);
+        $navigation = \App\Helpers\NavigationHelper::getNavigation(
+            $submission,
+            $query,
+            $request->sort_by ?: 'created_at',
+            $request->sort_order ?: 'desc'
+        );
 
         $lecturers = $this->kaprodiService->getLecturers();
         $rubrics = $this->kaprodiService->getRubrics();

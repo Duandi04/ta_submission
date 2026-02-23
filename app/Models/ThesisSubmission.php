@@ -15,6 +15,7 @@ class ThesisSubmission extends Model
     protected $fillable = [
         'student_id',
         'supervisor_id',
+        'supervisor_2_id',
         'title',
         'abstract',
         'research_field',
@@ -37,7 +38,7 @@ class ThesisSubmission extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['title', 'abstract', 'research_field', 'status', 'submission_date', 'defense_date', 'notes', 'final_score', 'supervisor_id'])
+            ->logOnly(['title', 'abstract', 'research_field', 'status', 'submission_date', 'defense_date', 'notes', 'final_score', 'supervisor_id', 'supervisor_2_id'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
             ->useLogName('submissions');
@@ -54,6 +55,11 @@ class ThesisSubmission extends Model
     public function supervisor()
     {
         return $this->belongsTo(User::class, 'supervisor_id');
+    }
+
+    public function supervisor2()
+    {
+        return $this->belongsTo(User::class, 'supervisor_2_id');
     }
 
     public function files()
@@ -79,6 +85,26 @@ class ThesisSubmission extends Model
     /**
      * Scopes
      */
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function ($q) use ($search) {
+            $q->where('title', 'like', "%{$search}%")
+                ->orWhere('research_field', 'like', "%{$search}%")
+                ->orWhereHas('student', function ($sq) use ($search) {
+                    $sq->where('name', 'like', "%{$search}%")
+                        ->orWhere('nim_nip', 'like', "%{$search}%");
+                });
+        });
+    }
+
+    public function scopeFilterByRequest($query, $request)
+    {
+        return $query->when($request->status, fn($q) => $q->byStatus($request->status))
+            ->when($request->student_id, fn($q) => $q->byStudent($request->student_id))
+            ->when($request->supervisor_id, fn($q) => $q->bySupervisor($request->supervisor_id))
+            ->when($request->search, fn($q) => $q->search($request->search));
+    }
+
     public function scopeByStatus($query, $status)
     {
         return $query->where('status', $status);

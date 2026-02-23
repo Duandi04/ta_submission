@@ -9,7 +9,7 @@
             <p class="text-muted small mb-0">{{ $student->name }} ({{ $student->nim_nip }})</p>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('dosen.students.index') }}" class="btn btn-secondary">
+            <a href="{{ route('dosen.students.index', request()->query()) }}" class="btn btn-outline-secondary shadow-none">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>

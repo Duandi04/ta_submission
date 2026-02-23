@@ -13,7 +13,22 @@ class KaprodiService
     /**
      * Get all students with their submission counts.
      */
-    public function getAllStudents(int $perPage = 10)
+    public function getAllStudents(int $perPage = 10, ?string $search = null, ?string $sortBy = 'name', ?string $sortOrder = 'asc')
+    {
+        return $this->getStudentsQuery($search)
+            ->when($sortBy, function ($query) use ($sortBy, $sortOrder) {
+                return $query->orderBy($sortBy, $sortOrder ?: 'asc');
+            }, function ($query) {
+                return $query->latest();
+            })
+            ->paginate($perPage)
+            ->withQueryString();
+    }
+
+    /**
+     * Get the base query for all students (scoped to prodi).
+     */
+    public function getStudentsQuery(?string $search = null)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
@@ -23,28 +38,57 @@ class KaprodiService
             ->when($prodiId, function ($query) use ($prodiId) {
                 return $query->where('program_studi_id', $prodiId);
             })
-            ->withCount('thesisSubmissions')
-            ->latest()
-            ->paginate($perPage);
+            ->when($search, function ($query) use ($search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('nim_nip', 'like', "%{$search}%");
+                });
+            })
+            ->withCount('thesisSubmissions');
     }
 
     /**
      * Get all submissions (scoped to prodi).
      */
-    public function getAllSubmissions(int $perPage = 15)
+    public function getAllSubmissions(int $perPage = 15, ?string $search = null, ?string $status = null, ?string $sortBy = 'created_at', ?string $sortOrder = 'desc')
+    {
+        return $this->getSubmissionsQuery($search, $status)
+            ->when($sortBy, function ($query) use ($sortBy, $sortOrder) {
+                return $query->orderBy($sortBy, $sortOrder ?: 'asc');
+            }, function ($query) {
+                return $query->latest();
+            })
+            ->paginate($perPage)
+            ->withQueryString();
+    }
+
+    /**
+     * Get the base query for all submissions (scoped to prodi).
+     */
+    public function getSubmissionsQuery(?string $search = null, ?string $status = null)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
         $prodiId = $user->program_studi_id;
 
-        return ThesisSubmission::with(['student', 'student.programStudi', 'files']) // files needed for listing? maybe "latest file"
+        return ThesisSubmission::with(['student', 'student.programStudi', 'files'])
             ->when($prodiId, function ($query) use ($prodiId) {
                 return $query->whereHas('student', function ($q) use ($prodiId) {
                     $q->where('program_studi_id', $prodiId);
                 });
             })
-            ->latest()
-            ->paginate($perPage);
+            ->when($search, function ($query) use ($search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                        ->orWhereHas('student', function ($sq) use ($search) {
+                            $sq->where('name', 'like', "%{$search}%")
+                                ->orWhere('nim_nip', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($status, function ($query) use ($status) {
+                return $query->where('status', $status);
+            });
     }
 
     /**
@@ -119,7 +163,11 @@ class KaprodiService
             throw new \Exception('Mahasiswa belum melakukan submit pengajuan (final) atau status tidak valid untuk penetapan dosen.');
         }
 
-        $submission->update(['rubric_id' => $rubricId]);
+        $submission->update([
+            'rubric_id' => $rubricId,
+            'supervisor_id' => $data['supervisor_id'] ?? $submission->supervisor_id,
+            'supervisor_2_id' => $data['supervisor_2_id'] ?? $submission->supervisor_2_id,
+        ]);
 
         // Delete old assessments that are not in the new list
         \App\Models\Assessment::where('thesis_submission_id', $submission->id)
