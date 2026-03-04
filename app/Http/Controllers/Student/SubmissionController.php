@@ -56,7 +56,7 @@ class SubmissionController extends Controller
         $user = \Illuminate\Support\Facades\Auth::user();
         abort_if($submission->student_id !== $user->id, 403);
 
-        $submission->load(['supervisor', 'files', 'assessments.evaluator', 'comments.user', 'statuses.changer']);
+        $submission->load(['supervisor', 'files', 'assessments.evaluator', 'statuses.changer']);
 
         $navigation = \App\Helpers\NavigationHelper::getNavigation(
             $submission,

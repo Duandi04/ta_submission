@@ -20,8 +20,9 @@
         </div>
     </div>
 
+    @php $hasSidebar = $submission->status === 'draft'; @endphp
     <div class="row">
-        <div class="col-md-8">
+        <div class="{{ $hasSidebar ? 'col-md-8' : 'col-md-12' }}">
             <!-- Main Info Card -->
             <div class="card mb-3">
                 <div class="card-header">
@@ -41,7 +42,7 @@
                             <th width="200">Pembimbing 1</th>
                             <td>: {{ $submission->supervisor->name ?? 'Belum ditentukan' }}</td>
                         </tr>
-                        @if($submission->supervisor_2_id)
+                        @if ($submission->supervisor_2_id)
                             <tr>
                                 <th>Pembimbing 2</th>
                                 <td>: {{ $submission->supervisor2->name }}</td>
@@ -192,62 +193,21 @@
                         <div class="modal fade" id="uploadRevisionModal" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <form action="{{ route('student.submissions.revision', $submission->id) }}" method="POST"
-                                        enctype="multipart/form-data">
+                                    <form action="{{ route('student.submissions.revision', $submission->id) }}"
+                                        method="POST" enctype="multipart/form-data">
                                         @csrf
+                                        <input type="hidden" name="upload_type" value="local">
                                         <div class="modal-header">
                                             <h5 class="modal-title">Unggah File Revisi</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <div class="mb-4">
-                                                <label class="form-label d-block">Metode Upload <span
-                                                        class="text-danger">*</span></label>
-                                                <div class="btn-group w-100" role="group">
-                                                    <input type="radio" class="btn-check" name="upload_type"
-                                                        id="rev_upload_local" value="local" checked autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="rev_upload_local">Lokal</label>
-
-                                                    <input type="radio" class="btn-check" name="upload_type"
-                                                        id="rev_upload_drive" value="drive" autocomplete="off">
-                                                    <label class="btn btn-outline-primary" for="rev_upload_drive">Drive</label>
-                                                </div>
-                                            </div>
-
-                                            <div id="rev_local_section">
-                                                <div class="mb-3">
-                                                    <label class="form-label">Pilih File Revisi (PDF/Doc/Docx)</label>
-                                                    <input type="file" name="revision_file" id="revision_file"
-                                                        class="form-control">
-                                                    <small class="text-muted">Maksimal 10MB</small>
-                                                </div>
-                                            </div>
-
-                                            <div id="rev_drive_section" style="display: none;">
-                                                <div class="mb-3">
-                                                    <label class="form-label">File dari Google Drive <span
-                                                            class="text-danger">*</span></label>
-                                                    <div class="d-grid">
-                                                        <button type="button" id="google_picker_btn"
-                                                            class="btn btn-outline-dark">
-                                                            <i class="bi bi-google me-2"></i> Pilih dari Drive
-                                                        </button>
-                                                    </div>
-                                                    <div id="selected_drive_file" class="mt-2 p-2 border rounded bg-light"
-                                                        style="display: none;">
-                                                        <div class="d-flex justify-content-between align-items-center">
-                                                            <div class="text-truncate me-2">
-                                                                <i class="bi bi-file-earmark-text me-2"></i>
-                                                                <span id="drive_file_name" class="fw-medium small"></span>
-                                                            </div>
-                                                            <button type="button" id="clear_drive_selection"
-                                                                class="btn btn-sm btn-link text-danger p-0">Batal</button>
-                                                        </div>
-                                                    </div>
-                                                    <input type="hidden" name="google_file_id" id="google_file_id">
-                                                    <input type="hidden" name="google_access_token" id="google_access_token">
-                                                </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Pilih File Revisi (PDF/Doc/Docx)</label>
+                                                <input type="file" name="revision_file" id="revision_file"
+                                                    class="form-control" required>
+                                                <small class="text-muted">Maksimal 10MB</small>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -263,7 +223,8 @@
                         @if ($proposalFile && str_contains($proposalFile->mime_type, 'pdf'))
                             <div class="pdf-preview-container mt-4">
                                 <h6 class="mb-3"><i class="bi bi-eye"></i> Pratinjau Proposal (PDF)</h6>
-                                <div class="ratio ratio-16x9 border rounded overflow-hidden shadow-sm" style="height: 600px;">
+                                <div class="ratio ratio-16x9 border rounded overflow-hidden shadow-sm"
+                                    style="height: 600px;">
                                     <iframe src="{{ route('files.preview', $proposalFile) }}#toolbar=0"
                                         title="PDF Preview"></iframe>
                                 </div>
@@ -316,166 +277,92 @@
             @endif
         </div>
 
-        <div class="col-md-4">
-            <!-- Submit Button (Only for Draft) -->
-            @if ($submission->status === 'draft')
-                <div class="card border-success mb-3">
-                    <div class="card-header bg-success text-white">
-                        <i class="bi bi-send"></i> Ajukan Proposal
-                    </div>
-                    <div class="card-body">
-                        <p class="small text-muted mb-3">Jika Anda yakin dengan draft ini, silakan ajukan untuk direview
-                            oleh Kaprodi.</p>
-                        <form action="{{ route('student.submissions.submit', $submission) }}" method="POST"
-                            onsubmit="return confirm('Apakah Anda yakin ingin mengajukan proposal ini? Proposal yang sudah diajukan tidak dapat diedit kembali sampai ada revisi.')">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" class="btn btn-success w-100">
+        @if ($hasSidebar)
+            <div class="col-md-4">
+                <!-- Submit Button (Only for Draft) -->
+                @if ($submission->status === 'draft')
+                    <div class="card border-success mb-3">
+                        <div class="card-header bg-success text-white">
+                            <i class="bi bi-send"></i> Ajukan Proposal
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted mb-3">Jika Anda yakin dengan draft ini, silakan ajukan untuk
+                                direview
+                                oleh Kaprodi.</p>
+                            <div class="alert alert-warning py-2 px-3 mb-3 d-flex align-items-start gap-2">
+                                <i class="bi bi-exclamation-triangle-fill mt-1 flex-shrink-0"></i>
+                                <small>Setelah diajukan, pengajuan <strong>tidak dapat dibatalkan</strong>.</small>
+                            </div>
+                            <button type="button" class="btn btn-success w-100" data-bs-toggle="modal"
+                                data-bs-target="#confirmSubmitModal">
                                 <i class="bi bi-send me-1"></i> Ajukan Sekarang
                             </button>
-                        </form>
+                        </div>
                     </div>
-                </div>
-            @endif
 
-            <!-- Cancel Submission Button -->
-            @if (in_array($submission->status, ['draft', 'submitted']))
-                <div class="card border-danger">
-                    <div class="card-header bg-danger text-white">
-                        <i class="bi bi-x-circle"></i> Batalkan Pengajuan
+                    {{-- Confirm Submit Modal --}}
+                    <div class="modal fade" id="confirmSubmitModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header border-0 pb-0">
+                                    <h5 class="modal-title fw-bold">
+                                        <i class="bi bi-send-check me-2 text-success"></i>Konfirmasi Pengajuan
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="mb-3">Anda akan mengajukan proposal berikut:</p>
+                                    <div class="bg-light rounded p-3 mb-3">
+                                        <strong class="small d-block text-truncate">{{ $submission->title }}</strong>
+                                    </div>
+                                    <div class="alert alert-danger py-2 px-3 d-flex align-items-start gap-2 mb-0">
+                                        <i class="bi bi-exclamation-octagon-fill mt-1 flex-shrink-0"></i>
+                                        <small><strong>Perhatian:</strong> Setelah diajukan, pengajuan ini <strong>tidak
+                                                dapat dibatalkan</strong> dan tidak dapat diedit kembali sampai ada
+                                            instruksi revisi dari Kaprodi.</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-0 pt-0">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Kembali</button>
+                                    <form action="{{ route('student.submissions.submit', $submission) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="bi bi-send me-1"></i> Ya, Ajukan Sekarang
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <p class="small text-muted mb-3">Anda dapat membatalkan pengajuan ini jika masih dalam status Draft
-                            atau Sudah Diajukan.</p>
-                        <form action="{{ route('student.submissions.cancel', $submission) }}" method="POST"
-                            onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pengajuan ini?')">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" class="btn btn-outline-danger w-100">
-                                <i class="bi bi-x-circle me-1"></i> Batalkan Pengajuan
-                            </button>
-                        </form>
+                @endif
+
+                <!-- Cancel Submission Button -->
+                @if ($submission->status === 'draft')
+                    <div class="card border-danger">
+                        <div class="card-header bg-danger text-white">
+                            <i class="bi bi-x-circle"></i> Batalkan Pengajuan
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted mb-3">Anda dapat membatalkan pengajuan ini selama masih dalam status
+                                Draft.</p>
+                            <form action="{{ route('student.submissions.cancel', $submission) }}" method="POST"
+                                onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pengajuan ini?')">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn btn-outline-danger w-100">
+                                    <i class="bi bi-x-circle me-1"></i> Batalkan Pengajuan
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            @endif
-        </div>
+                @endif
+            </div>
+        @endif
     </div>
 @endsection
 
 @push('scripts')
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script>
-        const GOOGLE_CLIENT_ID = "{{ env('GOOGLE_CLIENT_ID') }}";
-        const GOOGLE_API_KEY = "{{ env('GOOGLE_API_KEY') }}";
-        const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
-
-        let tokenClient;
-        let accessToken = null;
-        let pickerApiLoaded = false;
-        let gapiLoaded = false;
-
-        // Toggle logic for revision modal
-        document.querySelectorAll('input[name="upload_type"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                if (e.target.value === 'local') {
-                    document.getElementById('rev_local_section').style.display = 'block';
-                    document.getElementById('rev_drive_section').style.display = 'none';
-                    document.getElementById('revision_file').required = true;
-                } else {
-                    document.getElementById('rev_local_section').style.display = 'none';
-                    document.getElementById('rev_drive_section').style.display = 'block';
-                    document.getElementById('revision_file').required = false;
-                }
-            });
-        });
-
-        function gapiLoaded_callback() {
-            gapi.load('picker', () => {
-                pickerApiLoaded = true;
-            });
-        }
-
-        function gisLoaded_callback() {
-            tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: GOOGLE_CLIENT_ID,
-                scope: SCOPES,
-                callback: (path) => {
-                    if (path.error !== undefined) {
-                        throw (path);
-                    }
-                    accessToken = path.access_token;
-                    document.getElementById('google_access_token').value = accessToken;
-                    createPicker();
-                },
-            });
-            gapiLoaded = true;
-        }
-
-        window.onload = function () {
-            gapiLoaded_callback();
-            gisLoaded_callback();
-        };
-
-        const googlePickerBtn = document.getElementById('google_picker_btn');
-        if (googlePickerBtn) {
-            googlePickerBtn.addEventListener('click', () => {
-                if (!GOOGLE_CLIENT_ID || !GOOGLE_API_KEY) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Konfigurasi Google Belum Lengkap',
-                        text: 'Silakan atur GOOGLE_CLIENT_ID dan GOOGLE_API_KEY di file .env'
-                    });
-                    return;
-                }
-
-                if (accessToken === null) {
-                    tokenClient.requestAccessToken({ prompt: 'consent' });
-                } else {
-                    createPicker();
-                }
-            });
-        }
-
-        function createPicker() {
-            const view = new google.picker.View(google.picker.ViewId.DOCS);
-            view.setMimeTypes("application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-
-            const picker = new google.picker.PickerBuilder()
-                .enableFeature(google.picker.Feature.NAV_HIDDEN)
-                .setDeveloperKey(GOOGLE_API_KEY)
-                .setAppId(GOOGLE_CLIENT_ID)
-                .setOAuthToken(accessToken)
-                .addView(view)
-                .setCallback(pickerCallback)
-                .build();
-            picker.setVisible(true);
-        }
-
-        function pickerCallback(data) {
-            if (data.action == google.picker.Action.PICKED) {
-                const doc = data.docs[0];
-                const fileId = doc.id;
-                const fileName = doc.name;
-
-                document.getElementById('google_file_id').value = fileId;
-                document.getElementById('drive_file_name').innerText = fileName;
-                document.getElementById('selected_drive_file').style.display = 'block';
-                document.getElementById('google_picker_btn').classList.add('btn-success');
-                document.getElementById('google_picker_btn').classList.remove('btn-outline-dark');
-                document.getElementById('google_picker_btn').innerHTML = '<i class="bi bi-check-circle me-2"></i> File Terpilih';
-            }
-        }
-
-        const clearBtn = document.getElementById('clear_drive_selection');
-        if (clearBtn) {
-            clearBtn.addEventListener('click', () => {
-                document.getElementById('google_file_id').value = '';
-                document.getElementById('selected_drive_file').style.display = 'none';
-                document.getElementById('google_picker_btn').classList.remove('btn-success');
-                document.getElementById('google_picker_btn').classList.add('btn-outline-dark');
-                document.getElementById('google_picker_btn').innerHTML = '<i class="bi bi-google me-2"></i> Pilih dari Drive';
-            });
-        }
-    </script>
 @endpush
