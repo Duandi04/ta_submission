@@ -68,6 +68,18 @@ class KaprodiController extends Controller
         }
     }
 
+    public function acceptSubmission(\App\Http\Requests\Kaprodi\KaprodiAcceptSubmissionRequest $request, int $submissionId)
+    {
+        $data = $request->validated();
+
+        try {
+            $this->kaprodiService->acceptSubmission($submissionId, $data);
+            return back()->with('success', 'Pengajuan berhasil diterima dan dosen pembimbing telah ditetapkan.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
     public function submissionShow(\Illuminate\Http\Request $request, int $submissionId)
     {
         $submission = \App\Models\ThesisSubmission::with(['student', 'files', 'assessments.evaluator', 'assessments.scores'])

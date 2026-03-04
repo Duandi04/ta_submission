@@ -22,11 +22,16 @@ class NavigationHelper
             $query = $model->newQuery();
         }
 
-        // Apply default sorting if not provided and not already sorted in query
+        $keyName = $model->getTable() . '.' . $model->getKeyName();
+
         if ($orderBy) {
             $query->orderBy($orderBy, $direction ?: 'asc');
-        } elseif (empty($query->getQuery()->orders)) {
-            $query->orderBy($model->getKeyName(), 'asc');
+        } 
+        
+        // Add fallback sorting by ID to guarantee deterministic ordering
+        // This prevents random jumping when sorting by non-unique columns (e.g. created_at)
+        if ($orderBy !== $model->getKeyName() && $orderBy !== $keyName) {
+            $query->orderBy($keyName, $direction ?: 'desc');
         }
 
         $allIds = (clone $query)->pluck($model->getKeyName())->toArray();

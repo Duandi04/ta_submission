@@ -10,9 +10,10 @@
         </div>
         <div class="btn-toolbar mb-2 mb-md-0 align-items-center">
             @include('partials.record-navigation', ['route' => 'kaprodi.submissions.show'])
-                <a href="{{ route('kaprodi.submissions.index', request()->query()) }}" class="btn btn-outline-secondary shadow-none">
-                    <i class="bi bi-arrow-left"></i> Kembali
-                </a>
+            <a href="{{ route('kaprodi.submissions.index', request()->query()) }}"
+                class="btn btn-outline-secondary shadow-none">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
         </div>
     </div>
 
@@ -27,13 +28,8 @@
                     <p class="text-muted small mb-3">
                         <i class="bi bi-tag me-1"></i>{{ $submission->research_field ?? 'Umum' }}
                         <span class="mx-2">|</span>
-                        <span class="badge bg-{{ $submission->getStatusBadgeClass() }}">{{ $submission->getStatusLabel() }}</span>
-                        <span class="mx-2">|</span>
-                        <span class="text-muted small"><i class="bi bi-person-badge me-1"></i>P1: {{ $submission->supervisor->name ?? '-' }}</span>
-                        @if($submission->supervisor_2_id)
-                        <span class="mx-2">|</span>
-                        <span class="text-muted small"><i class="bi bi-person-badge me-1"></i>P2: {{ $submission->supervisor2->name }}</span>
-                        @endif
+                        <span
+                            class="badge bg-{{ $submission->getStatusBadgeClass() }}">{{ $submission->getStatusLabel() }}</span>
                     </p>
                     <hr>
                     <h6 class="fw-bold mb-2">Abstrak</h6>
@@ -61,8 +57,8 @@
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @endif
-                                        <a href="{{ route('files.download', $file) }}" class="btn btn-sm btn-outline-secondary"
-                                            title="Download">
+                                        <a href="{{ route('files.download', $file) }}"
+                                            class="btn btn-sm btn-outline-secondary" title="Download">
                                             <i class="bi bi-download"></i>
                                         </a>
                                     </li>
@@ -84,8 +80,8 @@
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @endif
-                                        <a href="{{ route('files.download', $file) }}" class="btn btn-sm btn-outline-secondary"
-                                            title="Download">
+                                        <a href="{{ route('files.download', $file) }}"
+                                            class="btn btn-sm btn-outline-secondary" title="Download">
                                             <i class="bi bi-download"></i>
                                         </a>
                                     </li>
@@ -93,9 +89,6 @@
                             </ul>
                         @endif
                     @endif
-                </div>
-            </div>
-
                 </div>
             </div>
 
@@ -144,16 +137,16 @@
                                         <tr>
                                             <td class="ps-3 align-middle">
                                                 <div class="fw-bold">{{ $assessment->evaluator->name ?? 'N/A' }}</div>
-                                                <span
-                                                    class="badge bg-secondary text-white small">{{ $assessment->getEvaluatorTypeLabel() }}</span>
                                             </td>
                                             <td class="text-center align-middle">
                                                 @if ($assessment->is_submitted)
-                                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                                    <span
+                                                        class="badge bg-success-subtle text-success border border-success-subtle">
                                                         <i class="bi bi-check-circle-fill me-1"></i>Selesai
                                                     </span>
                                                 @else
-                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
+                                                    <span
+                                                        class="badge bg-warning-subtle text-warning border border-warning-subtle">
                                                         <i class="bi bi-hourglass-split me-1"></i>Belum Dinilai
                                                     </span>
                                                 @endif
@@ -200,11 +193,13 @@
                                                                 <tbody>
                                                                     @foreach ($assessment->scores as $score)
                                                                         @php
-                                                                            $contribution = ($score->score * $score->weight) / 100;
+                                                                            $contribution =
+                                                                                ($score->score * $score->weight) / 100;
                                                                         @endphp
                                                                         <tr>
                                                                             <td class="ps-3">
-                                                                                <span class="fw-semibold">{{ $score->criterion_name }}</span>
+                                                                                <span
+                                                                                    class="fw-semibold">{{ $score->criterion_name }}</span>
                                                                                 @if ($score->criterion_description)
                                                                                     <div class="text-muted small fst-italic"
                                                                                         style="font-size: 0.8rem;">
@@ -212,7 +207,8 @@
                                                                                     </div>
                                                                                 @endif
                                                                             </td>
-                                                                            <td class="text-center">{{ number_format($score->weight, 0) }}%
+                                                                            <td class="text-center">
+                                                                                {{ number_format($score->weight, 0) }}%
                                                                             </td>
                                                                             <td class="text-center">
                                                                                 {{ number_format($score->score, 1) }}
@@ -265,19 +261,22 @@
                                     <h6 class="fw-bold">{{ $assessment->evaluator->name }}</h6>
                                     @if ($assessment->strengths)
                                         <div class="mb-2">
-                                            <strong class="text-success small"><i class="bi bi-plus-circle me-1"></i>Kelebihan:</strong>
+                                            <strong class="text-success small"><i
+                                                    class="bi bi-plus-circle me-1"></i>Kelebihan:</strong>
                                             <p class="mb-1 small">{{ $assessment->strengths }}</p>
                                         </div>
                                     @endif
                                     @if ($assessment->weaknesses)
                                         <div class="mb-2">
-                                            <strong class="text-danger small"><i class="bi bi-dash-circle me-1"></i>Kekurangan:</strong>
+                                            <strong class="text-danger small"><i
+                                                    class="bi bi-dash-circle me-1"></i>Kekurangan:</strong>
                                             <p class="mb-1 small">{{ $assessment->weaknesses }}</p>
                                         </div>
                                     @endif
                                     @if ($assessment->comments)
                                         <div class="mb-0">
-                                            <strong class="text-secondary small"><i class="bi bi-chat-left-text me-1"></i>Catatan:</strong>
+                                            <strong class="text-secondary small"><i
+                                                    class="bi bi-chat-left-text me-1"></i>Catatan:</strong>
                                             <p class="mb-0 small">{{ $assessment->comments }}</p>
                                         </div>
                                     @endif
@@ -299,15 +298,18 @@
                 </div>
                 <div class="card-body">
                     @if ($submission->status === 'submitted')
-                        <form action="{{ route('kaprodi.submissions.assign-lecturers', $submission->id) }}" method="POST"
+                        <form action="{{ route('kaprodi.submissions.assign-lecturers', $submission->id) }}"
+                            method="POST"
                             onsubmit="return confirm('Apakah Anda yakin ingin menyimpan perubahan? \n\nPERINGATAN: Setelah disimpan, Anda TIDAK DAPAT MENGUBAH dosen penilai lagi.')">
                             @csrf
                             <div class="mb-3">
                                 <label class="form-label text-dark fw-semibold">Pilih Rubrik Penilaian</label>
-                                <select name="rubric_id" class="form-select @error('rubric_id') is-invalid @enderror" required>
+                                <select name="rubric_id" class="form-select @error('rubric_id') is-invalid @enderror"
+                                    required>
                                     <option value="" disabled selected>Pilih Rubrik...</option>
                                     @foreach ($rubrics as $rubric)
-                                        <option value="{{ $rubric->id }}" {{ $submission->rubric_id == $rubric->id ? 'selected' : '' }}>
+                                        <option value="{{ $rubric->id }}"
+                                            {{ $submission->rubric_id == $rubric->id ? 'selected' : '' }}>
                                             {{ $rubric->name }}
                                         </option>
                                     @endforeach
@@ -317,40 +319,7 @@
                                 @enderror
                             </div>
 
-                            <hr class="my-3">
 
-                            <div class="mb-3">
-                                <label class="form-label text-dark fw-semibold">Pembimbing 1</label>
-                                <select name="supervisor_id" class="form-select @error('supervisor_id') is-invalid @enderror" required>
-                                    <option value="" disabled selected>Pilih Pembimbing 1...</option>
-                                    @foreach ($lecturers as $lecturer)
-                                        <option value="{{ $lecturer->id }}" {{ $submission->supervisor_id == $lecturer->id ? 'selected' : '' }}>
-                                            {{ $lecturer->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('supervisor_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label text-dark fw-semibold">Pembimbing 2</label>
-                                <select name="supervisor_2_id" class="form-select @error('supervisor_2_id') is-invalid @enderror">
-                                    <option value="">Pilih Pembimbing 2 (Opsional)...</option>
-                                    @foreach ($lecturers as $lecturer)
-                                        <option value="{{ $lecturer->id }}" {{ $submission->supervisor_2_id == $lecturer->id ? 'selected' : '' }}>
-                                            {{ $lecturer->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('supervisor_2_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                                <small class="text-muted">Pembimbing 2 bersifat opsional.</small>
-                            </div>
-
-                            <hr class="my-3">
 
                             <div class="mb-3">
                                 <label class="form-label text-dark fw-semibold">Dosen Penilai</label>
@@ -362,7 +331,8 @@
                                             ->toArray();
                                     @endphp
                                     @foreach ($lecturers as $lecturer)
-                                        <option value="{{ $lecturer->id }}" {{ in_array($lecturer->id, $currentAssessorIds) ? 'selected' : '' }}>
+                                        <option value="{{ $lecturer->id }}"
+                                            {{ in_array($lecturer->id, $currentAssessorIds) ? 'selected' : '' }}>
                                             {{ $lecturer->name }}
                                         </option>
                                     @endforeach
@@ -377,42 +347,110 @@
                                 <i class="bi bi-save me-1"></i> Simpan Perubahan
                             </button>
                         </form>
-                    @elseif (in_array($submission->status, ['under_review', 'completed', 'cancelled']))
+                    @elseif ($submission->status === 'under_review')
+                        @php
+                            $allAssessed =
+                                $submission->assessments->count() > 0 &&
+                                $submission->assessments->where('is_submitted', false)->count() === 0;
+                        @endphp
+                        @if ($allAssessed)
+                            <div class="alert alert-success mb-3">
+                                <i class="bi bi-check-circle me-1"></i> Semua dosen penilai telah memberikan nilai.
+                                Anda
+                                sekarang dapat menetapkan dosen pembimbing dan menerima pengajuan ini.
+                            </div>
+                            <form action="{{ route('kaprodi.submissions.accept', $submission->id) }}" method="POST"
+                                onsubmit="return confirm('Apakah Anda yakin ingin menerima pengajuan ini dan menetapkan dosen pembimbing?')">
+                                @csrf
+                                <div class="mb-3">
+                                    <label class="form-label text-dark fw-semibold">Pembimbing 1</label>
+                                    <select name="supervisor_id"
+                                        class="form-select @error('supervisor_id') is-invalid @enderror" required>
+                                        <option value="" disabled selected>Pilih Pembimbing 1...</option>
+                                        @foreach ($lecturers as $lecturer)
+                                            <option value="{{ $lecturer->id }}"
+                                                {{ $submission->supervisor_id == $lecturer->id ? 'selected' : '' }}>
+                                                {{ $lecturer->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('supervisor_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label text-dark fw-semibold">Pembimbing 2</label>
+                                    <select name="supervisor_2_id"
+                                        class="form-select @error('supervisor_2_id') is-invalid @enderror">
+                                        <option value="">Pilih Pembimbing 2 (Opsional)...</option>
+                                        @foreach ($lecturers as $lecturer)
+                                            <option value="{{ $lecturer->id }}"
+                                                {{ $submission->supervisor_2_id == $lecturer->id ? 'selected' : '' }}>
+                                                {{ $lecturer->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('supervisor_2_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="text-muted">Pembimbing 2 bersifat opsional.</small>
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100 mb-3">
+                                    <i class="bi bi-check-circle me-1"></i> Terima Pengajuan & Tetapkan Pembimbing
+                                </button>
+                            </form>
+
+                            <h6 class="fw-bold mt-4 border-bottom pb-2">Daftar Penilai</h6>
+                            <ul class="list-group list-group-flush mt-2">
+                                @foreach ($submission->assessments as $assessment)
+                                    <li class="list-group-item bg-transparent px-0 border-0 py-1">
+                                        <i class="bi bi-person-check text-success me-2"></i>
+                                        <span class="small">{{ $assessment->evaluator->name }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <div class="alert alert-info mb-0 alert-persistent">
+                                <i class="bi bi-info-circle me-1"></i> Dosen penilai sedang melakukan penilaian. Anda
+                                dapat
+                                menetapkan dosen pembimbing setelah semua nilai terkumpul.
+                            </div>
+                            <ul class="list-group list-group-flush mt-3">
+                                @foreach ($submission->assessments as $assessment)
+                                    <li class="list-group-item bg-transparent px-0 border-0 py-1">
+                                        <i
+                                            class="bi {{ $assessment->is_submitted ? 'bi-person-check text-success' : 'bi-hourglass-split text-warning' }} me-2"></i>
+                                        <span class="small">{{ $assessment->evaluator->name }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    @elseif (in_array($submission->status, ['completed', 'cancelled']))
                         <div class="alert alert-info mb-0 alert-persistent">
-                            <i class="bi bi-info-circle me-1"></i> Dosen penilai sudah ditetapkan. Anda tidak dapat
-                            mengubahnya lagi karena proses penilaian sedang berlangsung atau sudah selesai.
+                            <i class="bi bi-info-circle me-1"></i> Dosen penilai dan dosen pembimbing sudah ditetapkan.
+                            Pengajuan ini telah diproses (Selesai/Dibatalkan).
                         </div>
                         <ul class="list-group list-group-flush mt-3">
                             @foreach ($submission->assessments as $assessment)
                                 <li class="list-group-item bg-transparent px-0 border-0 py-1">
                                     <i class="bi bi-person-check text-success me-2"></i>
                                     <span class="small">{{ $assessment->evaluator->name }}</span>
-                                    <span class="badge bg-secondary-subtle text-secondary float-end" style="font-size: 0.65rem;">
-                                        {{ $assessment->getEvaluatorTypeLabel() }}
-                                    </span>
                                 </li>
                             @endforeach
                         </ul>
                     @else
                         <div class="text-center py-4">
                             <i class="bi bi-hourglass-top text-muted fs-2 d-block mb-3"></i>
-                            <p class="text-muted small mb-0">Dosen penilai dapat diatur setelah mahasiswa mengajukan (submit)
+                            <p class="text-muted small mb-0">Dosen penilai dapat diatur setelah mahasiswa mengajukan
+                                (submit)
                                 pengajuan ini.</p>
                             <span class="badge bg-secondary mt-2">{{ $submission->getStatusLabel() }}</span>
                         </div>
                     @endif
                 </div>
             </div>
-
-            @if ($submission->final_score)
-                <div class="card border-0 shadow-sm bg-success-subtle mb-4">
-                    <div class="card-body text-center">
-                        <h6 class="text-success mb-1">Nilai Akhir</h6>
-                        <h2 class="fw-bold text-success mb-0">{{ number_format($submission->final_score, 1) }}
-                        </h2>
-                    </div>
-                </div>
-            @endif
 
             @php
                 $latestFile = $submission->getLatestFile();
@@ -440,7 +478,8 @@
                                     <i class="bi bi-eye me-1"></i> Preview
                                 </a>
                             @endif
-                            <a href="{{ route('files.download', $latestFile) }}" class="btn btn-outline-secondary flex-grow-1">
+                            <a href="{{ route('files.download', $latestFile) }}"
+                                class="btn btn-outline-secondary flex-grow-1">
                                 <i class="bi bi-download me-1"></i> Download
                             </a>
                         </div>
@@ -449,50 +488,54 @@
             @endif
 
 
+
+
         </div>
-    </div>
-@endsection
+    @endsection
 
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            new TomSelect('#assessor-select', {
-                plugins: ['remove_button'],
-                persist: false,
-                create: false,
-            });
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                new TomSelect('#assessor-select', {
+                    plugins: ['remove_button'],
+                    persist: false,
+                    create: false,
+                });
 
-            // Similarity Analysis for Kaprodi
-            const title = "{{ $submission->title }}";
-            const excludeId = "{{ $submission->id }}";
-            const resultsBody = document.getElementById('similarity-results-body');
-            const card = document.getElementById('similarity-analysis-card');
+                // Similarity Analysis for Kaprodi
+                const title = "{{ $submission->title }}";
+                const excludeId = "{{ $submission->id }}";
+                const resultsBody = document.getElementById('similarity-results-body');
+                const card = document.getElementById('similarity-analysis-card');
 
-            fetch('{{ route('similarity.check') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ title: title, exclude_id: excludeId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.count > 0) {
-                    resultsBody.innerHTML = '';
-                    data.data.forEach(item => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
+                fetch('{{ route('similarity.check') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            title: title,
+                            exclude_id: excludeId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.count > 0) {
+                            resultsBody.innerHTML = '';
+                            data.data.forEach(item => {
+                                const tr = document.createElement('tr');
+                                tr.innerHTML = `
                             <td><span class="fw-medium">${item.title}</span> <span class="badge bg-secondary ms-1 small" style="font-size: 0.6rem;">${item.status}</span></td>
                             <td><small>${item.student}</small></td>
                             <td class="text-center"><span class="badge bg-warning text-dark">${item.similarity}%</span></td>
                         `;
-                        resultsBody.appendChild(tr);
-                    });
-                    card.style.display = 'block';
-                }
-            })
-            .catch(error => console.error('Error fetching similarity data:', error));
-        });
-    </script>
-@endpush
+                                resultsBody.appendChild(tr);
+                            });
+                            card.style.display = 'block';
+                        }
+                    })
+                    .catch(error => console.error('Error fetching similarity data:', error));
+            });
+        </script>
+    @endpush

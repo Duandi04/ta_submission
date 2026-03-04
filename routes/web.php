@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\SubmissionController as AdminSubmissionController
 use App\Http\Controllers\Dosen\AssessmentController;
 use App\Http\Controllers\Dosen\SubmissionController as DosenSubmissionController;
 use App\Http\Controllers\Kaprodi\KaprodiController;
+use App\Http\Controllers\Kaprodi\StudentController as KaprodiStudentController;
+use App\Http\Controllers\Kaprodi\LecturerController as KaprodiLecturerController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,12 +56,33 @@ Route::middleware('auth')->group(function () {
 
     // Kaprodi routes
     Route::middleware('role:kaprodi')->prefix('kaprodi')->name('kaprodi.')->group(function () {
+        // Management Routes (Students & Lecturers)
+        Route::resource('students/manage', KaprodiStudentController::class)->names([
+            'index' => 'students.manage.index',
+            'create' => 'students.manage.create',
+            'store' => 'students.manage.store',
+            'show' => 'students.manage.show',
+            'edit' => 'students.manage.edit',
+            'update' => 'students.manage.update',
+            'destroy' => 'students.manage.destroy',
+        ]);
+        Route::resource('lecturers/manage', KaprodiLecturerController::class)->names([
+            'index' => 'lecturers.manage.index',
+            'create' => 'lecturers.manage.create',
+            'store' => 'lecturers.manage.store',
+            'show' => 'lecturers.manage.show',
+            'edit' => 'lecturers.manage.edit',
+            'update' => 'lecturers.manage.update',
+            'destroy' => 'lecturers.manage.destroy',
+        ]);
+
         Route::get('/students', [KaprodiController::class, 'index'])->name('students.index');
         Route::get('/submissions', [KaprodiController::class, 'submissions'])->name('submissions.index');
         Route::get('/students/{student}', [KaprodiController::class, 'studentDetails'])->name('students.show');
         Route::get('/submissions/{submission}', [KaprodiController::class, 'submissionShow'])->name('submissions.show');
         Route::get('/assessments/{assessment}', [KaprodiController::class, 'assessmentShow'])->name('assessments.show');
         Route::post('/submissions/{submission}/assign-lecturers', [KaprodiController::class, 'assignLecturers'])->name('submissions.assign-lecturers');
+        Route::post('/submissions/{submission}/accept', [KaprodiController::class, 'acceptSubmission'])->name('submissions.accept');
         Route::get('/settings', [KaprodiController::class, 'settings'])->name('settings.index');
         Route::post('/settings', [KaprodiController::class, 'updateSettings'])->name('settings.update');
         Route::get('/rubrics', [KaprodiController::class, 'rubrics'])->name('rubrics.index');

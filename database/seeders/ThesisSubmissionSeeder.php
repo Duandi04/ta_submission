@@ -54,12 +54,14 @@ class ThesisSubmissionSeeder extends Seeder
             'abstract' => 'Sistem rekomendasi hybrid ini menggabungkan metode collaborative filtering dan content-based filtering untuk memberikan rekomendasi destinasi wisata yang personalized kepada pengguna. Data wisata diperoleh dari berbagai sumber termasuk review pengguna dan informasi geografis.',
             'research_field' => 'Artificial Intelligence',
             'status' => 'under_review',
+            'has_assessments' => true,
         ],
         [
             'title' => 'Implementasi Blockchain untuk Sistem Verifikasi Ijazah Digital',
             'abstract' => 'Penelitian ini mengimplementasikan teknologi blockchain untuk membangun sistem verifikasi ijazah digital yang aman dan transparan. Smart contract digunakan untuk menyimpan dan memverifikasi keaslian ijazah. Sistem dibangun menggunakan platform Ethereum.',
             'research_field' => 'Cyber Security',
             'status' => 'under_review',
+            'has_assessments' => true,
         ],
         [
             'title' => 'Deteksi Wajah Real-Time Menggunakan YOLO untuk Sistem Absensi Karyawan',
@@ -200,8 +202,8 @@ class ThesisSubmissionSeeder extends Seeder
             $this->createStatusHistory($thesis, $supervisor);
 
 
-            // Create assessments for completed submissions
-            if ($data['status'] === 'completed') {
+            // Create assessments for completed submissions and selected under_review submissions
+            if ($data['status'] === 'completed' || ($data['status'] === 'under_review' && !empty($data['has_assessments']))) {
                 $this->createAssessments($thesis, $supervisor, $rubric);
             }
 

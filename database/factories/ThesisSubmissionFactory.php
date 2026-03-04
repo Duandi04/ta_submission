@@ -122,15 +122,6 @@ class ThesisSubmissionFactory extends Factory
         ]);
     }
 
-    public function revisionRequired(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'status' => 'revision_required',
-            'submission_date' => now()->subDays(rand(14, 21)),
-            'notes' => 'Silakan perbaiki bagian metodologi dan tambahkan referensi yang lebih baru.',
-        ]);
-    }
-
     public function approved(): static
     {
         return $this->state(fn (array $attributes) => [
@@ -164,7 +155,7 @@ class ThesisSubmissionFactory extends Factory
             'submission_date' => now()->subMonths(rand(2, 6)),
             'defense_date' => now()->subDays(rand(7, 30)),
             'final_score' => fake()->randomFloat(2, 70, 100),
-            'notes' => 'Sidang selesai dengan baik. Mahasiswa telah melakukan revisi sesuai masukan penguji.',
+            'notes' => 'Sidang selesai dengan baik.',
         ]);
     }
 

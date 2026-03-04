@@ -165,8 +165,6 @@ class KaprodiService
 
         $submission->update([
             'rubric_id' => $rubricId,
-            'supervisor_id' => $data['supervisor_id'] ?? $submission->supervisor_id,
-            'supervisor_2_id' => $data['supervisor_2_id'] ?? $submission->supervisor_2_id,
         ]);
 
         // Delete old assessments that are not in the new list
@@ -208,6 +206,48 @@ class KaprodiService
                 ->causedBy(Auth::user())
                 ->log('Dosen penilai ditetapkan, status berubah ke Dalam Penilaian');
         }
+    }
+
+    /**
+     * Accept submission, assign advisors and calculate final score.
+     */
+    public function acceptSubmission(int $submissionId, array $data)
+    {
+        $submission = ThesisSubmission::with('assessments')->findOrFail($submissionId);
+
+        if ($submission->status !== 'under_review') {
+            throw new \Exception('Pengajuan tidak dalam status Penilaian.');
+        }
+
+        if ($submission->assessments->count() === 0) {
+            throw new \Exception('Dosen penilai belum ditetapkan.');
+        }
+
+        if ($submission->assessments->where('is_submitted', false)->count() > 0) {
+            throw new \Exception('Semua dosen penilai harus mensubmit nilai terlebih dahulu.');
+        }
+
+        $finalScore = $submission->assessments->avg('total_score');
+
+        $submission->update([
+            'supervisor_id' => $data['supervisor_id'],
+            'supervisor_2_id' => $data['supervisor_2_id'] ?? null,
+            'final_score' => $finalScore,
+            'status' => 'completed',
+        ]);
+
+        \App\Models\ThesisStatus::create([
+            'thesis_submission_id' => $submission->id,
+            'old_status' => 'under_review',
+            'new_status' => 'completed',
+            'changed_by' => Auth::id(),
+            'comment' => 'Pengajuan telah diterima oleh Kaprodi dan dosen pembimbing telah ditetapkan.',
+        ]);
+
+        activity()
+            ->performedOn($submission)
+            ->causedBy(Auth::user())
+            ->log('Pengajuan diterima, pembimbing ditetapkan, status berubah ke Selesai');
     }
 
     /**

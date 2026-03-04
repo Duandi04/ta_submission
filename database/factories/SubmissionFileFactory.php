@@ -34,7 +34,7 @@ class SubmissionFileFactory extends Factory
      */
     public function definition(): array
     {
-        $fileType = fake()->randomElement(['proposal', 'final_document', 'presentation', 'revision']);
+        $fileType = fake()->randomElement(['proposal', 'final_document', 'presentation']);
         $fileName = $this->generateFileName($fileType);
 
         return [
@@ -60,7 +60,6 @@ class SubmissionFileFactory extends Factory
             'proposal' => "proposal_{$timestamp}_{$random}.pdf",
             'final_document' => "dokumen_akhir_{$timestamp}_{$random}.pdf",
             'presentation' => "presentasi_{$timestamp}_{$random}.pptx",
-            'revision' => "revisi_{$timestamp}_{$random}.pdf",
             default => "dokumen_{$timestamp}_{$random}.pdf",
         };
     }
@@ -113,21 +112,7 @@ class SubmissionFileFactory extends Factory
         });
     }
 
-    /**
-     * Revision file
-     */
-    public function revision(): static
-    {
-        return $this->state(function (array $attributes) {
-            $fileName = $this->generateFileName('revision');
-            return [
-                'file_name' => $fileName,
-                'file_path' => 'submissions/' . date('Y/m') . '/' . $fileName,
-                'file_type' => 'revision',
-                'mime_type' => 'application/pdf',
-            ];
-        });
-    }
+
 
     /**
      * For specific thesis

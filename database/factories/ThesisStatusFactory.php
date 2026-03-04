@@ -25,10 +25,6 @@ class ThesisStatusFactory extends Factory
             'Sedang dalam proses peninjauan oleh pembimbing.',
             'Proposal sedang direview.',
         ],
-        'revision_required' => [
-            'Diperlukan revisi sesuai catatan pembimbing.',
-            'Silakan perbaiki sesuai saran yang diberikan.',
-        ],
         'approved' => [
             'Proposal disetujui, siap untuk dijadwalkan sidang.',
             'Dokumen telah memenuhi syarat.',

@@ -21,7 +21,6 @@ return new class extends Migration {
                 'draft',
                 'submitted',
                 'under_review',
-                'revision_required',
                 'approved',
                 'rejected',
                 'scheduled_for_defense',
