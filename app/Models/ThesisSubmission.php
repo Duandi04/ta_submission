@@ -125,7 +125,7 @@ class ThesisSubmission extends Model
      */
     public function canBeEditedByStudent(): bool
     {
-        return in_array($this->status, ['draft', 'revision_required']);
+        return in_array($this->status, ['draft']);
     }
 
     public function getStatusBadgeClass(): string

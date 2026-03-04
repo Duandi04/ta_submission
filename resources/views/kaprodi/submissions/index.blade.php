@@ -25,7 +25,7 @@
                         <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Submitted</option>
                         <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>Under Review
                         </option>
-                        <option value="revision" {{ request('status') == 'revision' ? 'selected' : '' }}>Revisi</option>
+                        {{-- <option value="revision" {{ request('status') == 'revision' ? 'selected' : '' }}>Revisi</option> --}}
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
                     </select>
                 </div>

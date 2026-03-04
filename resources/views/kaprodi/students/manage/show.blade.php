@@ -101,7 +101,7 @@
                                 </div>
                                 <p class="mb-1 small text-muted text-truncate">{{ $submission->abstract }}</p>
                                 <span
-                                    class="badge bg-soft-secondary text-secondary border small">{{ $submission->status }}</span>
+                                    class="badge bg-{{ $submission->getStatusBadgeClass() }}">{{ $submission->getStatusLabel() }}</span>
                             </a>
                         @endforeach
                     </div>

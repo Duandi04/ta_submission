@@ -22,9 +22,9 @@ class StudentController extends Controller
             ->where('program_studi_id', $user->program_studi_id)
             ->filterByRequest($request)
             ->when($request->sort_by, function ($q) use ($request) {
-                $q->orderBy($request->sort_by, $request->sort_order ?: 'asc');
+                $q->orderBy($request->sort_by, $request->sort_order ?: 'asc')->orderBy('users.id', $request->sort_order ?: 'asc');
             }, function ($q) {
-                $q->latest();
+                $q->latest('users.id');
             })
             ->paginate(15);
 

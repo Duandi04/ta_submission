@@ -70,22 +70,20 @@
                 <div class="row">
                     <div class="col-sm-6 mb-4">
                         <label class="text-muted small d-block">Fakultas</label>
-                        @if($lecturer->programStudi && $lecturer->programStudi->faculty)
-                            <a href="{{ route('admin.faculties.show', $lecturer->programStudi->faculty) }}"
-                                class="fw-semibold text-decoration-none">
+                        @if ($lecturer->programStudi && $lecturer->programStudi->faculty)
+                            <span class="fw-semibold text-dark">
                                 {{ $lecturer->programStudi->faculty->name }}
-                            </a>
+                            </span>
                         @else
                             <span class="fw-semibold">-</span>
                         @endif
                     </div>
                     <div class="col-sm-6 mb-4">
                         <label class="text-muted small d-block">Program Studi</label>
-                        @if($lecturer->programStudi)
-                            <a href="{{ route('admin.program-studis.show', $lecturer->programStudi) }}"
-                                class="fw-semibold text-primary text-decoration-none">
+                        @if ($lecturer->programStudi)
+                            <span class="fw-semibold text-primary">
                                 <i class="bi bi-mortarboard me-1"></i>{{ $lecturer->programStudi->name }}
-                            </a>
+                            </span>
                         @else
                             <span class="fw-semibold">-</span>
                         @endif
@@ -96,7 +94,9 @@
             <div class="card border-0 shadow-sm p-4">
                 <h5 class="fw-bold mb-4 border-bottom pb-2">Daftar Bimbingan (Mahasiswa)</h5>
                 @php
-                    $supervisedSubmissions = \App\Models\ThesisSubmission::where('supervisor_id', $lecturer->id)
+                    $supervisedSubmissions = \App\Models\ThesisSubmission::where(function ($q) use ($lecturer) {
+                        $q->where('supervisor_id', $lecturer->id)->orWhere('supervisor_2_id', $lecturer->id);
+                    })
                         ->with('student')
                         ->latest()
                         ->get();
@@ -113,7 +113,8 @@
                             </thead>
                             <tbody>
                                 @foreach ($supervisedSubmissions as $submission)
-                                    <tr>
+                                    <tr onclick="window.location='{{ route('kaprodi.submissions.show', $submission) }}'"
+                                        style="cursor: pointer;">
                                         <td>
                                             <div class="fw-semibold">{{ $submission->student->name }}</div>
                                             <div class="small text-muted">{{ $submission->student->nim_nip }}</div>
@@ -121,7 +122,7 @@
                                         <td class="small">{{ $submission->title }}</td>
                                         <td>
                                             <span
-                                                class="badge bg-soft-secondary text-secondary border small">{{ $submission->status }}</span>
+                                                class="badge bg-{{ $submission->getStatusBadgeClass() }}">{{ $submission->getStatusLabel() }}</span>
                                         </td>
                                     </tr>
                                 @endforeach

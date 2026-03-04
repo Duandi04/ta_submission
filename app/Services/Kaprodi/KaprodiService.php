@@ -17,9 +17,9 @@ class KaprodiService
     {
         return $this->getStudentsQuery($search)
             ->when($sortBy, function ($query) use ($sortBy, $sortOrder) {
-                return $query->orderBy($sortBy, $sortOrder ?: 'asc');
+                return $query->orderBy($sortBy, $sortOrder ?: 'asc')->orderBy('users.id', $sortOrder ?: 'asc');
             }, function ($query) {
-                return $query->latest();
+                return $query->latest('users.id');
             })
             ->paginate($perPage)
             ->withQueryString();
@@ -54,9 +54,9 @@ class KaprodiService
     {
         return $this->getSubmissionsQuery($search, $status)
             ->when($sortBy, function ($query) use ($sortBy, $sortOrder) {
-                return $query->orderBy($sortBy, $sortOrder ?: 'asc');
+                return $query->orderBy($sortBy, $sortOrder ?: 'asc')->orderBy('thesis_submissions.id', $sortOrder ?: 'desc');
             }, function ($query) {
-                return $query->latest();
+                return $query->latest('thesis_submissions.id');
             })
             ->paginate($perPage)
             ->withQueryString();

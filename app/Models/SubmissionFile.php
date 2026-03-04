@@ -67,7 +67,6 @@ class SubmissionFile extends Model
             'proposal' => 'Proposal',
             'final_document' => 'Dokumen Akhir',
             'presentation' => 'Presentasi',
-            'revision' => 'Revisi',
             default => 'Lainnya',
         };
     }

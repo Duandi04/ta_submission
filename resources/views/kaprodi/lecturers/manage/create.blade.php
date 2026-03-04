@@ -62,21 +62,8 @@
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="role" class="form-label">Pilih Hak Akses <span
-                                        class="text-danger">*</span></label>
-                                <select class="form-select @error('role') is-invalid @enderror" id="role"
-                                    name="role" required>
-                                    <option value="">-- Pilih Role --</option>
-                                    @foreach ($roles as $role)
-                                        <option value="{{ $role->name }}"
-                                            {{ old('role') == $role->name ? 'selected' : '' }}>
-                                            {{ ucfirst($role->name) }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('role')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <!-- Hidden role selection, default to 'dosen' for Kaprodi management -->
+                                <input type="hidden" name="role" value="dosen">
                             </div>
                         </div>
 

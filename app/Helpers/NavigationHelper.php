@@ -30,8 +30,8 @@ class NavigationHelper
         
         // Add fallback sorting by ID to guarantee deterministic ordering
         // This prevents random jumping when sorting by non-unique columns (e.g. created_at)
-        if ($orderBy !== $model->getKeyName() && $orderBy !== $keyName) {
-            $query->orderBy($keyName, $direction ?: 'desc');
+        if ($orderBy !== $model->getKeyName() && $orderBy !== $model->getTable() . '.' . $model->getKeyName()) {
+            $query->orderBy($model->getTable() . '.' . $model->getKeyName(), $direction ?: 'desc');
         }
 
         $allIds = (clone $query)->pluck($model->getKeyName())->toArray();

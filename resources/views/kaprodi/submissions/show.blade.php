@@ -66,28 +66,7 @@
                             </ul>
                         @endif
 
-                        @if ($revisionFiles->count() > 0)
-                            <p class="small text-muted mb-1"><strong>Revisi</strong></p>
-                            <ul class="list-unstyled mb-3">
-                                @foreach ($revisionFiles as $file)
-                                    <li class="mb-2 d-flex align-items-center">
-                                        <i class="bi bi-file-earmark-pdf text-warning me-2"></i>
-                                        <span class="flex-grow-1">{{ $file->file_name }} <span
-                                                class="text-muted small">({{ $file->getFormattedFileSize() }})</span></span>
-                                        @if (Str::endsWith(strtolower($file->file_name), '.pdf'))
-                                            <a href="{{ route('files.preview', $file) }}" target="_blank"
-                                                class="btn btn-sm btn-outline-primary me-1" title="Preview PDF">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                        @endif
-                                        <a href="{{ route('files.download', $file) }}"
-                                            class="btn btn-sm btn-outline-secondary" title="Download">
-                                            <i class="bi bi-download"></i>
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
+
                     @endif
                 </div>
             </div>
@@ -293,8 +272,16 @@
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white py-3 border-0">
-                    <span class="fw-bold"><i class="bi bi-person-plus me-2 text-primary"></i>Atur Dosen
-                        Penilai</span>
+                    <span class="fw-bold"><i class="bi bi-person-plus me-2 text-primary"></i>
+                        @if (
+                            $submission->status === 'under_review' &&
+                                $submission->assessments->count() > 0 &&
+                                $submission->assessments->where('is_submitted', false)->count() === 0)
+                            Atur Dosen Pembimbing
+                        @else
+                            Atur Dosen Penilai
+                        @endif
+                    </span>
                 </div>
                 <div class="card-body">
                     @if ($submission->status === 'submitted')
@@ -369,7 +356,8 @@
                                         <option value="" disabled selected>Pilih Pembimbing 1...</option>
                                         @foreach ($lecturers as $lecturer)
                                             <option value="{{ $lecturer->id }}"
-                                                {{ $submission->supervisor_id == $lecturer->id ? 'selected' : '' }}>
+                                                {{ $submission->supervisor_id == $lecturer->id ? 'selected' : '' }}
+                                                {{ $submission->supervisor_2_id == $lecturer->id ? 'disabled' : '' }}>
                                                 {{ $lecturer->name }}
                                             </option>
                                         @endforeach
@@ -386,7 +374,8 @@
                                         <option value="">Pilih Pembimbing 2 (Opsional)...</option>
                                         @foreach ($lecturers as $lecturer)
                                             <option value="{{ $lecturer->id }}"
-                                                {{ $submission->supervisor_2_id == $lecturer->id ? 'selected' : '' }}>
+                                                {{ $submission->supervisor_2_id == $lecturer->id ? 'selected' : '' }}
+                                                {{ $submission->supervisor_id == $lecturer->id ? 'disabled' : '' }}>
                                                 {{ $lecturer->name }}
                                             </option>
                                         @endforeach
@@ -412,16 +401,18 @@
                                 @endforeach
                             </ul>
                         @else
-                            <div class="alert alert-info mb-0 alert-persistent">
+                            <div class="alert alert-info mb-3 alert-persistent">
                                 <i class="bi bi-info-circle me-1"></i> Dosen penilai sedang melakukan penilaian. Anda
                                 dapat
                                 menetapkan dosen pembimbing setelah semua nilai terkumpul.
                             </div>
-                            <ul class="list-group list-group-flush mt-3">
+
+                            <h6 class="fw-bold mt-4 border-bottom pb-2">Daftar Penilai</h6>
+                            <ul class="list-group list-group-flush mt-2">
                                 @foreach ($submission->assessments as $assessment)
                                     <li class="list-group-item bg-transparent px-0 border-0 py-1">
                                         <i
-                                            class="bi {{ $assessment->is_submitted ? 'bi-person-check text-success' : 'bi-hourglass-split text-warning' }} me-2"></i>
+                                            class="bi {{ $assessment->is_submitted ? 'bi-person-check-fill text-success' : 'bi-hourglass-split text-warning' }} me-2"></i>
                                         <span class="small">{{ $assessment->evaluator->name }}</span>
                                     </li>
                                 @endforeach
@@ -432,7 +423,30 @@
                             <i class="bi bi-info-circle me-1"></i> Dosen penilai dan dosen pembimbing sudah ditetapkan.
                             Pengajuan ini telah diproses (Selesai/Dibatalkan).
                         </div>
-                        <ul class="list-group list-group-flush mt-3">
+
+                        <h6 class="fw-bold mt-4 border-bottom pb-2">Program Studi</h6>
+                        <p class="small mb-0">{{ $submission->student->programStudi->name ?? 'N/A' }}</p>
+
+                        <h6 class="fw-bold mt-3 border-bottom pb-2">Dosen Pembimbing</h6>
+                        <ul class="list-group list-group-flush">
+                            @if ($submission->supervisor)
+                                <li class="list-group-item bg-transparent px-0 border-0 py-1">
+                                    <i class="bi bi-person-check-fill text-primary me-2"></i>
+                                    <span class="small fw-bold">Pembimbing 1:</span>
+                                    <span class="small d-block ms-4">{{ $submission->supervisor->name }}</span>
+                                </li>
+                            @endif
+                            @if ($submission->supervisor_2_id)
+                                <li class="list-group-item bg-transparent px-0 border-0 py-1">
+                                    <i class="bi bi-person-check text-primary me-2"></i>
+                                    <span class="small fw-bold">Pembimbing 2:</span>
+                                    <span class="small d-block ms-4">{{ $submission->supervisor2->name ?? 'N/A' }}</span>
+                                </li>
+                            @endif
+                        </ul>
+
+                        <h6 class="fw-bold mt-3 border-bottom pb-2">Dosen Penilai</h6>
+                        <ul class="list-group list-group-flush mt-2">
                             @foreach ($submission->assessments as $assessment)
                                 <li class="list-group-item bg-transparent px-0 border-0 py-1">
                                     <i class="bi bi-person-check text-success me-2"></i>
@@ -501,6 +515,29 @@
                     persist: false,
                     create: false,
                 });
+
+                // Prevent selecting same supervisor
+                const supervisor1 = document.querySelector('select[name="supervisor_id"]');
+                const supervisor2 = document.querySelector('select[name="supervisor_2_id"]');
+
+                if (supervisor1 && supervisor2) {
+                    const updateOptions = () => {
+                        const val1 = supervisor1.value;
+                        const val2 = supervisor2.value;
+
+                        Array.from(supervisor2.options).forEach(opt => {
+                            opt.disabled = opt.value && opt.value === val1;
+                        });
+
+                        Array.from(supervisor1.options).forEach(opt => {
+                            opt.disabled = opt.value && opt.value === val2;
+                        });
+                    };
+
+                    supervisor1.addEventListener('change', updateOptions);
+                    supervisor2.addEventListener('change', updateOptions);
+                    updateOptions();
+                }
 
                 // Similarity Analysis for Kaprodi
                 const title = "{{ $submission->title }}";
