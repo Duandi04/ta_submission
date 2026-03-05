@@ -20,10 +20,8 @@ class DashboardService
             $stats = $this->getKaprodiStats($user);
         } elseif ($user->hasRole('koordinator')) {
             $stats = $this->getCoordinatorStats();
-        } elseif ($user->hasRole('dosen_pembimbing')) {
-            $stats = $this->getSupervisorStats($user);
-        } elseif ($user->hasRole('dosen_penguji')) {
-            $stats = $this->getExaminerStats($user);
+        } elseif ($user->hasRole('dosen')) {
+            $stats = $this->getDosenStats($user);
         } elseif ($user->hasRole('mahasiswa')) {
             $stats = $this->getStudentStats($user);
         }
@@ -116,6 +114,22 @@ class DashboardService
             'pending_review' => ThesisSubmission::where('status', 'pending')->count(),
             'in_progress' => ThesisSubmission::where('status', 'in_progress')->count(),
             'completed' => ThesisSubmission::where('status', 'completed')->count(),
+        ];
+    }
+
+    protected function getDosenStats(User $user): array
+    {
+        $supervised = $user->supervisedTheses();
+        $assessments = $user->assessments();
+
+        return [
+            'supervised_total'      => $supervised->count(),
+            'supervised_ongoing'    => $supervised->whereIn('status', ['submitted', 'under_review'])->count(),
+            'supervised_completed'  => $supervised->where('status', 'completed')->count(),
+            'supervised_students'   => $user->supervisedTheses()->with('student')->latest()->take(10)->get(),
+            'pending_assessments'   => $assessments->where('is_submitted', false)->count(),
+            'submitted_assessments' => $assessments->where('is_submitted', true)->count(),
+            'total_assessments'     => $assessments->count(),
         ];
     }
 
