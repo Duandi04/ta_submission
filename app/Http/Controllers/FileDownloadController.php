@@ -37,8 +37,25 @@ class FileDownloadController extends Controller
 
         // Sanitize title for filename
         $safeTitle = Str::limit(Str::slug($title, ' '), 50);
-
         $customFilename = sprintf('[%s] %s.%s', $studentName, $safeTitle, $extension);
+
+        $disk = $file->storage_disk ?? 'local';
+
+        // If file lives on R2/S3, redirect via a temporary signed URL
+        if ($disk !== 'local') {
+            $diskInstance = Storage::disk($disk);
+            try {
+                if (method_exists($diskInstance, 'temporaryUrl')) {
+                    $tempUrl = $diskInstance->temporaryUrl($file->file_path, now()->addMinutes(15));
+                    return redirect()->away($tempUrl);
+                }
+                // If temporaryUrl is not supported, fall through to local processing if possible
+                // or just fail if it's strictly expected to be cloud.
+            } catch (\Throwable $e) {
+                activity()->log("Error generating signed URL for download [{$disk}]: " . $e->getMessage());
+                abort(500, 'Gagal membuat tautan unduhan.');
+            }
+        }
 
         if (!Storage::disk('local')->exists($file->file_path)) {
             abort(404, 'File tidak ditemukan di server.');
@@ -69,6 +86,22 @@ class FileDownloadController extends Controller
             }
         }
 
+        $disk = $file->storage_disk ?? 'local';
+
+        // If file lives on R2/S3, redirect via a temporary signed URL (inline open)
+        if ($disk !== 'local') {
+            $diskInstance = Storage::disk($disk);
+            try {
+                if (method_exists($diskInstance, 'temporaryUrl')) {
+                    $tempUrl = $diskInstance->temporaryUrl($file->file_path, now()->addMinutes(15));
+                    return redirect()->away($tempUrl);
+                }
+            } catch (\Throwable $e) {
+                activity()->log("Error generating signed URL for preview [{$disk}]: " . $e->getMessage());
+                abort(500, 'Gagal membuat pratinjau file.');
+            }
+        }
+
         if (!Storage::disk('local')->exists($file->file_path)) {
             abort(404, 'File tidak ditemukan di server.');
         }
@@ -77,10 +110,10 @@ class FileDownloadController extends Controller
         $mimeType = $file->mime_type ?? 'application/octet-stream';
 
         return response()->file($path, [
-            'Content-Type' => $mimeType,
+            'Content-Type'        => $mimeType,
             'Content-Disposition' => 'inline; filename="' . $file->file_name . '"',
-            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
-            'Pragma' => 'no-cache',
+            'Cache-Control'       => 'no-store, no-cache, must-revalidate, max-age=0',
+            'Pragma'              => 'no-cache',
         ]);
     }
 

@@ -29,6 +29,7 @@ class SubmissionFile extends Model
         'file_size',
         'mime_type',
         'uploaded_by',
+        'storage_disk',
     ];
 
     /**

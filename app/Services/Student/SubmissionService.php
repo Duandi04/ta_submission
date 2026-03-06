@@ -108,19 +108,21 @@ class SubmissionService
     }
 
     /**
-     * Upload a file for the submission from local.
+     * Upload a file for the submission from local or configured disk.
      */
     protected function uploadFile(ThesisSubmission $submission, UploadedFile $file, string $type): void
     {
-        $path = $file->store('submissions/' . $submission->id, 'local');
+        $disk = config('filesystems.default', 'local');
+        $path = $file->store('submissions/' . $submission->id, $disk);
 
         $submission->files()->create([
-            'file_name' => $file->getClientOriginalName(),
-            'file_path' => $path,
-            'file_type' => $type,
-            'file_size' => $file->getSize(),
-            'mime_type' => $file->getMimeType(),
-            'uploaded_by' => Auth::id(),
+            'file_name'    => $file->getClientOriginalName(),
+            'file_path'    => $path,
+            'file_type'    => $type,
+            'file_size'    => $file->getSize(),
+            'mime_type'    => $file->getMimeType(),
+            'uploaded_by'  => Auth::id(),
+            'storage_disk' => $disk,
         ]);
     }
 
@@ -151,7 +153,8 @@ class SubmissionService
         }
 
         $content = $downloadResponse->body();
-        $path = 'submissions/' . $submission->id . '/' . \Illuminate\Support\Str::random(40);
+        $disk    = config('filesystems.default', 'local');
+        $path    = 'submissions/' . $submission->id . '/' . \Illuminate\Support\Str::random(40);
 
         // Add extension if missing in path but present in filename
         $extension = pathinfo($fileName, PATHINFO_EXTENSION);
@@ -159,15 +162,16 @@ class SubmissionService
             $path .= '.' . $extension;
         }
 
-        \Illuminate\Support\Facades\Storage::disk('local')->put($path, $content);
+        \Illuminate\Support\Facades\Storage::disk($disk)->put($path, $content);
 
         $submission->files()->create([
-            'file_name' => $fileName,
-            'file_path' => $path,
-            'file_type' => $type,
-            'file_size' => $fileSize,
-            'mime_type' => $mimeType,
-            'uploaded_by' => Auth::id(),
+            'file_name'    => $fileName,
+            'file_path'    => $path,
+            'file_type'    => $type,
+            'file_size'    => $fileSize,
+            'mime_type'    => $mimeType,
+            'uploaded_by'  => Auth::id(),
+            'storage_disk' => $disk,
         ]);
     }
 
