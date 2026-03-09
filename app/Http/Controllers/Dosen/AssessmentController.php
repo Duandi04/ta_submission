@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Assessment;
 use App\Models\ThesisSubmission;
 use App\Services\Examiner\AssessmentService;
+use App\Helpers\SimilarityHelper;
 use Illuminate\Http\Request;
 use App\Models\Rubric; // Added Rubric model
 use Illuminate\Support\Facades\Auth;
@@ -61,7 +62,10 @@ class AssessmentController extends Controller
         // Get rubric assigned to submission
         $rubric = $submission->rubric ?? Rubric::where('is_active', true)->firstOrFail();
 
-        return view('dosen.assessments.create', compact('submission', 'rubric')); // Changed view to dosen and compact rubric
+        // Get similar submissions
+        $similarSubmissions = SimilarityHelper::findSimilarSubmissions($submission->title, 50, $submission->id)->take(5);
+
+        return view('dosen.assessments.create', compact('submission', 'rubric', 'similarSubmissions')); // Changed view to dosen and compact rubric
     }
 
     public function store(Request $request)
@@ -112,7 +116,10 @@ class AssessmentController extends Controller
         $criteria = $this->assessmentService->getCriteriaForAssessment($assessment); // Kept original logic for criteria
         $submission = $assessment->thesisSubmission; // Kept original logic for submission
 
-        return view('dosen.assessments.edit', compact('assessment', 'submission', 'criteria')); // Changed view to dosen, kept submission and criteria
+        // Get similar submissions
+        $similarSubmissions = SimilarityHelper::findSimilarSubmissions($submission->title, 50, $submission->id)->take(5);
+
+        return view('dosen.assessments.edit', compact('assessment', 'submission', 'criteria', 'similarSubmissions')); // Changed view to dosen, kept submission and criteria
     }
 
     public function update(Request $request, Assessment $assessment)

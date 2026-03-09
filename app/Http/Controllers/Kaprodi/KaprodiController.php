@@ -18,8 +18,8 @@ class KaprodiController extends Controller
     public function index(\Illuminate\Http\Request $request)
     {
         $students = $this->kaprodiService->getAllStudents(
+            $request,
             10,
-            $request->query('search'),
             $request->query('sort_by', 'name'),
             $request->query('sort_order', 'asc')
         );
@@ -29,9 +29,8 @@ class KaprodiController extends Controller
     public function submissions(\Illuminate\Http\Request $request)
     {
         $submissions = $this->kaprodiService->getAllSubmissions(
+            $request,
             15,
-            $request->query('search'),
-            $request->query('status'),
             $request->query('sort_by', 'created_at'),
             $request->query('sort_order', 'desc')
         );
@@ -45,7 +44,7 @@ class KaprodiController extends Controller
         $lecturers = $this->kaprodiService->getLecturers();
 
         // Contextual navigation
-        $query = $this->kaprodiService->getStudentsQuery($request->search);
+        $query = $this->kaprodiService->getStudentsQuery($request);
         $navigation = \App\Helpers\NavigationHelper::getNavigation(
             $student,
             $query,
@@ -63,6 +62,24 @@ class KaprodiController extends Controller
         try {
             $this->kaprodiService->assignLecturers($submissionId, $data);
             return back()->with('success', 'Dosen penilai berhasil ditetapkan.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function batchAssignLecturers(\Illuminate\Http\Request $request)
+    {
+        $validated = $request->validate([
+            'submission_ids' => 'required|array',
+            'submission_ids.*' => 'exists:thesis_submissions,id',
+            'batch_assessor_ids' => 'required|array',
+            'batch_assessor_ids.*' => 'exists:users,id',
+            'batch_rubric_id' => 'required|exists:rubrics,id',
+        ]);
+
+        try {
+            $this->kaprodiService->batchAssignLecturers($validated);
+            return back()->with('success', count($validated['submission_ids']) . ' pengajuan berhasil diproses.');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -86,7 +103,7 @@ class KaprodiController extends Controller
             ->findOrFail($submissionId);
 
         // Contextual navigation
-        $query = $this->kaprodiService->getSubmissionsQuery($request->search, $request->status);
+        $query = $this->kaprodiService->getSubmissionsQuery($request);
         $navigation = \App\Helpers\NavigationHelper::getNavigation(
             $submission,
             $query,

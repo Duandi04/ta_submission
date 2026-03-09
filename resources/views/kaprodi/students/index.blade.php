@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Daftar Seluruh Mahasiswa')
+@section('title', 'Daftar Proposal Mahasiswa')
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <h1 class="h2">Seluruh Mahasiswa</h1>
+        <h1 class="h2">Proposal Mahasiswa</h1>
     </div>
 
     {{-- Search Bar --}}
@@ -34,6 +34,7 @@
                             <tr>
                                 <th class="ps-3">Mahasiswa</th>
                                 <th>NIM</th>
+                                <th>Angkatan</th>
                                 <th>Total Draft</th>
                                 <th class="text-end pe-3">Aksi</th>
                             </tr>
@@ -43,7 +44,8 @@
                                 <tr>
                                     <td class="ps-3">
                                         <div class="d-flex align-items-center">
-                                            <img src="{{ $student->profile_photo_url }}" class="rounded-circle me-2 shadow-sm"
+                                            <img src="{{ $student->profile_photo_url }}"
+                                                class="rounded-circle me-2 shadow-sm"
                                                 style="width: 32px; height: 32px; object-fit: cover;" alt="Avatar">
                                             <div>
                                                 <div class="fw-semibold text-dark">{{ $student->name }}</div>
@@ -52,8 +54,10 @@
                                         </div>
                                     </td>
                                     <td>{{ $student->nim_nip }}</td>
+                                    <td>{{ $student->angkatan ?? '-' }}</td>
                                     <td>
-                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3">
+                                        <span
+                                            class="badge bg-primary-subtle text-primary border border-primary-subtle px-3">
                                             {{ $student->thesis_submissions_count }}
                                         </span>
                                     </td>
@@ -68,10 +72,12 @@
                                 <tr>
                                     <td colspan="4" class="text-center py-5 text-muted">
                                         <i class="bi bi-people fs-1 d-block mb-2"></i>
-                                        @if(request('search'))
-                                            <p class="text-muted mb-0">Tidak ditemukan mahasiswa yang sesuai dengan pencarian
+                                        @if (request('search'))
+                                            <p class="text-muted mb-0">Tidak ditemukan mahasiswa yang sesuai dengan
+                                                pencarian
                                                 "{{ request('search') }}"</p>
-                                            <a href="{{ route('kaprodi.students.index') }}" class="btn btn-outline-primary mt-2">
+                                            <a href="{{ route('kaprodi.students.index') }}"
+                                                class="btn btn-outline-primary mt-2">
                                                 <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Pencarian
                                             </a>
                                         @else

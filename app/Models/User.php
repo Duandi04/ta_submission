@@ -47,6 +47,7 @@ class User extends Authenticatable
         'profile_photo',
         'is_active',
         'program_studi_id',
+        'angkatan',
     ];
 
     /**

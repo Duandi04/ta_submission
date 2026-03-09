@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/submissions/{submission}', [KaprodiController::class, 'submissionShow'])->name('submissions.show');
         Route::get('/assessments/{assessment}', [KaprodiController::class, 'assessmentShow'])->name('assessments.show');
         Route::post('/submissions/{submission}/assign-lecturers', [KaprodiController::class, 'assignLecturers'])->name('submissions.assign-lecturers');
+        Route::post('/submissions/batch-assign', [KaprodiController::class, 'batchAssignLecturers'])->name('submissions.batch-assign');
         Route::post('/submissions/{submission}/accept', [KaprodiController::class, 'acceptSubmission'])->name('submissions.accept');
         Route::get('/settings', [KaprodiController::class, 'settings'])->name('settings.index');
         Route::post('/settings', [KaprodiController::class, 'updateSettings'])->name('settings.update');

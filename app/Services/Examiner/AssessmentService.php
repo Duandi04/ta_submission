@@ -37,18 +37,16 @@ class AssessmentService
      */
     public function getCriteriaForAssessment(Assessment $assessment)
     {
-        if ($assessment->rubric_snapshot) {
-            // Convert snapshot array to a format compatible with the view
-            // Assuming snapshot structure is list of criteria objects
-            return $assessment->scores->map(function ($score) {
+        if ($assessment->assessment_rubric_id) {
+            $snap = $assessment->assessmentRubric;
+            return collect($snap->criteria)->map(function ($criterion, $idx) {
                 $obj = new AssessmentCriterion();
                 $obj->forceFill([
-                    'id' => $score->criterion_id,
-                    'name' => $score->criterion_name,
-                    'description' => $score->notes, // Or keep notes separate
-                    'weight_percentage' => $score->weight,
+                    'id' => $criterion['id'] ?? $idx,
+                    'name' => $criterion['name'],
+                    'description' => $criterion['description'] ?? null,
+                    'weight_percentage' => $criterion['weight'] ?? 0,
                 ]);
-                $obj->id = $score->criterion_id;
                 return $obj;
             });
         }
@@ -135,8 +133,9 @@ class AssessmentService
     {
         $totalScore = 0;
         $totalWeight = 0;
+        $data = request()->all(); // Get original request for notes
 
-        $rubric = $assessment->rubric;
+        $rubric = $assessment->assessmentRubric ?? $assessment->rubric;
         $criteria = $rubric ? collect($rubric->criteria) : collect();
         $criteriaMap = $criteria->keyBy(fn($c, $idx) => $c['id'] ?? $idx);
 

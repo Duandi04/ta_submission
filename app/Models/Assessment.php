@@ -24,6 +24,7 @@ class Assessment extends Model
         'recommendations',
         'is_submitted',
         'submitted_at',
+        'assessment_rubric_id',
     ];
 
     protected function casts(): array
@@ -60,6 +61,11 @@ class Assessment extends Model
     public function scores()
     {
         return $this->hasMany(AssessmentScore::class);
+    }
+
+    public function assessmentRubric()
+    {
+        return $this->belongsTo(AssessmentRubric::class);
     }
 
     public function rubric()

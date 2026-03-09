@@ -52,7 +52,7 @@
                     <a class="nav-link {{ request()->routeIs('kaprodi.students.index') || request()->routeIs('kaprodi.students.show') ? 'active' : '' }}"
                         href="{{ route('kaprodi.students.index') }}">
                         <i class="bi bi-people-fill"></i>
-                        <span>Seluruh Mahasiswa</span>
+                        <span>Proposal Mahasiswa</span>
                     </a>
                 </li>
                 <li class="nav-item">

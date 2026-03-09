@@ -13,9 +13,9 @@ class KaprodiService
     /**
      * Get all students with their submission counts.
      */
-    public function getAllStudents(int $perPage = 10, ?string $search = null, ?string $sortBy = 'name', ?string $sortOrder = 'asc')
+    public function getAllStudents(\Illuminate\Http\Request $request, int $perPage = 10, ?string $sortBy = 'name', ?string $sortOrder = 'asc')
     {
-        return $this->getStudentsQuery($search)
+        return $this->getStudentsQuery($request)
             ->when($sortBy, function ($query) use ($sortBy, $sortOrder) {
                 return $query->orderBy($sortBy, $sortOrder ?: 'asc')->orderBy('users.id', $sortOrder ?: 'asc');
             }, function ($query) {
@@ -28,8 +28,9 @@ class KaprodiService
     /**
      * Get the base query for all students (scoped to prodi).
      */
-    public function getStudentsQuery(?string $search = null)
+    public function getStudentsQuery(\Illuminate\Http\Request $request)
     {
+        $search = $request->query('search');
         /** @var \App\Models\User $user */
         $user = Auth::user();
         $prodiId = $user->program_studi_id;
@@ -50,9 +51,9 @@ class KaprodiService
     /**
      * Get all submissions (scoped to prodi).
      */
-    public function getAllSubmissions(int $perPage = 15, ?string $search = null, ?string $status = null, ?string $sortBy = 'created_at', ?string $sortOrder = 'desc')
+    public function getAllSubmissions(\Illuminate\Http\Request $request, int $perPage = 15, ?string $sortBy = 'created_at', ?string $sortOrder = 'desc')
     {
-        return $this->getSubmissionsQuery($search, $status)
+        return $this->getSubmissionsQuery($request)
             ->when($sortBy, function ($query) use ($sortBy, $sortOrder) {
                 return $query->orderBy($sortBy, $sortOrder ?: 'asc')->orderBy('thesis_submissions.id', $sortOrder ?: 'desc');
             }, function ($query) {
@@ -65,8 +66,10 @@ class KaprodiService
     /**
      * Get the base query for all submissions (scoped to prodi).
      */
-    public function getSubmissionsQuery(?string $search = null, ?string $status = null)
+    public function getSubmissionsQuery(\Illuminate\Http\Request $request)
     {
+        $search = $request->query('search');
+        $status = $request->query('status');
         /** @var \App\Models\User $user */
         $user = Auth::user();
         $prodiId = $user->program_studi_id;
@@ -88,6 +91,11 @@ class KaprodiService
             })
             ->when($status, function ($query) use ($status) {
                 return $query->where('status', $status);
+            })
+            ->when($request->angkatan ?? null, function ($query, $angkatan) {
+                return $query->whereHas('student', function ($q) use ($angkatan) {
+                    $q->where('angkatan', $angkatan);
+                });
             });
     }
 
@@ -167,12 +175,23 @@ class KaprodiService
             'rubric_id' => $rubricId,
         ]);
 
+        // Create or update rubric snapshot for this submission
+        $rubricTemplate = Rubric::findOrFail($rubricId);
+        $assessmentRubric = \App\Models\AssessmentRubric::updateOrCreate(
+            ['thesis_submission_id' => $submission->id],
+            [
+                'name' => $rubricTemplate->name,
+                'description' => $rubricTemplate->description,
+                'criteria' => $rubricTemplate->criteria,
+            ]
+        );
+
         // Delete old assessments that are not in the new list
         \App\Models\Assessment::where('thesis_submission_id', $submission->id)
             ->whereNotIn('evaluator_id', $assessorIds)
             ->delete();
 
-        // Add or keep existing assessors with the locked rubric
+        // Add or keep existing assessors with the locked rubric snapshot
         foreach ($assessorIds as $assessorId) {
             \App\Models\Assessment::withTrashed()->updateOrCreate(
                 [
@@ -181,7 +200,8 @@ class KaprodiService
                 ],
                 [
                     'evaluator_type' => 'assessor',
-                    'rubric_id' => $rubricId,
+                    'rubric_id' => $rubricId, // Keep for reference to template
+                    'assessment_rubric_id' => $assessmentRubric->id, // LINK TO SNAPSHOT
                     'deleted_at' => null, // Restore if it was soft deleted
                 ]
             );
@@ -205,6 +225,23 @@ class KaprodiService
                 ->performedOn($submission)
                 ->causedBy(Auth::user())
                 ->log('Dosen penilai ditetapkan, status berubah ke Dalam Penilaian');
+        }
+    }
+
+    /**
+     * Batch assign lecturers to multiple submissions.
+     */
+    public function batchAssignLecturers(array $data)
+    {
+        $submissionIds = $data['submission_ids'];
+        $assessorIds = $data['batch_assessor_ids'];
+        $rubricId = $data['batch_rubric_id'];
+
+        foreach ($submissionIds as $submissionId) {
+            $this->assignLecturers($submissionId, [
+                'assessor_ids' => $assessorIds,
+                'rubric_id' => $rubricId,
+            ]);
         }
     }
 
