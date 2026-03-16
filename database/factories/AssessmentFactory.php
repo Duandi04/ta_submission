@@ -55,7 +55,6 @@ class AssessmentFactory extends Factory
         return [
             'thesis_submission_id' => ThesisSubmission::factory(),
             'evaluator_id' => User::factory(),
-            'evaluator_type' => fake()->randomElement(['supervisor', 'examiner_1', 'examiner_2']),
             'rubric_id' => null,
             'total_score' => null,
             'comments' => null,
@@ -93,36 +92,6 @@ class AssessmentFactory extends Factory
             'comments' => null,
             'is_submitted' => false,
             'submitted_at' => null,
-        ]);
-    }
-
-    /**
-     * Supervisor assessment
-     */
-    public function supervisor(): static
-    {
-        return $this->state(fn(array $attributes) => [
-            'evaluator_type' => 'supervisor',
-        ]);
-    }
-
-    /**
-     * Examiner 1 assessment
-     */
-    public function examiner1(): static
-    {
-        return $this->state(fn(array $attributes) => [
-            'evaluator_type' => 'examiner_1',
-        ]);
-    }
-
-    /**
-     * Examiner 2 assessment
-     */
-    public function examiner2(): static
-    {
-        return $this->state(fn(array $attributes) => [
-            'evaluator_type' => 'examiner_2',
         ]);
     }
 

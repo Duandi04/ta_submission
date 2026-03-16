@@ -143,7 +143,7 @@
                                         </div>
                                         <p class="mb-0 text-muted" style="font-size: 0.75rem;">
                                             Oleh: {{ $similar->student->name }} |
-                                            {{ $similar->created_at->format('d M Y') }}
+                                            {{ \Carbon\Carbon::parse($similar->created_at)->format('d M Y') }}
                                         </p>
                                     </div>
                                 @endforeach

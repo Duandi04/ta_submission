@@ -386,9 +386,15 @@
                                     <small class="text-muted">Pembimbing 2 bersifat opsional.</small>
                                 </div>
 
-                                <button type="submit" class="btn btn-success w-100 mb-3">
-                                    <i class="bi bi-check-circle me-1"></i> Terima Pengajuan & Tetapkan Pembimbing
-                                </button>
+                                <div class="d-flex gap-2 mb-3">
+                                    <button type="submit" class="btn btn-success flex-grow-1">
+                                        <i class="bi bi-check-circle me-1"></i> Terima Pengajuan & Tetapkan Pembimbing
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                                        data-bs-target="#rejectModal">
+                                        <i class="bi bi-x-circle me-1"></i> Tolak
+                                    </button>
+                                </div>
                             </form>
 
                             <h6 class="fw-bold mt-4 border-bottom pb-2">Daftar Penilai</h6>
@@ -418,10 +424,10 @@
                                 @endforeach
                             </ul>
                         @endif
-                    @elseif (in_array($submission->status, ['completed', 'cancelled']))
+                    @elseif (in_array($submission->status, ['completed', 'cancelled', 'approved', 'rejected']))
                         <div class="alert alert-info mb-0 alert-persistent">
                             <i class="bi bi-info-circle me-1"></i> Dosen penilai dan dosen pembimbing sudah ditetapkan.
-                            Pengajuan ini telah diproses (Selesai/Dibatalkan).
+                            Pengajuan ini telah diproses ({{ $submission->getStatusLabel() }}).
                         </div>
 
                         <h6 class="fw-bold mt-4 border-bottom pb-2">Program Studi</h6>
@@ -465,6 +471,40 @@
                     @endif
                 </div>
             </div>
+
+            <!-- Modals for Rejection -->
+            @if ($submission->status === 'under_review')
+                <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rejectModalLabel">Tolak Pengajuan</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form action="{{ route('kaprodi.submissions.reject', $submission->id) }}" method="POST">
+                                @csrf
+                                <div class="modal-body">
+                                    <p class="small text-muted mb-3">Tuliskan alasan penolakan pengajuan proposal skripsi
+                                        ini.</p>
+                                    <div class="mb-3">
+                                        <label for="rejection_reason" class="form-label fw-semibold">Alasan
+                                            Penolakan</label>
+                                        <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="4" required
+                                            placeholder="Jelaskan alasan pengajuan ditolak..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary shadow-none"
+                                        data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-danger">Tolak Pengajuan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             @php
                 $latestFile = $submission->getLatestFile();

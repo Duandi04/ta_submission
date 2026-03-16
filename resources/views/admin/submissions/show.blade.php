@@ -57,8 +57,8 @@
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @endif
-                                        <a href="{{ route('files.download', $file) }}" class="btn btn-sm btn-outline-secondary"
-                                            title="Download">
+                                        <a href="{{ route('files.download', $file) }}"
+                                            class="btn btn-sm btn-outline-secondary" title="Download">
                                             <i class="bi bi-download"></i>
                                         </a>
                                     </li>
@@ -80,8 +80,8 @@
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         @endif
-                                        <a href="{{ route('files.download', $file) }}" class="btn btn-sm btn-outline-secondary"
-                                            title="Download">
+                                        <a href="{{ route('files.download', $file) }}"
+                                            class="btn btn-sm btn-outline-secondary" title="Download">
                                             <i class="bi bi-download"></i>
                                         </a>
                                     </li>
@@ -114,15 +114,17 @@
                                             <td class="ps-3 align-middle">
                                                 <div class="fw-bold">{{ $assessment->evaluator->name ?? 'N/A' }}</div>
                                                 <span
-                                                    class="badge bg-secondary text-white small">{{ $assessment->getEvaluatorTypeLabel() }}</span>
+                                                    class="badge bg-secondary text-white small">{{ $assessment->getAnonymousLabel() }}</span>
                                             </td>
                                             <td class="text-center align-middle">
                                                 @if ($assessment->is_submitted)
-                                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                                    <span
+                                                        class="badge bg-success-subtle text-success border border-success-subtle">
                                                         <i class="bi bi-check-circle-fill me-1"></i>Selesai
                                                     </span>
                                                 @else
-                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
+                                                    <span
+                                                        class="badge bg-warning-subtle text-warning border border-warning-subtle">
                                                         <i class="bi bi-hourglass-split me-1"></i>Belum Dinilai
                                                     </span>
                                                 @endif
@@ -170,23 +172,26 @@
                             @if ($assessment->is_submitted && ($assessment->comments || $assessment->strengths || $assessment->weaknesses))
                                 <div class="mb-4 pb-3 border-bottom last-no-border">
                                     <h6 class="fw-bold">{{ $assessment->evaluator->name }} <span
-                                            class="text-muted small fw-normal">({{ $assessment->getEvaluatorTypeLabel() }})</span>
+                                            class="text-muted small fw-normal">({{ $assessment->getAnonymousLabel() }})</span>
                                     </h6>
                                     @if ($assessment->strengths)
                                         <div class="mb-2">
-                                            <strong class="text-success small"><i class="bi bi-plus-circle me-1"></i>Kelebihan:</strong>
+                                            <strong class="text-success small"><i
+                                                    class="bi bi-plus-circle me-1"></i>Kelebihan:</strong>
                                             <p class="mb-1 small">{{ $assessment->strengths }}</p>
                                         </div>
                                     @endif
                                     @if ($assessment->weaknesses)
                                         <div class="mb-2">
-                                            <strong class="text-danger small"><i class="bi bi-dash-circle me-1"></i>Kekurangan:</strong>
+                                            <strong class="text-danger small"><i
+                                                    class="bi bi-dash-circle me-1"></i>Kekurangan:</strong>
                                             <p class="mb-1 small">{{ $assessment->weaknesses }}</p>
                                         </div>
                                     @endif
                                     @if ($assessment->comments)
                                         <div class="mb-0">
-                                            <strong class="text-secondary small"><i class="bi bi-chat-left-text me-1"></i>Catatan:</strong>
+                                            <strong class="text-secondary small"><i
+                                                    class="bi bi-chat-left-text me-1"></i>Catatan:</strong>
                                             <p class="mb-0 small">{{ $assessment->comments }}</p>
                                         </div>
                                     @endif
@@ -238,7 +243,8 @@
                                     <i class="bi bi-eye me-1"></i> Preview
                                 </a>
                             @endif
-                            <a href="{{ route('files.download', $latestFile) }}" class="btn btn-outline-secondary flex-grow-1">
+                            <a href="{{ route('files.download', $latestFile) }}"
+                                class="btn btn-outline-secondary flex-grow-1">
                                 <i class="bi bi-download me-1"></i> Download
                             </a>
                         </div>

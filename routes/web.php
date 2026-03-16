@@ -21,9 +21,12 @@ use Illuminate\Support\Facades\Route;
 
 // Guest routes
 Route::middleware('guest')->group(function () {
-    Route::get('/', [AuthController::class, 'showLogin'])->name('login');
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
+
+// Default redirect
+Route::redirect('/', '/login');
 
 // Authenticated routes
 Route::middleware('auth')->group(function () {
@@ -84,6 +87,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/submissions/{submission}/assign-lecturers', [KaprodiController::class, 'assignLecturers'])->name('submissions.assign-lecturers');
         Route::post('/submissions/batch-assign', [KaprodiController::class, 'batchAssignLecturers'])->name('submissions.batch-assign');
         Route::post('/submissions/{submission}/accept', [KaprodiController::class, 'acceptSubmission'])->name('submissions.accept');
+        Route::post('/submissions/{submission}/reject', [KaprodiController::class, 'rejectSubmission'])->name('submissions.reject');
         Route::get('/settings', [KaprodiController::class, 'settings'])->name('settings.index');
         Route::post('/settings', [KaprodiController::class, 'updateSettings'])->name('settings.update');
         Route::get('/rubrics', [KaprodiController::class, 'rubrics'])->name('rubrics.index');

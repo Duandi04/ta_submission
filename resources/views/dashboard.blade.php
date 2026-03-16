@@ -93,6 +93,12 @@
                                             <div class="fw-semibold text-dark">{{ $submission->title }}</div>
                                             <div class="text-muted smaller-text">{{ $submission->research_field ?? 'Umum' }}
                                             </div>
+                                            @if (in_array($submission->status, ['approved', 'completed']) && $submission->supervisor)
+                                                <div class="small mt-1 text-primary">
+                                                    <i class="bi bi-person-check-fill me-1"></i> Pembimbing:
+                                                    {{ $submission->supervisor->name }}
+                                                </div>
+                                            @endif
                                         </td>
                                         <td>
                                             <span class="badge bg-{{ $submission->getStatusBadgeClass() }} rounded-pill">

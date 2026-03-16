@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class,
             RubricSeeder::class,
             ThesisSubmissionSeeder::class,
+            AssessmentCriteriaSeeder::class,
+            DummyProposalSeeder::class,
         ]);
     }
 }

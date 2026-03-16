@@ -245,35 +245,111 @@
 
             <!-- Assessments Card -->
             @if ($submission->assessments->where('is_submitted', true)->count() > 0)
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <i class="bi bi-clipboard-data"></i> Penilaian
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Penilai</th>
-                                        <th>Tipe</th>
-                                        <th>Nilai</th>
-                                        <th>Tanggal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($submission->assessments->where('is_submitted', true) as $assessment)
-                                        <tr>
-                                            <td>{{ $assessment->evaluator->name }}</td>
-                                            <td>{{ $assessment->getEvaluatorTypeLabel() }}</td>
-                                            <td><strong>{{ $assessment->total_score }}</strong></td>
-                                            <td>{{ $assessment->submitted_at->format('d/m/Y') }}</td>
+                <h5 class="mb-3 mt-4"><i class="bi bi-clipboard-data me-2"></i>Hasil Penilaian</h5>
+                @foreach ($submission->assessments->where('is_submitted', true) as $assessment)
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-primary">
+                                <i class="bi bi-person-badge me-2"></i>{{ $assessment->getAnonymousLabel() }}
+                            </span>
+                            <div class="text-end">
+                                <span class="small text-muted d-block" style="font-size: 0.75rem;">Total Nilai</span>
+                                <span
+                                    class="badge bg-primary fs-6">{{ number_format($assessment->total_score, 2) }}</span>
+                            </div>
+                        </div>
+                        <div class="card-body border-top border-light">
+                            <h6 class="fw-bold mb-3 small text-muted">DETAIL RUBRIK PENILAIAN</h6>
+                            <div class="table-responsive mb-4">
+                                <table class="table table-sm table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr class="small text-uppercase" style="font-size: 0.7rem;">
+                                            <th class="ps-3">Kriteria</th>
+                                            <th class="text-center" width="80">Bobot</th>
+                                            <th class="text-center" width="80">Nilai</th>
+                                            <th class="text-center" width="100">Kontribusi</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($assessment->scores as $score)
+                                            @php
+                                                $contribution = ($score->score * $score->weight) / 100;
+                                            @endphp
+                                            <tr class="small">
+                                                <td class="ps-3">
+                                                    <div class="fw-semibold text-dark">{{ $score->criterion_name }}</div>
+                                                    @if ($score->criterion_description)
+                                                        <div class="text-muted" style="font-size: 0.75rem;">
+                                                            {{ $score->criterion_description }}</div>
+                                                    @endif
+                                                </td>
+                                                <td class="text-center">{{ number_format($score->weight, 0) }}%</td>
+                                                <td class="text-center">
+                                                    <span
+                                                        class="badge bg-light text-dark border">{{ number_format($score->score, 1) }}</span>
+                                                </td>
+                                                <td class="text-center fw-bold text-primary">
+                                                    {{ number_format($contribution, 2) }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot class="table-light border-top-0">
+                                        <tr class="small fw-bold">
+                                            <td class="ps-3">TOTAL</td>
+                                            <td class="text-center">100%</td>
+                                            <td colspan="2" class="text-end pe-4 text-primary fs-6">
+                                                {{ number_format($assessment->total_score, 2) }}
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            @if ($assessment->comments || $assessment->strengths || $assessment->weaknesses || $assessment->recommendations)
+                                <h6 class="fw-bold mb-2 small text-muted text-uppercase">Feedback & Catatan</h6>
+                                <div class="row g-3">
+                                    @if ($assessment->comments)
+                                        <div class="col-12">
+                                            <div class="p-3 rounded bg-light border-start border-4 border-info">
+                                                <label class="small fw-bold text-info mb-1 d-block">Komentar Umum</label>
+                                                <p class="small mb-0 text-dark">{{ $assessment->comments }}</p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if ($assessment->strengths)
+                                        <div class="col-md-6">
+                                            <div class="p-3 rounded bg-light border-start border-4 border-success h-100">
+                                                <label class="small fw-bold text-success mb-1 d-block">Kelebihan</label>
+                                                <p class="small mb-0 text-dark">{{ $assessment->strengths }}</p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if ($assessment->weaknesses)
+                                        <div class="col-md-6">
+                                            <div class="p-3 rounded bg-light border-start border-4 border-danger h-100">
+                                                <label class="small fw-bold text-danger mb-1 d-block">Kelemahan</label>
+                                                <p class="small mb-0 text-dark">{{ $assessment->weaknesses }}</p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if ($assessment->recommendations)
+                                        <div class="col-12">
+                                            <div class="p-3 rounded bg-light border-start border-4 border-primary">
+                                                <label class="small fw-bold text-primary mb-1 d-block">Rekomendasi</label>
+                                                <p class="small mb-0 text-dark">{{ $assessment->recommendations }}</p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                        <div class="card-footer bg-white border-0 py-3 text-end">
+                            <small class="text-muted"><i class="bi bi-calendar-event me-1"></i> Disubmit pada:
+                                {{ $assessment->submitted_at->format('d/m/Y') }}</small>
                         </div>
                     </div>
-                </div>
+                @endforeach
             @endif
         </div>
 

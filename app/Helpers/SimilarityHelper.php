@@ -6,14 +6,6 @@ use App\Models\ThesisSubmission;
 
 class SimilarityHelper
 {
-    /**
-     * Find submissions with similar titles.
-     *
-     * @param string $title
-     * @param int $threshold Minimum percentage of similarity (0-100)
-     * @param int|null $excludeId ID to exclude from search
-     * @return \Illuminate\Support\Collection
-     */
     public static function findSimilarSubmissions(string $title, int $threshold = 50, ?int $excludeId = null)
     {
         $allSubmissions = ThesisSubmission::where('status', '!=', 'draft')
@@ -28,16 +20,18 @@ class SimilarityHelper
             similar_text(strtolower($title), strtolower($submission->title), $percent);
 
             if ($percent >= $threshold) {
-                $similar->push([
-                    'id' => $submission->id,
-                    'title' => $submission->title,
-                    'student' => $submission->student->name ?? 'Unknown',
-                    'similarity' => round($percent, 2),
-                    'status' => $submission->status
-                ]);
+                $obj = new \stdClass();
+                $obj->id = $submission->id;
+                $obj->title = $submission->title;
+                $obj->student = (object)['name' => $submission->student->name ?? 'Unknown'];
+                $obj->similarity_percentage = round($percent, 2);
+                $obj->status = $submission->status;
+                $obj->created_at = $submission->created_at;
+                
+                $similar->push($obj);
             }
         }
 
-        return $similar->sortByDesc('similarity');
+        return $similar->sortByDesc('similarity_percentage');
     }
 }

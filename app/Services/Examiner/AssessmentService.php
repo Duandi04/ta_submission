@@ -73,7 +73,6 @@ class AssessmentService
         $assessment = Assessment::create([
             'thesis_submission_id' => $submission->id,
             'evaluator_id' => Auth::id(),
-            'evaluator_type' => $data['evaluator_type'],
             'rubric_id' => $submission->rubric_id,
             'comments' => $data['comments'] ?? null,
             'strengths' => $data['strengths'] ?? null,

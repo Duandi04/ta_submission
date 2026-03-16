@@ -15,7 +15,6 @@ class Assessment extends Model
     protected $fillable = [
         'thesis_submission_id',
         'evaluator_id',
-        'evaluator_type',
         'rubric_id',
         'total_score',
         'comments',
@@ -86,11 +85,6 @@ class Assessment extends Model
         return $query->where('evaluator_id', $evaluatorId);
     }
 
-    public function scopeByType($query, $type)
-    {
-        return $query->where('evaluator_type', $type);
-    }
-
     /**
      * Helper methods
      */
@@ -99,14 +93,34 @@ class Assessment extends Model
         return $this->evaluator_id === $user->id && !$this->is_submitted;
     }
 
-    public function getEvaluatorTypeLabel(): string
+    /**
+     * Get anonymous label for student view.
+     */
+    public function getAnonymousLabel(): string
     {
-        return match ($this->evaluator_type) {
-            'supervisor' => 'Pembimbing',
-            'examiner_1' => 'Penguji 1',
-            'examiner_2' => 'Penguji 2',
-            'assessor' => 'Penilai',
-            default => 'Tidak Diketahui',
-        };
+        $submission = $this->thesisSubmission;
+        
+        if (!$submission) {
+            return 'Dosen Penilai';
+        }
+
+        if ($this->evaluator_id === $submission->supervisor_id || $this->evaluator_id === $submission->supervisor_2_id) {
+            return 'Pembimbing';
+        }
+
+        $examinerAssessments = $submission->assessments
+            ->where('evaluator_id', '!=', $submission->supervisor_id)
+            ->where('evaluator_id', '!=', $submission->supervisor_2_id)
+            ->sortBy('id')
+            ->values();
+
+        foreach ($examinerAssessments as $index => $exam) {
+            if ($exam->id === $this->id) {
+                return 'Dosen ' . ($index + 1);
+            }
+        }
+
+        return 'Dosen Penilai';
     }
+
 }

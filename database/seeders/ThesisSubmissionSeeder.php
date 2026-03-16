@@ -292,7 +292,6 @@ class ThesisSubmissionSeeder extends Seeder
         $assessment = Assessment::factory()
             ->forThesis($thesis)
             ->forEvaluator($supervisor)
-            ->supervisor()
             ->submitted()
             ->create([
                 'rubric_id' => $rubric?->id,
@@ -311,7 +310,6 @@ class ThesisSubmissionSeeder extends Seeder
             $eAssessment = Assessment::factory()
                 ->forThesis($thesis)
                 ->forEvaluator($examiner)
-                ->state(['evaluator_type' => $index === 0 ? 'examiner_1' : 'examiner_2'])
                 ->submitted()
                 ->create([
                     'rubric_id' => $rubric?->id,

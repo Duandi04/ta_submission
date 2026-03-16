@@ -205,7 +205,6 @@ class DummyProposalSeeder extends Seeder
                 ->forThesis($thesis)
                 ->forEvaluator($evaluator)
                 ->state([
-                    'evaluator_type' => $type, 
                     'rubric_id' => $rubric->id,
                     'is_submitted' => true,
                     'submitted_at' => now(),

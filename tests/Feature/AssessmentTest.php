@@ -155,23 +155,6 @@ class AssessmentTest extends TestCase
         $this->assertFalse($assessment->canBeEditedBy($dosen2));
     }
 
-    /**
-     * Test evaluator type label is correct
-     */
-    public function test_evaluator_type_label(): void
-    {
-        $labels = [
-            'supervisor' => 'Pembimbing',
-            'examiner_1' => 'Penguji 1',
-            'examiner_2' => 'Penguji 2',
-            'assessor' => 'Penilai',
-        ];
-
-        foreach ($labels as $type => $expectedLabel) {
-            $assessment = Assessment::factory()->make(['evaluator_type' => $type]);
-            $this->assertEquals($expectedLabel, $assessment->getEvaluatorTypeLabel());
-        }
-    }
 
     /**
      * Test assessment factory states
@@ -186,8 +169,7 @@ class AssessmentTest extends TestCase
         $this->assertFalse($draft->is_submitted);
         $this->assertTrue($submitted->is_submitted);
         $this->assertNotNull($submitted->submitted_at);
-        $this->assertEquals('supervisor', $supervisor->evaluator_type);
-        $this->assertEquals('examiner_1', $examiner1->evaluator_type);
+        
     }
 
     /**

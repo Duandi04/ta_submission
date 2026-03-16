@@ -73,7 +73,6 @@ class AssessmentController extends Controller
         $validated = $request->validate([
             'thesis_submission_id' => 'required|exists:thesis_submissions,id',
             'rubric_id' => 'required|exists:rubrics,id',
-            'evaluator_type' => 'required|in:supervisor,examiner_1,examiner_2,assessor',
             'comments' => 'nullable',
             'strengths' => 'nullable',
             'weaknesses' => 'nullable',

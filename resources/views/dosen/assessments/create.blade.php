@@ -52,10 +52,6 @@
                 <input type="hidden" name="thesis_submission_id" value="{{ $submission->id }}">
                 <input type="hidden" name="rubric_id" value="{{ $rubric->id }}">
 
-                {{-- Evaluator Role Hidden Input --}}
-                <input type="hidden" name="evaluator_type"
-                    value="{{ auth()->id() == $submission->supervisor_id ? 'supervisor' : 'assessor' }}">
-
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white py-3 border-0">
                         <div class="d-flex justify-content-between align-items-center">

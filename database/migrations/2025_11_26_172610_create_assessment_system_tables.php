@@ -23,7 +23,6 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('thesis_submission_id')->constrained()->cascadeOnDelete();
             $table->foreignId('evaluator_id')->constrained('users')->cascadeOnDelete();
-            $table->enum('evaluator_type', ['supervisor', 'examiner_1', 'examiner_2', 'assessor'])->default('assessor');
             $table->foreignId('rubric_id')->nullable()->constrained()->nullOnDelete();
             $table->json('rubric_snapshot')->nullable();
             $table->decimal('total_score', 5, 2)->nullable();

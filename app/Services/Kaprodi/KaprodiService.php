@@ -199,7 +199,6 @@ class KaprodiService
                     'evaluator_id' => $assessorId,
                 ],
                 [
-                    'evaluator_type' => 'assessor',
                     'rubric_id' => $rubricId, // Keep for reference to template
                     'assessment_rubric_id' => $assessmentRubric->id, // LINK TO SNAPSHOT
                     'deleted_at' => null, // Restore if it was soft deleted
@@ -245,9 +244,6 @@ class KaprodiService
         }
     }
 
-    /**
-     * Accept submission, assign advisors and calculate final score.
-     */
     public function acceptSubmission(int $submissionId, array $data)
     {
         $submission = ThesisSubmission::with('assessments')->findOrFail($submissionId);
@@ -270,13 +266,13 @@ class KaprodiService
             'supervisor_id' => $data['supervisor_id'],
             'supervisor_2_id' => $data['supervisor_2_id'] ?? null,
             'final_score' => $finalScore,
-            'status' => 'completed',
+            'status' => 'approved',
         ]);
 
         \App\Models\ThesisStatus::create([
             'thesis_submission_id' => $submission->id,
             'old_status' => 'under_review',
-            'new_status' => 'completed',
+            'new_status' => 'approved',
             'changed_by' => Auth::id(),
             'comment' => 'Pengajuan telah diterima oleh Kaprodi dan dosen pembimbing telah ditetapkan.',
         ]);
@@ -284,7 +280,64 @@ class KaprodiService
         activity()
             ->performedOn($submission)
             ->causedBy(Auth::user())
-            ->log('Pengajuan diterima, pembimbing ditetapkan, status berubah ke Selesai');
+            ->log('Pengajuan diterima, pembimbing ditetapkan, status berubah ke Diterima');
+
+        // Automatically reject other submissions from this student that are not approved.
+        $otherSubmissions = ThesisSubmission::where('student_id', $submission->student_id)
+            ->where('id', '!=', $submission->id)
+            ->whereNotIn('status', ['approved', 'rejected'])
+            ->get();
+
+        foreach ($otherSubmissions as $otherSubmission) {
+            $oldStatus = $otherSubmission->status;
+            $otherSubmission->update([
+                'status' => 'rejected',
+            ]);
+
+            \App\Models\ThesisStatus::create([
+                'thesis_submission_id' => $otherSubmission->id,
+                'old_status' => $oldStatus,
+                'new_status' => 'rejected',
+                'changed_by' => Auth::id(),
+                'comment' => 'Ditolak otomatis karena pengajuan skripsi lain telah diterima.',
+            ]);
+
+            activity()
+                ->performedOn($otherSubmission)
+                ->causedBy(Auth::user())
+                ->log('Pengajuan ditolak otomatis karena pengajuan lain diterima');
+        }
+    }
+
+    /**
+     * Reject submission.
+     */
+    public function rejectSubmission(int $submissionId, array $data)
+    {
+        $submission = ThesisSubmission::findOrFail($submissionId);
+
+        if ($submission->status === 'approved') {
+            throw new \Exception('Pengajuan yang sudah diterima tidak dapat ditolak.');
+        }
+
+        $oldStatus = $submission->status;
+        
+        $submission->update([
+            'status' => 'rejected',
+        ]);
+
+        \App\Models\ThesisStatus::create([
+            'thesis_submission_id' => $submission->id,
+            'old_status' => $oldStatus,
+            'new_status' => 'rejected',
+            'changed_by' => Auth::id(),
+            'comment' => 'Pengajuan ditolak oleh Kaprodi. Alasan: ' . $data['rejection_reason'],
+        ]);
+
+        activity()
+            ->performedOn($submission)
+            ->causedBy(Auth::user())
+            ->log('Pengajuan ditolak, status berubah ke Ditolak');
     }
 
     /**

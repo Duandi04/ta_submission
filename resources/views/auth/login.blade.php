@@ -22,9 +22,10 @@
     </style>
     <div class="login-card">
         <div class="login-header">
-            <img src="{{ url(\App\Models\Setting::getValue('app_logo', 'images/logo_uvers.webp')) }}" alt="Logo"
-                class="mb-4 dynamic-logo" style="height: 120px; object-fit: contain;">
-            <!-- <h1>{{ \App\Models\Setting::getValue('campus_name', 'Sistem Pengajuan TA') }}</h1> -->
+            <div class="icon-wrapper">
+                <img src="{{ url(\App\Models\Setting::getValue('app_logo', 'images/logo_uvers.webp')) }}" alt="Logo"
+                    class="dynamic-logo" style="height: 50px; object-fit: contain;">
+            </div>
             <h1>Sistem Pengajuan Draft Proposal TA</h1>
             <p>Masuk ke akun Anda untuk melanjutkan</p>
         </div>
@@ -42,12 +43,12 @@
                 </div>
             @endif
 
-            <form method="POST" action="/login">
+            <form method="POST" action="{{ route('login') }}">
                 @csrf
 
                 <div class="form-floating">
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email"
-                        value="{{ old('email') }}" placeholder="email@example.com" required autofocus>
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email"
+                        name="email" value="{{ old('email') }}" placeholder="email@example.com" required autofocus>
                     <label for="email"><i class="bi bi-envelope me-2"></i>Alamat Email</label>
                 </div>
 

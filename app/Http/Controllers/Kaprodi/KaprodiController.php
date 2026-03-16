@@ -85,13 +85,30 @@ class KaprodiController extends Controller
         }
     }
 
-    public function acceptSubmission(\App\Http\Requests\Kaprodi\KaprodiAcceptSubmissionRequest $request, int $submissionId)
+    public function acceptSubmission(\Illuminate\Http\Request $request, int $submissionId)
     {
-        $data = $request->validated();
+        $validated = $request->validate([
+            'supervisor_id' => 'required|exists:users,id',
+            'supervisor_2_id' => 'nullable|exists:users,id|different:supervisor_id',
+        ]);
 
         try {
-            $this->kaprodiService->acceptSubmission($submissionId, $data);
+            $this->kaprodiService->acceptSubmission($submissionId, $validated);
             return back()->with('success', 'Pengajuan berhasil diterima dan dosen pembimbing telah ditetapkan.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function rejectSubmission(\Illuminate\Http\Request $request, int $submissionId)
+    {
+        $validated = $request->validate([
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+
+        try {
+            $this->kaprodiService->rejectSubmission($submissionId, $validated);
+            return back()->with('success', 'Pengajuan berhasil ditolak.');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
