@@ -34,6 +34,13 @@ This project has been refactored to ensure high maintainability and scalability:
 - **Thin Controllers**: Controllers only handle request routing and response returning.
 - **Repository/Service Pattern**: logic for complex operations is decoupled from the Eloquent models.
 
+## 📚 Documentation
+
+For more detailed information, please refer to:
+- [**Architecture & Design**](docs/ARCHITECTURE.md): Technical deep-dive into patterns and structure.
+- [**Kaprodi Features**](docs/FEATURES_KAPRODI.md): Detailed guide for Kaprodi functionalities.
+- [**Testing Guide**](docs/TESTING_GUIDE.md): Instructions on running and writing tests.
+
 ## 📥 Installation
 
 1. **Clone the repository**
