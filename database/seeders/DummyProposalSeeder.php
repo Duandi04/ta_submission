@@ -120,6 +120,11 @@ class DummyProposalSeeder extends Seeder
             $supervisor = $lecturers->random();
             $status = $statuses[array_rand($statuses)];
 
+            if ($status === 'completed') {
+                $hasApproved = ThesisSubmission::where('student_id', $student->id)->where('status', 'approved')->exists();
+                $status = $hasApproved ? 'rejected' : 'approved';
+            }
+
             $thesis = ThesisSubmission::create([
                 'student_id' => $student->id,
                 'supervisor_id' => $supervisor->id,
@@ -128,14 +133,14 @@ class DummyProposalSeeder extends Seeder
                 'research_field' => 'Teknik Perangkat Lunak',
                 'status' => $status,
                 'submission_date' => $this->getSubmissionDate($status),
-                'defense_date' => ($status === 'completed') ? now()->subDays(rand(1, 30)) : null,
-                'final_score' => ($status === 'completed') ? rand(75, 95) : null,
+                'defense_date' => in_array($status, ['completed', 'approved', 'rejected']) ? now()->subDays(rand(1, 30)) : null,
+                'final_score' => in_array($status, ['completed', 'approved', 'rejected']) ? rand(75, 95) : null,
             ]);
 
             $this->createStatusHistory($thesis, $supervisor);
 
             // If under review or completed, it has assessments
-            if (($status === 'under_review' || $status === 'completed') && $rubric) {
+            if ((in_array($status, ['under_review', 'completed', 'approved', 'rejected'])) && $rubric) {
                 $this->createAssessments($thesis, $supervisor, $lecturers, $rubric);
             }
         }
@@ -149,7 +154,7 @@ class DummyProposalSeeder extends Seeder
             'draft' => null,
             'submitted' => now()->subDays(rand(1, 7)),
             'under_review' => now()->subDays(rand(7, 21)),
-            'completed' => now()->subMonths(rand(2, 6)),
+            'completed', 'approved', 'rejected' => now()->subMonths(rand(2, 6)),
             'cancelled' => now()->subMonths(rand(1, 3)),
             default => now(),
         };
@@ -162,6 +167,8 @@ class DummyProposalSeeder extends Seeder
             'submitted' => ['draft', 'submitted'],
             'under_review' => ['draft', 'submitted', 'under_review'],
             'completed' => ['draft', 'submitted', 'under_review', 'completed'],
+            'approved' => ['draft', 'submitted', 'under_review', 'completed', 'approved'],
+            'rejected' => ['draft', 'submitted', 'under_review', 'completed', 'rejected'],
             'cancelled' => ['draft', 'submitted', 'cancelled'],
         ];
 

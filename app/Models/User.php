@@ -48,6 +48,7 @@ class User extends Authenticatable
         'is_active',
         'program_studi_id',
         'angkatan',
+        'can_exceed_submission_limit',
     ];
 
     /**
@@ -71,6 +72,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'can_exceed_submission_limit' => 'boolean',
         ];
     }
 

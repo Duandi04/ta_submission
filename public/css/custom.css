@@ -561,35 +561,84 @@ body {
     padding: 2rem;
 }
 
-.guest-layout .form-floating {
-    margin-bottom: 1rem;
+.login-footer {
+    padding: 1rem 2rem 1.5rem;
+    text-align: center;
+    border-top: 1px solid var(--card-border);
 }
 
-.guest-layout .form-floating .form-control {
+.login-footer p {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Redesigned Premium Input Groups (No Floating Labels) */
+.input-premium-group {
+    position: relative;
+    margin-bottom: 1.25rem;
+}
+
+.input-premium-group .form-control {
     border: 2px solid #e2e8f0;
     border-radius: 12px;
-    padding: 1rem;
+    padding: 0.875rem 1rem 0.875rem 3rem; /* Left padding to clear the icon */
     height: auto;
-    font-size: 0.95rem;
+    font-size: 1rem;
     transition: all 0.3s ease;
     background: var(--input-bg);
     color: var(--text-main);
 }
 
-.guest-layout .form-floating .form-control:focus {
+.input-premium-group .form-control:focus {
     border-color: var(--primary-400);
     box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
     background: var(--card-bg);
-    color: var(--text-main);
 }
 
-.guest-layout .form-floating label {
+/* Input Prefix Icon */
+.input-premium-group .icon-prefix {
+    position: absolute;
+    left: 1.15rem;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--text-muted);
-    font-weight: 500;
+    font-size: 1.1rem;
+    pointer-events: none;
+    transition: color 0.3s ease;
+    z-index: 5;
+}
+
+.input-premium-group .form-control:focus + .icon-prefix,
+.input-premium-group:focus-within .icon-prefix {
+    color: var(--primary-500);
 }
 
 .guest-layout .form-check {
     margin: 1rem 0 1.5rem;
+}
+
+/* Password input toggle button refined for standard layout */
+.password-input-wrapper .password-toggle-btn {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    color: #64748b;
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.2s;
+}
+
+.password-input-wrapper .password-toggle-btn:hover {
+    color: var(--primary-500);
+}
+
+.password-input-wrapper .password-toggle-btn:focus {
+    outline: none;
 }
 
 .guest-layout .form-check-input {
@@ -692,6 +741,32 @@ body {
 
 .demo-credentials strong {
     color: var(--primary-700);
+}
+
+.login-alert {
+    animation: alertFadeIn 0.35s ease both;
+}
+
+@keyframes alertFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0.75rem 0 1.5rem;
+}
+
+.login-options .form-check {
+    margin: 0;
 }
 
 .guest-layout .alert {

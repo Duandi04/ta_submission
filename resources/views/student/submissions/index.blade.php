@@ -12,6 +12,15 @@
         </div>
     </div>
 
+    @if(Auth::user()->can_exceed_submission_limit)
+        <div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-4">
+            <i class="bi bi-info-circle-fill fs-4 me-3 text-primary"></i>
+            <div>
+                <strong>Pemberitahuan Khusus:</strong> Anda mendapatkan pengecualian untuk mengunggah draft proposal melebihi batas maksimal reguler prodi.
+            </div>
+        </div>
+    @endif
+
     <div id="ajax-container">
         @if($submissions->count() > 0)
             <div class="card border-0 shadow-sm">

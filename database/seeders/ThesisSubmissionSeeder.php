@@ -175,6 +175,12 @@ class ThesisSubmissionSeeder extends Seeder
                 continue;
             }
 
+            $status = $data['status'];
+            if ($status === 'completed') {
+                $hasApproved = ThesisSubmission::where('student_id', $student->id)->where('status', 'approved')->exists();
+                $status = $hasApproved ? 'rejected' : 'approved';
+            }
+
             // Create the thesis submission
             $thesis = ThesisSubmission::create([
                 'student_id' => $student->id,
@@ -182,15 +188,15 @@ class ThesisSubmissionSeeder extends Seeder
                 'title' => $data['title'],
                 'abstract' => $data['abstract'],
                 'research_field' => $data['research_field'],
-                'status' => $data['status'],
-                'submission_date' => $this->getSubmissionDate($data['status']),
-                'defense_date' => $this->getDefenseDate($data['status']),
+                'status' => $status,
+                'submission_date' => $this->getSubmissionDate($status),
+                'defense_date' => $this->getDefenseDate($status),
                 'notes' => $data['notes'] ?? null,
                 'final_score' => $data['final_score'] ?? null,
             ]);
 
             // Create proposal file for non-draft submissions
-            if ($data['status'] !== 'draft') {
+            if ($status !== 'draft') {
                 SubmissionFile::factory()
                     ->proposal()
                     ->forThesis($thesis)
@@ -203,11 +209,11 @@ class ThesisSubmissionSeeder extends Seeder
 
 
             // Create assessments for completed submissions and selected under_review submissions
-            if ($data['status'] === 'completed' || ($data['status'] === 'under_review' && !empty($data['has_assessments']))) {
+            if (in_array($status, ['completed', 'approved', 'rejected']) || ($status === 'under_review' && !empty($data['has_assessments']))) {
                 $this->createAssessments($thesis, $supervisor, $rubric);
             }
 
-            $this->command->info("Created thesis: {$data['title']} ({$data['status']})");
+            $this->command->info("Created thesis: {$data['title']} ({$status})");
         }
 
         $this->command->info('ThesisSubmissionSeeder completed successfully!');
@@ -222,7 +228,7 @@ class ThesisSubmissionSeeder extends Seeder
             'draft' => null,
             'submitted' => now()->subDays(rand(1, 7)),
             'under_review' => now()->subDays(rand(7, 21)),
-            'completed' => now()->subMonths(rand(2, 6)),
+            'completed', 'approved', 'rejected' => now()->subMonths(rand(2, 6)),
             'cancelled' => now()->subMonths(rand(1, 3)),
             default => now(),
         };
@@ -234,7 +240,7 @@ class ThesisSubmissionSeeder extends Seeder
     protected function getDefenseDate(string $status): ?\DateTime
     {
         return match ($status) {
-            'completed' => now()->subDays(rand(7, 30)),
+            'completed', 'approved', 'rejected' => now()->subDays(rand(7, 30)),
             default => null,
         };
     }
@@ -249,6 +255,8 @@ class ThesisSubmissionSeeder extends Seeder
             'submitted' => ['draft', 'submitted'],
             'under_review' => ['draft', 'submitted', 'under_review'],
             'completed' => ['draft', 'submitted', 'under_review', 'completed'],
+            'approved' => ['draft', 'submitted', 'under_review', 'completed', 'approved'],
+            'rejected' => ['draft', 'submitted', 'under_review', 'completed', 'rejected'],
             'cancelled' => ['draft', 'submitted', 'cancelled'],
         ];
 
@@ -277,6 +285,8 @@ class ThesisSubmissionSeeder extends Seeder
             'submitted' => 'Proposal telah diajukan untuk ditinjau.',
             'under_review' => 'Sedang dalam proses peninjauan dan penilaian.',
             'completed' => 'Proses pengajuan selesai. Selamat!',
+            'approved' => 'Proposal telah disetujui. Selamat!',
+            'rejected' => 'Proposal ditolak. Silakan perbaiki dan ajukan ulang.',
             'cancelled' => 'Pengajuan dibatalkan.',
             default => 'Status diubah.',
         };

@@ -62,7 +62,7 @@
             <div class="card border-0 shadow-sm p-4 mb-4">
                 <h5 class="fw-bold mb-4 border-bottom pb-2">Informasi Akademik</h5>
                 <div class="row">
-                    <div class="col-sm-6 mb-4">
+                    <div class="col-sm-4 mb-4">
                         <label class="text-muted small d-block">Fakultas</label>
                         @if ($student->programStudi && $student->programStudi->faculty)
                             <span class="fw-semibold text-dark">
@@ -72,7 +72,7 @@
                             <span class="fw-semibold">-</span>
                         @endif
                     </div>
-                    <div class="col-sm-6 mb-4">
+                    <div class="col-sm-4 mb-4">
                         <label class="text-muted small d-block">Program Studi</label>
                         @if ($student->programStudi)
                             <span class="fw-semibold text-primary">
@@ -82,13 +82,27 @@
                             <span class="fw-semibold">-</span>
                         @endif
                     </div>
+                    <div class="col-sm-4 mb-4">
+                        <label class="text-muted small d-block">Angkatan</label>
+                        <span class="fw-semibold text-dark">
+                            {{ $student->angkatan ?? '-' }}
+                        </span>
+                    </div>
+                    <div class="col-sm-4 mb-4">
+                        <label class="text-muted small d-block">Pengecualian Limit</label>
+                        @if($student->can_exceed_submission_limit)
+                            <span class="badge bg-soft-info text-info border border-info-subtle px-2">Ya (Khusus)</span>
+                        @else
+                            <span class="text-muted small">Tidak</span>
+                        @endif
+                    </div>
                 </div>
             </div>
 
             <div class="card border-0 shadow-sm p-4">
                 <h5 class="fw-bold mb-4 border-bottom pb-2">Riwayat Pengajuan Tugas Akhir</h5>
                 @php
-                    $submissions = \App\Models\ThesisSubmission::where('student_id', $student->id)->latest()->get();
+                    $submissions = \App\Models\ThesisSubmission::with('supervisor')->where('student_id', $student->id)->latest()->get();
                 @endphp
                 @if ($submissions->count() > 0)
                     <div class="list-group list-group-flush">
@@ -100,6 +114,9 @@
                                     <small class="text-muted">{{ $submission->created_at->format('d/m/Y') }}</small>
                                 </div>
                                 <p class="mb-1 small text-muted text-truncate">{{ $submission->abstract }}</p>
+                                @if($submission->supervisor)
+                                    <p class="mb-1 small text-muted"><i class="bi bi-person me-1"></i>Pembimbing: <strong>{{ $submission->supervisor->name }}</strong></p>
+                                @endif
                                 <span
                                     class="badge bg-{{ $submission->getStatusBadgeClass() }}">{{ $submission->getStatusLabel() }}</span>
                             </a>

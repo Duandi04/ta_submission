@@ -30,7 +30,7 @@
                         </div>
 
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="nim_nip" class="form-label">NIM (Nomor Induk Mahasiswa) <span
                                         class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('nim_nip') is-invalid @enderror"
@@ -40,7 +40,15 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="angkatan" class="form-label">Tahun Angkatan</label>
+                                <input type="number" class="form-control @error('angkatan') is-invalid @enderror"
+                                    id="angkatan" name="angkatan" value="{{ old('angkatan') }}" placeholder="Contoh: 2021">
+                                @error('angkatan')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-4">
                                 <label for="program_studi_id" class="form-label">Program Studi <span
                                         class="text-danger">*</span></label>
                                 <select class="form-select @error('program_studi_id') is-invalid @enderror"

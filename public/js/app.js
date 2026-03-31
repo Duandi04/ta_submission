@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // (e.g., tooltips, delete buttons)
                 initDeleteButtons();
                 initTooltips();
+                document.dispatchEvent(new Event('ajaxContentLoaded'));
             }
         })
         .catch(error => console.error('Error during search:', error));

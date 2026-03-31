@@ -26,6 +26,38 @@ class KaprodiController extends Controller
         return view('kaprodi.students.index', compact('students'));
     }
 
+    public function reportIndex()
+    {
+        $students = \App\Models\User::role('mahasiswa')
+            ->where('program_studi_id', \Illuminate\Support\Facades\Auth::user()->program_studi_id)
+            ->whereHas('thesisSubmissions', function ($query) {
+                $query->where('status', 'approved');
+            })
+            ->with(['thesisSubmissions' => function ($query) {
+                $query->where('status', 'approved')->with('supervisor');
+            }])
+            ->orderBy('nim_nip', 'asc')
+            ->get();
+
+        return view('kaprodi.reports.index', compact('students'));
+    }
+
+    public function reportPrint()
+    {
+        $students = \App\Models\User::role('mahasiswa')
+            ->where('program_studi_id', \Illuminate\Support\Facades\Auth::user()->program_studi_id)
+            ->whereHas('thesisSubmissions', function ($query) {
+                $query->where('status', 'approved');
+            })
+            ->with(['thesisSubmissions' => function ($query) {
+                $query->where('status', 'approved')->with('supervisor');
+            }])
+            ->orderBy('nim_nip', 'asc')
+            ->get();
+
+        return view('kaprodi.reports.print', compact('students'));
+    }
+
     public function submissions(\Illuminate\Http\Request $request)
     {
         $submissions = $this->kaprodiService->getAllSubmissions(
@@ -34,7 +66,9 @@ class KaprodiController extends Controller
             $request->query('sort_by', 'created_at'),
             $request->query('sort_order', 'desc')
         );
-        return view('kaprodi.submissions.index', compact('submissions'));
+        $lecturers = $this->kaprodiService->getLecturers();
+        $rubrics = $this->kaprodiService->getRubrics();
+        return view('kaprodi.submissions.index', compact('submissions', 'lecturers', 'rubrics'));
     }
 
     public function studentDetails(\Illuminate\Http\Request $request, int $studentId)

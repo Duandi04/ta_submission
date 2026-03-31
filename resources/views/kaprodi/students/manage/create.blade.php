@@ -32,7 +32,7 @@
                         </div>
 
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="nim_nip" class="form-label">NIM (Nomor Induk Mahasiswa) <span
                                         class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('nim_nip') is-invalid @enderror"
@@ -42,7 +42,15 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="angkatan" class="form-label">Tahun Angkatan</label>
+                                <input type="number" class="form-control @error('angkatan') is-invalid @enderror"
+                                    id="angkatan" name="angkatan" value="{{ old('angkatan') }}" placeholder="Contoh: 2021">
+                                @error('angkatan')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-4">
                                 <label for="program_studi_id" class="form-label">Program Studi <span
                                         class="text-danger">*</span></label>
                                 <input type="hidden" name="program_studi_id" value="{{ $programStudis->first()->id }}">
@@ -104,6 +112,20 @@
                                 </div>
                                 <div class="form-text mt-1 ms-4 text-muted small">Jika dinonaktifkan, mahasiswa tidak akan
                                     bisa masuk ke sistem.</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check form-switch p-0">
+                                <div class="d-flex align-items-center">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="can_exceed_submission_limit"
+                                        name="can_exceed_submission_limit" value="1"
+                                        {{ old('can_exceed_submission_limit') ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-semibold text-primary" for="can_exceed_submission_limit">
+                                        <i class="bi bi-star-fill me-1"></i> Pengecualian Batas Pengajuan
+                                    </label>
+                                </div>
+                                <div class="form-text ms-4">Izinkan mahasiswa ini mengunggah lebih dari batas maksimal draft TA yang ditentukan prodi.</div>
                             </div>
                         </div>
 

@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <div>
             <h1 class="h2">Review Draft Mahasiswa</h1>
-            <p class="text-muted small mb-0">{{ $student->name }} ({{ $student->nim_nip }})</p>
+            <p class="text-muted small mb-0">{{ $student->name }} ({{ $student->nim_nip }}) &bull; Angkatan: {{ $student->angkatan ?? '-' }}</p>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             <a href="{{ route('kaprodi.students.index', request()->query()) }}" class="btn btn-outline-secondary shadow-none">

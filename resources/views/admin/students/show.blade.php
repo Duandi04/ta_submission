@@ -62,7 +62,7 @@
             <div class="card border-0 shadow-sm p-4 mb-4">
                 <h5 class="fw-bold mb-4 border-bottom pb-2">Informasi Akademik</h5>
                 <div class="row">
-                    <div class="col-sm-6 mb-4">
+                    <div class="col-sm-4 mb-4">
                         <label class="text-muted small d-block">Fakultas</label>
                         @if($student->programStudi && $student->programStudi->faculty)
                             <a href="{{ route('admin.faculties.show', $student->programStudi->faculty) }}"
@@ -73,7 +73,7 @@
                             <span class="fw-semibold">-</span>
                         @endif
                     </div>
-                    <div class="col-sm-6 mb-4">
+                    <div class="col-sm-4 mb-4">
                         <label class="text-muted small d-block">Program Studi</label>
                         @if($student->programStudi)
                             <a href="{{ route('admin.program-studis.show', $student->programStudi) }}"
@@ -83,6 +83,12 @@
                         @else
                             <span class="fw-semibold">-</span>
                         @endif
+                    </div>
+                    <div class="col-sm-4 mb-4">
+                        <label class="text-muted small d-block">Angkatan</label>
+                        <span class="fw-semibold text-dark">
+                            {{ $student->angkatan ?? '-' }}
+                        </span>
                     </div>
                 </div>
             </div>

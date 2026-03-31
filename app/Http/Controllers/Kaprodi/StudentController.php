@@ -26,6 +26,10 @@ class StudentController extends Controller
             }, function ($q) {
                 $q->latest('users.id');
             })
+            ->withCount('thesisSubmissions')
+            ->with(['thesisSubmissions' => function ($query) {
+                $query->where('status', 'approved')->with('supervisor');
+            }])
             ->paginate(15);
 
         $programStudis = ProgramStudi::where('id', $user->program_studi_id)->get();
@@ -52,7 +56,9 @@ class StudentController extends Controller
             'phone' => $validated['phone'],
             'address' => $validated['address'],
             'program_studi_id' => $validated['program_studi_id'],
+            'angkatan' => $validated['angkatan'] ?? null,
             'is_active' => $request->boolean('is_active'),
+            'can_exceed_submission_limit' => $request->boolean('can_exceed_submission_limit'),
         ];
 
         if ($request->hasFile('profile_photo')) {
@@ -107,7 +113,9 @@ class StudentController extends Controller
             'phone' => $validated['phone'],
             'address' => $validated['address'],
             'program_studi_id' => $validated['program_studi_id'],
+            'angkatan' => $validated['angkatan'] ?? null,
             'is_active' => $request->boolean('is_active'),
+            'can_exceed_submission_limit' => $request->boolean('can_exceed_submission_limit'),
         ];
 
         if (!empty($validated['password'])) {

@@ -85,6 +85,17 @@
                 </li>
             @endrole
 
+            @role('kaprodi')
+                <div class="sidebar-label">Laporan & Cetak</div>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('kaprodi.reports.*') ? 'active' : '' }}"
+                        href="{{ route('kaprodi.reports.index') }}">
+                        <i class="bi bi-file-earmark-pdf-fill"></i>
+                        <span>Laporan Proposal Diterima</span>
+                    </a>
+                </li>
+            @endrole
+
             @role('admin')
                 <div class="sidebar-label">Administrator</div>
                 <li class="nav-item">

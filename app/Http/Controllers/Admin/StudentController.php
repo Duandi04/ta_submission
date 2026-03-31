@@ -48,6 +48,7 @@ class StudentController extends Controller
             'phone' => $validated['phone'],
             'address' => $validated['address'],
             'program_studi_id' => $validated['program_studi_id'],
+            'angkatan' => $validated['angkatan'] ?? null,
             'is_active' => $request->boolean('is_active'),
         ];
 
@@ -97,6 +98,7 @@ class StudentController extends Controller
             'phone' => $validated['phone'],
             'address' => $validated['address'],
             'program_studi_id' => $validated['program_studi_id'],
+            'angkatan' => $validated['angkatan'] ?? null,
             'is_active' => $request->boolean('is_active'),
         ];
 

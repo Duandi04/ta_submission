@@ -82,6 +82,8 @@
                                         @endif
                                     </a>
                                 </th>
+                                <th>Total Pengajuan</th>
+                                <th>Status Proposal</th>
                                 <th>Status</th>
                                 <th class="text-end pe-3">Aksi</th>
                             </tr>
@@ -102,6 +104,24 @@
                                     </td>
                                     <td>{{ $student->programStudi->name ?? '-' }}</td>
                                     <td class="text-muted small">{{ $student->email }}</td>
+                                    <td>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3">
+                                            {{ $student->thesis_submissions_count }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $accepted = $student->thesisSubmissions->firstWhere('status', 'approved');
+                                        @endphp
+                                        @if($accepted)
+                                            <span class="badge bg-success rounded-pill mb-1">Diterima</span>
+                                            <div class="small text-muted" style="font-size: 0.75rem;">
+                                                <i class="bi bi-person me-1"></i>{{ $accepted->supervisor->name ?? 'Belum ada pembimbing' }}
+                                            </div>
+                                        @else
+                                            <span class="text-muted small">-</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         @if ($student->is_active)
                                             <span
@@ -135,7 +155,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-5">
+                                    <td colspan="9" class="text-center py-5">
                                         <p class="text-muted mb-0">Data mahasiswa tidak ditemukan.</p>
                                     </td>
                                 </tr>

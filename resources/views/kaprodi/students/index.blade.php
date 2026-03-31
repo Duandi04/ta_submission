@@ -35,7 +35,8 @@
                                 <th class="ps-3">Mahasiswa</th>
                                 <th>NIM</th>
                                 <th>Angkatan</th>
-                                <th>Total Draft</th>
+                                <th>Total Pengajuan</th>
+                                <th>Status Proposal</th>
                                 <th class="text-end pe-3">Aksi</th>
                             </tr>
                         </thead>
@@ -56,10 +57,22 @@
                                     <td>{{ $student->nim_nip }}</td>
                                     <td>{{ $student->angkatan ?? '-' }}</td>
                                     <td>
-                                        <span
-                                            class="badge bg-primary-subtle text-primary border border-primary-subtle px-3">
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3">
                                             {{ $student->thesis_submissions_count }}
                                         </span>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $accepted = $student->thesisSubmissions->firstWhere('status', 'approved');
+                                        @endphp
+                                        @if($accepted)
+                                            <span class="badge bg-success rounded-pill mb-1">Diterima</span>
+                                            <div class="small text-muted" style="font-size: 0.75rem;">
+                                                <i class="bi bi-person me-1"></i>{{ $accepted->supervisor->name ?? 'Belum ada pembimbing' }}
+                                            </div>
+                                        @else
+                                            <span class="text-muted small">-</span>
+                                        @endif
                                     </td>
                                     <td class="text-end pe-3">
                                         <a href="{{ route('kaprodi.students.show', array_merge(['student' => $student->id], request()->query())) }}"
@@ -70,7 +83,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center py-5 text-muted">
+                                    <td colspan="6" class="text-center py-5 text-muted">
                                         <i class="bi bi-people fs-1 d-block mb-2"></i>
                                         @if (request('search'))
                                             <p class="text-muted mb-0">Tidak ditemukan mahasiswa yang sesuai dengan

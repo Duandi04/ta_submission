@@ -80,6 +80,8 @@ Route::middleware('auth')->group(function () {
         ]);
 
         Route::get('/students', [KaprodiController::class, 'index'])->name('students.index');
+        Route::get('/reports', [KaprodiController::class, 'reportIndex'])->name('reports.index');
+        Route::get('/reports/print', [KaprodiController::class, 'reportPrint'])->name('reports.print');
         Route::get('/submissions', [KaprodiController::class, 'submissions'])->name('submissions.index');
         Route::get('/students/{student}', [KaprodiController::class, 'studentDetails'])->name('students.show');
         Route::get('/submissions/{submission}', [KaprodiController::class, 'submissionShow'])->name('submissions.show');

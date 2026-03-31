@@ -26,6 +26,7 @@ class ProfileController extends Controller
             'address' => 'nullable',
             'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'remove_photo' => 'nullable|boolean',
+            'angkatan' => 'nullable|integer|min:2000|max:2099',
         ];
 
         // Only allow name change if NOT a student or lecturer (e.g., Admin)

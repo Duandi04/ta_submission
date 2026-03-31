@@ -54,13 +54,25 @@
                         </div>
 
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="nim_nip_display" class="form-label">NIM / NIP</label>
                                 <input type="text" class="form-control" id="nim_nip_display"
                                     value="{{ auth()->user()->nim_nip ?? '-' }}" disabled>
                                 <div class="form-text">Hubungi admin untuk perubahan NIM/NIP.</div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="angkatan" class="form-label">Tahun Angkatan</label>
+                                @if(auth()->user()->hasRole('mahasiswa'))
+                                    <input type="number" class="form-control @error('angkatan') is-invalid @enderror" id="angkatan"
+                                        name="angkatan" value="{{ old('angkatan', auth()->user()->angkatan) }}" placeholder="Contoh: 2021">
+                                    @error('angkatan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                @else
+                                    <input type="text" class="form-control" value="-" disabled>
+                                @endif
+                            </div>
+                            <div class="col-md-4">
                                 <label for="phone" class="form-label">Nomor Telepon/WA</label>
                                 <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone"
                                     name="phone" value="{{ old('phone', auth()->user()->phone) }}">

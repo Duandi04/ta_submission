@@ -21,7 +21,7 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        $userParam = $this->route('user') ?: $this->route('student') ?: $this->route('lecturer');
+        $userParam = $this->route('user') ?: $this->route('student') ?: $this->route('lecturer') ?: $this->route('manage');
         $userId = $userParam instanceof \App\Models\User ? $userParam->id : $userParam;
 
         $rules = [
@@ -34,8 +34,10 @@ class UserRequest extends FormRequest
             'role' => 'required|string|exists:roles,name',
             'program_studi_id' => 'required_if:role,mahasiswa,dosen,kaprodi|nullable|exists:program_studis,id',
             'is_active' => 'boolean',
+            'angkatan' => 'nullable|integer|min:2000|max:2099',
             'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'remove_photo' => 'nullable|boolean',
+            'can_exceed_submission_limit' => 'nullable|boolean',
         ];
 
         return $rules;

@@ -430,7 +430,7 @@
         </div>
     @endrole
 
-    @role('dosen')
+    @if(auth()->user()->hasRole('dosen') && !auth()->user()->hasRole('kaprodi') && !auth()->user()->hasRole('admin'))
         {{-- Stat Cards --}}
         <div class="row g-4 mb-4">
             <div class="col-md-4">
@@ -540,5 +540,5 @@
                 @endif
             </div>
         </div>
-    @endrole
+    @endif
 @endsection

@@ -51,7 +51,7 @@ class SubmissionService
         $currentCount = $user->thesisSubmissions()->count();
 
         $maxDrafts = (int) Setting::getValue('max_thesis_drafts', 3);
-        if ($currentCount >= $maxDrafts) {
+        if (!$user->can_exceed_submission_limit && $currentCount >= $maxDrafts) {
             throw ValidationException::withMessages([
                 'limit' => "Anda telah mencapai batas maksimal pengunggahan draft ({$maxDrafts} draft). Silakan hubungi Kaprodi jika ada kendala."
             ]);

@@ -45,7 +45,10 @@ class KaprodiService
                         ->orWhere('nim_nip', 'like', "%{$search}%");
                 });
             })
-            ->withCount('thesisSubmissions');
+            ->withCount('thesisSubmissions')
+            ->with(['thesisSubmissions' => function ($query) {
+                $query->where('status', 'approved')->with('supervisor');
+            }]);
     }
 
     /**
@@ -92,10 +95,8 @@ class KaprodiService
             ->when($status, function ($query) use ($status) {
                 return $query->where('status', $status);
             })
-            ->when($request->angkatan ?? null, function ($query, $angkatan) {
-                return $query->whereHas('student', function ($q) use ($angkatan) {
-                    $q->where('angkatan', $angkatan);
-                });
+            ->when($request->tahun_pengajuan ?? null, function ($query, $tahun) {
+                return $query->whereYear('thesis_submissions.created_at', $tahun);
             });
     }
 
@@ -250,6 +251,13 @@ class KaprodiService
 
         if ($submission->status !== 'under_review') {
             throw new \Exception('Pengajuan tidak dalam status Penilaian.');
+        }
+
+        $existingApproved = ThesisSubmission::where('student_id', $submission->student_id)
+            ->where('status', 'approved')
+            ->exists();
+        if ($existingApproved) {
+            throw new \Exception('Mahasiswa ini sudah memiliki proposal yang diterima. Satu mahasiswa hanya boleh memiliki satu proposal yang diterima.');
         }
 
         if ($submission->assessments->count() === 0) {

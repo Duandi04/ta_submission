@@ -22,18 +22,17 @@
                     <select name="status" class="form-select" data-auto-submit>
                         <option value="">-- Semua Status --</option>
                         <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                        <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Submitted
-                        </option>
-                        <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>Under
-                            Review
-                        </option>
-                        {{-- <option value="revision" {{ request('status') == 'revision' ? 'selected' : '' }}>Revisi</option> --}}
+                        <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Sudah Diajukan</option>
+                        <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>Sedang Ditinjau</option>
+                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Diterima</option>
+                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <input type="number" name="angkatan" class="form-control" placeholder="Angkatan..."
-                        value="{{ request('angkatan') }}" data-auto-submit>
+                    <input type="number" name="tahun_pengajuan" class="form-control" placeholder="Tahun Pengajuan..."
+                        value="{{ request('tahun_pengajuan') }}" data-auto-submit>
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-secondary w-100">Filter</button>
@@ -41,8 +40,9 @@
             </form>
         </div>
     </div>
-    <div id="batch-action-bar" class="card border-0 shadow-sm mb-4 d-none">
-        <div class="card-body bg-light border rounded">
+    <div id="ajax-container">
+        <div id="batch-action-bar" class="card border-0 shadow-sm mb-4 d-none">
+            <div class="card-body bg-light border rounded">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <span id="selected-count" class="fw-bold me-2">0</span> pengajuan terpilih
@@ -54,8 +54,8 @@
                             <option value="{{ $rubric->id }}">{{ $rubric->name }}</option>
                         @endforeach
                     </select>
-                    <select name="batch_assessor_ids[]" class="form-select w-auto" multiple form="batch-assign-form"
-                        required style="min-width: 200px;">
+                    <select name="batch_assessor_ids[]" id="batch-assessor-select" class="form-select w-auto" multiple form="batch-assign-form"
+                        required style="min-width: 200px;" data-placeholder="Pilih Dosen Penilai...">
                         @foreach ($lecturers as $lecturer)
                             <option value="{{ $lecturer->id }}">{{ $lecturer->name }}</option>
                         @endforeach
@@ -92,8 +92,10 @@
                             @forelse($submissions as $submission)
                                 <tr>
                                     <td class="ps-3">
-                                        <input type="checkbox" name="submission_ids[]" value="{{ $submission->id }}"
-                                            class="form-check-input submission-check">
+                                        @if($submission->status === 'submitted')
+                                            <input type="checkbox" name="submission_ids[]" value="{{ $submission->id }}"
+                                                class="form-check-input submission-check">
+                                        @endif
                                     </td>
                                     <td>
                                         <div class="fw-semibold text-dark text-truncate" style="max-width: 400px;">
@@ -133,7 +135,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-5 text-muted">
+                                    <td colspan="6" class="text-center py-5 text-muted">
                                         <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                                         @if (request('search') || request('status'))
                                             <p class="text-muted mb-0">Tidak ditemukan pengajuan yang sesuai dengan filter
@@ -157,12 +159,13 @@
         <div class="mt-3">
             {{ $submissions->appends(request()->query())->links() }}
         </div>
-        </div>
+    </form>
+    </div>
     @endsection
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    function initBatchUI() {
         const checkAll = document.getElementById('check-all');
         const submissionChecks = document.querySelectorAll('.submission-check');
         const batchActionBar = document.getElementById('batch-action-bar');
@@ -170,32 +173,58 @@
 
         function updateBatchUI() {
             const checkedCount = document.querySelectorAll('.submission-check:checked').length;
-            selectedCount.textContent = checkedCount;
-            if (checkedCount > 0) {
-                batchActionBar.classList.remove('d-none');
-            } else {
-                batchActionBar.classList.add('d-none');
+            if (selectedCount) {
+                selectedCount.textContent = checkedCount;
+            }
+            if (batchActionBar) {
+                if (checkedCount > 0) {
+                    batchActionBar.classList.remove('d-none');
+                } else {
+                    batchActionBar.classList.add('d-none');
+                }
             }
         }
 
         if (checkAll) {
             checkAll.addEventListener('change', function() {
-                submissionChecks.forEach(check => {
+                const currentChecks = document.querySelectorAll('.submission-check');
+                currentChecks.forEach(check => {
                     check.checked = checkAll.checked;
                 });
                 updateBatchUI();
             });
         }
 
-        submissionChecks.forEach(check => {
+        const freshChecks = document.querySelectorAll('.submission-check');
+        freshChecks.forEach(check => {
             check.addEventListener('change', updateBatchUI);
         });
 
         window.resetBatch = function() {
-            submissionChecks.forEach(check => check.checked = false);
-            if (checkAll) checkAll.checked = false;
+            const allChecks = document.querySelectorAll('.submission-check');
+            allChecks.forEach(check => check.checked = false);
+            const masterCheck = document.getElementById('check-all');
+            if (masterCheck) masterCheck.checked = false;
             updateBatchUI();
         }
-    });
+
+        if (typeof TomSelect !== 'undefined') {
+            const selectEl = document.getElementById('batch-assessor-select');
+            if (selectEl) {
+                if (selectEl.tomselect) {
+                    selectEl.tomselect.destroy();
+                }
+                new TomSelect('#batch-assessor-select', {
+                    plugins: ['remove_button'],
+                    persist: false,
+                    create: false,
+                    placeholder: 'Pilih Dosen Penilai...'
+                });
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', initBatchUI);
+    document.addEventListener('ajaxContentLoaded', initBatchUI);
 </script>
 @endpush
