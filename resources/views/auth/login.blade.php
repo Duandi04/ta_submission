@@ -26,20 +26,20 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}" id="loginForm" novalidate>
+            <form method="POST" action="{{ route('login') }}" id="loginForm">
                 @csrf
 
                 <div class="input-premium-group">
                     <i class="bi bi-envelope icon-prefix"></i>
                     <input type="email" class="form-control @error('email') is-invalid @enderror" id="email"
                         name="email" value="{{ old('email') }}" placeholder="Alamat Email" required autofocus
-                        autocomplete="email">
+                        autocomplete="email" tabindex="1">
                 </div>
 
                 <div class="input-premium-group password-input-wrapper">
                     <i class="bi bi-lock icon-prefix"></i>
                     <input type="password" class="form-control @error('password') is-invalid @enderror" id="password"
-                        name="password" placeholder="Password" required autocomplete="current-password">
+                        name="password" placeholder="Password" required autocomplete="current-password" tabindex="2">
                     <button type="button"
                         class="password-toggle-btn"
                         id="togglePassword" tabindex="-1" aria-label="Toggle password visibility">
@@ -47,14 +47,7 @@
                     </button>
                 </div>
 
-                <div class="login-options">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                        <label class="form-check-label" for="remember">Ingat saya</label>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-login" id="loginBtn">
+                <button type="submit" class="btn btn-login" id="loginBtn" tabindex="3">
                     <span class="btn-login-text">
                         <i class="bi bi-box-arrow-in-right"></i>
                         Masuk

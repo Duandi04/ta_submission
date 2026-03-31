@@ -24,14 +24,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (loginForm && loginBtn) {
         loginForm.addEventListener('submit', function () {
-            // Brief timeout so browser validation fires first
-            requestAnimationFrame(() => {
-                if (loginForm.checkValidity()) {
-                    loginBtn.disabled = true;
-                    loginBtn.querySelector('.btn-login-text').classList.add('d-none');
-                    loginBtn.querySelector('.btn-login-loading').classList.remove('d-none');
-                }
-            });
+            // Once the form is submitted (native validation passed), show loading state
+            loginBtn.disabled = true;
+            const btnText = loginBtn.querySelector('.btn-login-text');
+            const btnLoading = loginBtn.querySelector('.btn-login-loading');
+            
+            if (btnText) btnText.classList.add('d-none');
+            if (btnLoading) btnLoading.classList.remove('d-none');
         });
     }
 

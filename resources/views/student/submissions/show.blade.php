@@ -196,7 +196,6 @@
                                     <form action="{{ route('student.submissions.revision', $submission->id) }}"
                                         method="POST" enctype="multipart/form-data">
                                         @csrf
-                                        <input type="hidden" name="upload_type" value="local">
                                         <div class="modal-header">
                                             <h5 class="modal-title">Unggah File Revisi</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"

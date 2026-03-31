@@ -42,17 +42,18 @@
         <div class="shape shape-3"></div>
     </div>
 
+    <div class="login-container">
+        @yield('content')
+    </div>
+
     <!-- Theme Toggle Button -->
     <div class="position-fixed top-0 end-0 p-4" style="z-index: 1050;">
         <button class="btn btn-light shadow-sm rounded-circle d-flex align-items-center justify-content-center p-2" 
                 id="themeToggle" 
-                style="width: 45px; height: 45px; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main);">
+                style="width: 45px; height: 45px; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main);"
+                tabindex="4">
             <i class="bi bi-moon-stars-fill fs-5"></i>
         </button>
-    </div>
-
-    <div class="login-container">
-        @yield('content')
     </div>
 
     <!-- Bootstrap Bundle JS -->

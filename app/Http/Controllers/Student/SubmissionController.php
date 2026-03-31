@@ -32,17 +32,12 @@ class SubmissionController extends Controller
             'title' => 'required|max:255',
             'abstract' => 'required',
             'research_field' => 'nullable|max:100',
-            'upload_type' => 'required|in:local,drive',
-            'proposal_file' => 'required_if:upload_type,local|nullable|file|mimes:pdf,doc,docx|max:10240',
-            'google_file_id' => 'required_if:upload_type,drive|nullable|string',
-            'google_access_token' => 'required_if:upload_type,drive|nullable|string',
+            'proposal_file' => 'required|file|mimes:pdf,doc,docx|max:10240',
         ]);
 
         $submission = $this->submissionService->create(
             $validated,
-            $request->file('proposal_file'),
-            $request->input('google_file_id'),
-            $request->input('google_access_token')
+            $request->file('proposal_file')
         );
 
         return redirect()
@@ -90,18 +85,13 @@ class SubmissionController extends Controller
             'title' => 'required|max:255',
             'abstract' => 'required',
             'research_field' => 'nullable|max:100',
-            'upload_type' => 'required|in:local,drive',
-            'proposal_file' => 'required_if:upload_type,local|nullable|file|mimes:pdf,doc,docx|max:10240',
-            'google_file_id' => 'required_if:upload_type,drive|nullable|string',
-            'google_access_token' => 'required_if:upload_type,drive|nullable|string',
+            'proposal_file' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
         ]);
 
         $this->submissionService->update(
             $submission,
             $validated,
-            $request->file('proposal_file'),
-            $request->input('google_file_id'),
-            $request->input('google_access_token')
+            $request->file('proposal_file')
         );
 
         return redirect()
@@ -116,17 +106,12 @@ class SubmissionController extends Controller
         abort_if($submission->student_id !== $user->id, 403);
 
         $request->validate([
-            'upload_type' => 'required|in:local,drive',
-            'revision_file' => 'required_if:upload_type,local|nullable|file|mimes:pdf,doc,docx|max:10240',
-            'google_file_id' => 'required_if:upload_type,drive|nullable|string',
-            'google_access_token' => 'required_if:upload_type,drive|nullable|string',
+            'revision_file' => 'required|file|mimes:pdf,doc,docx|max:10240',
         ]);
 
         $this->submissionService->storeRevision(
             $submission,
-            $request->file('revision_file'),
-            $request->input('google_file_id'),
-            $request->input('google_access_token')
+            $request->file('revision_file')
         );
 
         return back()->with('success', 'File revisi berhasil diungggah!');

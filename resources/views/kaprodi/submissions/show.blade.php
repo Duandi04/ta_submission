@@ -604,8 +604,8 @@
                                 const tr = document.createElement('tr');
                                 tr.innerHTML = `
                             <td><span class="fw-medium">${item.title}</span> <span class="badge bg-secondary ms-1 small" style="font-size: 0.6rem;">${item.status}</span></td>
-                            <td><small>${item.student}</small></td>
-                            <td class="text-center"><span class="badge bg-warning text-dark">${item.similarity}%</span></td>
+                            <td><small>${item.student.name}</small></td>
+                            <td class="text-center"><span class="badge bg-warning text-dark">${item.similarity_percentage}%</span></td>
                         `;
                                 resultsBody.appendChild(tr);
                             });

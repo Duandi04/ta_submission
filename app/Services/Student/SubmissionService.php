@@ -28,12 +28,10 @@ class SubmissionService
     /**
      * Store a revision file.
      */
-    public function storeRevision(ThesisSubmission $submission, ?UploadedFile $file = null, ?string $googleFileId = null, ?string $googleAccessToken = null): void
+    public function storeRevision(ThesisSubmission $submission, ?UploadedFile $file = null): void
     {
         if ($file) {
             $this->uploadFile($submission, $file, 'revision');
-        } elseif ($googleFileId && $googleAccessToken) {
-            $this->storeFromDrive($submission, $googleFileId, $googleAccessToken, 'revision');
         }
 
         activity()
@@ -44,7 +42,7 @@ class SubmissionService
     /**
      * Create a new thesis submission.
      */
-    public function create(array $data, ?UploadedFile $file = null, ?string $googleFileId = null, ?string $googleAccessToken = null): ThesisSubmission
+    public function create(array $data, ?UploadedFile $file = null): ThesisSubmission
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
@@ -58,14 +56,12 @@ class SubmissionService
         }
 
         $submission = $user->thesisSubmissions()->create([
-            ...collect($data)->except(['google_file_id', 'google_access_token'])->toArray(),
+            ...collect($data)->toArray(),
             'status' => 'draft',
         ]);
 
         if ($file) {
             $this->uploadFile($submission, $file, 'proposal');
-        } elseif ($googleFileId && $googleAccessToken) {
-            $this->storeFromDrive($submission, $googleFileId, $googleAccessToken, 'proposal');
         }
 
         activity()
@@ -78,14 +74,12 @@ class SubmissionService
     /**
      * Update an existing thesis submission.
      */
-    public function update(ThesisSubmission $submission, array $data, ?UploadedFile $file = null, ?string $googleFileId = null, ?string $googleAccessToken = null): ThesisSubmission
+    public function update(ThesisSubmission $submission, array $data, ?UploadedFile $file = null): ThesisSubmission
     {
-        $submission->update(collect($data)->except(['google_file_id', 'google_access_token', 'revision_file'])->toArray());
+        $submission->update(collect($data)->except(['revision_file'])->toArray());
 
         if ($file) {
             $this->uploadFile($submission, $file, 'proposal');
-        } elseif ($googleFileId && $googleAccessToken) {
-            $this->storeFromDrive($submission, $googleFileId, $googleAccessToken, 'proposal');
         }
 
         activity()
@@ -126,54 +120,7 @@ class SubmissionService
         ]);
     }
 
-    /**
-     * Store a file from Google Drive.
-     */
-    public function storeFromDrive(ThesisSubmission $submission, string $fileId, string $accessToken, string $type): void
-    {
-        // Fetch file metadata from Google Drive API
-        $metadataResponse = \Illuminate\Support\Facades\Http::withToken($accessToken)
-            ->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=name,size,mimeType");
 
-        if ($metadataResponse->failed()) {
-            throw new \Exception('Failed to fetch file metadata from Google Drive.');
-        }
-
-        $metadata = $metadataResponse->json();
-        $fileName = $metadata['name'];
-        $fileSize = $metadata['size'] ?? 0;
-        $mimeType = $metadata['mimeType'];
-
-        // Download file content
-        $downloadResponse = \Illuminate\Support\Facades\Http::withToken($accessToken)
-            ->get("https://www.googleapis.com/drive/v3/files/{$fileId}?alt=media");
-
-        if ($downloadResponse->failed()) {
-            throw new \Exception('Failed to download file from Google Drive.');
-        }
-
-        $content = $downloadResponse->body();
-        $disk    = config('filesystems.default', 'local');
-        $path    = 'submissions/' . $submission->id . '/' . \Illuminate\Support\Str::random(40);
-
-        // Add extension if missing in path but present in filename
-        $extension = pathinfo($fileName, PATHINFO_EXTENSION);
-        if ($extension) {
-            $path .= '.' . $extension;
-        }
-
-        \Illuminate\Support\Facades\Storage::disk($disk)->put($path, $content);
-
-        $submission->files()->create([
-            'file_name'    => $fileName,
-            'file_path'    => $path,
-            'file_type'    => $type,
-            'file_size'    => $fileSize,
-            'mime_type'    => $mimeType,
-            'uploaded_by'  => Auth::id(),
-            'storage_disk' => $disk,
-        ]);
-    }
 
     /**
      * Check if submission can be edited by the student.
