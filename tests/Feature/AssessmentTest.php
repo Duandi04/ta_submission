@@ -204,15 +204,23 @@ class AssessmentTest extends TestCase
      */
     public function test_by_type_scope(): void
     {
-        Assessment::factory()->supervisor()->count(2)->create();
-        Assessment::factory()->examiner1()->count(1)->create();
-        Assessment::factory()->examiner2()->count(1)->create();
+        $thesis = ThesisSubmission::factory()->create([
+            'supervisor_id' => User::factory()->dosen()->create()->id,
+            'supervisor_2_id' => User::factory()->dosen()->create()->id,
+        ]);
+
+        Assessment::factory()->create(['thesis_submission_id' => $thesis->id, 'evaluator_id' => $thesis->supervisor_id]);
+        Assessment::factory()->create(['thesis_submission_id' => $thesis->id, 'evaluator_id' => $thesis->supervisor_2_id]);
+
+        $examiner1 = Assessment::factory()->create(['thesis_submission_id' => $thesis->id, 'evaluator_id' => User::factory()->dosen()->create()->id]);
+        $examiner2 = Assessment::factory()->create(['thesis_submission_id' => $thesis->id, 'evaluator_id' => User::factory()->dosen()->create()->id]);
 
         $supervisors = Assessment::byType('supervisor')->get();
         $examiner1s = Assessment::byType('examiner_1')->get();
 
         $this->assertCount(2, $supervisors);
         $this->assertCount(1, $examiner1s);
+        $this->assertEquals($examiner1->id, $examiner1s->first()->id);
     }
 
     /**

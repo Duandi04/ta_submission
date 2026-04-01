@@ -55,7 +55,7 @@ class UserFactory extends Factory
         
         return [
             'name' => $name,
-            'email' => strtolower(str_replace(' ', '.', $name)) . '@' . fake()->randomElement(['gmail.com', 'yahoo.com', 'outlook.com']),
+            'email' => strtolower(str_replace(' ', '.', $name)) . '_' . fake()->unique()->numerify('####') . '@' . fake()->randomElement(['gmail.com', 'yahoo.com', 'outlook.com']),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),

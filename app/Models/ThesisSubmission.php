@@ -67,6 +67,11 @@ class ThesisSubmission extends Model
         return $this->hasMany(SubmissionFile::class);
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function statuses()
     {
         return $this->hasMany(ThesisStatus::class);
@@ -125,7 +130,7 @@ class ThesisSubmission extends Model
      */
     public function canBeEditedByStudent(): bool
     {
-        return in_array($this->status, ['draft']);
+        return in_array($this->status, ['draft', 'revision_required']);
     }
 
     public function getStatusBadgeClass(): string
@@ -134,8 +139,11 @@ class ThesisSubmission extends Model
             'draft' => 'secondary',
             'submitted' => 'info',
             'under_review' => 'warning',
-            'approved' => 'primary',
-            'rejected' => 'danger',
+            'revision_required' => 'danger',
+            'approved' => 'success',
+            'rejected' => 'dark',
+            'scheduled_for_defense' => 'primary',
+            'defense_in_progress' => 'warning',
             'completed' => 'success',
             'cancelled' => 'danger',
             default => 'secondary',
@@ -148,8 +156,11 @@ class ThesisSubmission extends Model
             'draft' => 'Draft',
             'submitted' => 'Sudah Diajukan',
             'under_review' => 'Sedang Ditinjau',
-            'approved' => 'Diterima',
+            'revision_required' => 'Perlu Revisi',
+            'approved' => 'Disetujui',
             'rejected' => 'Ditolak',
+            'scheduled_for_defense' => 'Dijadwalkan Sidang',
+            'defense_in_progress' => 'Sedang Sidang',
             'completed' => 'Selesai',
             'cancelled' => 'Dibatalkan',
             default => 'Tidak Diketahui',

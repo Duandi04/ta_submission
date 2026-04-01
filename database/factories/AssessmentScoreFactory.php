@@ -48,6 +48,9 @@ class AssessmentScoreFactory extends Factory
         return [
             'assessment_id' => Assessment::factory(),
             'criterion_id' => AssessmentCriterion::factory(),
+            'criterion_name' => fake()->words(3, true),
+            'criterion_description' => fake()->sentence(),
+            'weight' => fake()->randomFloat(2, 5, 30),
             'score' => $score,
             'notes' => fake()->randomElement(self::$scoreNotes[$category]),
         ];

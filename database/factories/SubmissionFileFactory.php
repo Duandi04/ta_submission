@@ -112,6 +112,22 @@ class SubmissionFileFactory extends Factory
         });
     }
 
+    /**
+     * Revision file
+     */
+    public function revision(): static
+    {
+        return $this->state(function (array $attributes) {
+            $fileName = $this->generateFileName('revision');
+            return [
+                'file_name' => $fileName,
+                'file_path' => 'submissions/' . date('Y/m') . '/' . $fileName,
+                'file_type' => 'revision',
+                'mime_type' => 'application/pdf',
+            ];
+        });
+    }
+
 
 
     /**

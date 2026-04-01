@@ -85,6 +85,27 @@ class Assessment extends Model
         return $query->where('evaluator_id', $evaluatorId);
     }
 
+    public function scopeByType($query, $type)
+    {
+        if ($type === 'supervisor') {
+            return $query->whereHas('thesisSubmission', function ($q) {
+                $q->whereColumn('assessments.evaluator_id', 'thesis_submissions.supervisor_id')
+                  ->orWhereColumn('assessments.evaluator_id', 'thesis_submissions.supervisor_2_id');
+            });
+        } elseif ($type === 'examiner_1') {
+            $thesisIds = self::whereHas('thesisSubmission', function ($q) {
+                $q->whereColumn('assessments.evaluator_id', '!=', 'thesis_submissions.supervisor_id')
+                  ->where(function ($query) {
+                      $query->whereColumn('assessments.evaluator_id', '!=', 'thesis_submissions.supervisor_2_id')
+                            ->orWhereNull('thesis_submissions.supervisor_2_id');
+                  });
+            })->selectRaw('MIN(id) as first_id')->groupBy('thesis_submission_id')->pluck('first_id');
+            
+            return $query->whereIn('id', $thesisIds);
+        }
+        return $query;
+    }
+
     /**
      * Helper methods
      */

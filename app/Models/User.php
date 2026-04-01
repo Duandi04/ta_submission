@@ -116,6 +116,11 @@ class User extends Authenticatable
         return $this->hasMany(SubmissionFile::class, 'uploaded_by');
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     /**
      * Helper methods
      */

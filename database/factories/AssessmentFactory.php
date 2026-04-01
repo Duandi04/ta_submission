@@ -115,6 +115,44 @@ class AssessmentFactory extends Factory
         ]);
     }
 
+    public function supervisor(): static
+    {
+        return $this->state(function (array $attributes) {
+            $evaluator = User::factory()->dosen()->create();
+            $thesis = ThesisSubmission::factory()->create([
+                'supervisor_id' => $evaluator->id
+            ]);
+            return [
+                'evaluator_id' => $evaluator->id,
+                'thesis_submission_id' => $thesis->id,
+            ];
+        });
+    }
+
+    public function examiner1(): static
+    {
+        return $this->state(function (array $attributes) {
+            $evaluator = User::factory()->dosen()->create();
+            $thesis = ThesisSubmission::factory()->create(); // different supervisor
+            return [
+                'evaluator_id' => $evaluator->id,
+                'thesis_submission_id' => $thesis->id,
+            ];
+        });
+    }
+
+    public function examiner2(): static
+    {
+        return $this->state(function (array $attributes) {
+            $evaluator = User::factory()->dosen()->create();
+            $thesis = ThesisSubmission::factory()->create(); // different supervisor
+            return [
+                'evaluator_id' => $evaluator->id,
+                'thesis_submission_id' => $thesis->id,
+            ];
+        });
+    }
+
     /**
      * With rubric snapshot
      */

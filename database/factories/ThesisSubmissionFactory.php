@@ -20,7 +20,7 @@ class ThesisSubmissionFactory extends Factory
             'Sistem Pengenalan Wajah Menggunakan Convolutional Neural Network untuk Absensi Karyawan',
             'Pengembangan Chatbot Berbasis Natural Language Processing untuk Layanan Informasi Akademik',
             'Deteksi Objek Real-Time Menggunakan YOLO untuk Sistem Keamanan Kampus',
-            'Prediksi Harga Saham Menggunakan Long Short-Term Memory Neural Network',
+            'Model Prediksi Harga Saham Menggunakan Long Short-Term Memory Neural Network',
         ],
         'Web Development' => [
             'Perancangan dan Implementasi Sistem Informasi Manajemen Perpustakaan Berbasis Web',
