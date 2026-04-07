@@ -8,7 +8,10 @@
         <div class="btn-toolbar mb-2 mb-md-0 d-flex align-items-center">
             @include('partials.record-navigation', ['route' => 'student.submissions.edit'])
             <div class="ms-3">
-                <a href="{{ route('student.submissions.show', $submission) }}" class="btn btn-secondary">
+                @php
+                    $backUrl = url()->previous() !== url()->current() ? url()->previous() : route('student.submissions.show', $submission);
+                @endphp
+                <a href="{{ $backUrl }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Kembali
                 </a>
             </div>
@@ -70,7 +73,7 @@
                         <hr class="my-4">
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{{ route('student.submissions.show', $submission) }}" class="btn btn-secondary">
+                            <a href="{{ $backUrl }}" class="btn btn-secondary">
                                 Batal
                             </a>
                             <button type="submit" class="btn btn-primary">

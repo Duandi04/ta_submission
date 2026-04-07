@@ -14,8 +14,11 @@
             </p>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('dosen.students.show', $submission->student_id) }}" class="btn btn-secondary shadow-none">
-                <i class="bi bi-arrow-left"></i> Kembali ke Draft Student
+            @php
+                $backUrl = url()->previous() !== url()->current() ? url()->previous() : route('dosen.assessments.index');
+            @endphp
+            <a href="{{ $backUrl }}" class="btn btn-secondary shadow-none">
+                <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>
     </div>
@@ -189,7 +192,7 @@
                             <button type="submit" class="btn btn-primary w-100 mb-2">
                                 <i class="bi bi-save me-1"></i> Simpan Draft Penilaian
                             </button>
-                            <a href="{{ route('dosen.students.show', $submission->student_id) }}"
+                            <a href="{{ $backUrl }}"
                                 class="btn btn-outline-secondary w-100 shadow-none">
                                 <i class="bi bi-x-circle me-1"></i> Batal
                             </a>

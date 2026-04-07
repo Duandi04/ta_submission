@@ -13,8 +13,11 @@
             </p>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('kaprodi.submissions.show', $assessment->thesis_submission_id) }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Kembali ke Pengajuan
+            @php
+                $backUrl = url()->previous() !== url()->current() ? url()->previous() : route('kaprodi.submissions.show', $assessment->thesis_submission_id);
+            @endphp
+            <a href="{{ $backUrl }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>
     </div>

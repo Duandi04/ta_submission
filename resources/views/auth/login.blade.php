@@ -8,7 +8,7 @@
             <div class="image-overlay"></div>
             <div class="brand-content">
                 <div class="mb-4">
-                    <img src="{{ url(\App\Models\Setting::getValue('app_logo', 'images/logo_uvers.webp')) }}" alt="Logo"
+                    <img src="{{ url(\App\Models\Setting::getValue('app_logo', 'images/uvers_logo_blue.webp')) }}" alt="Logo"
                         class="brand-logo glass-logo">
                 </div>
                 <h2 class="brand-title">Sistem Pengajuan TA Teknik Perangkat Lunak</h2>

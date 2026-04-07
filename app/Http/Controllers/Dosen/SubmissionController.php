@@ -22,7 +22,8 @@ class SubmissionController extends Controller
         // Get unique students who have supervised submissions (Primary or Secondary Supervisor)
         // Using a nested closure to ensure OR condition is properly scoped inside whereHas
         $query = \App\Models\User::whereHas('thesisSubmissions', function ($q) use ($lecturerId) {
-            $q->where(function($sq) use ($lecturerId) {
+            $q->where('status', 'approved')
+              ->where(function($sq) use ($lecturerId) {
                 $sq->where('supervisor_id', $lecturerId)
                   ->orWhere('supervisor_2_id', $lecturerId);
             });
@@ -38,7 +39,8 @@ class SubmissionController extends Controller
 
         // Eager load the latest supervised submission and its assessment for this lecturer
         $students = $query->with(['thesisSubmissions' => function($q) use ($lecturerId) {
-            $q->where(function($sq) use ($lecturerId) {
+            $q->where('status', 'approved')
+              ->where(function($sq) use ($lecturerId) {
                 $sq->where('supervisor_id', $lecturerId)
                   ->orWhere('supervisor_2_id', $lecturerId);
             })

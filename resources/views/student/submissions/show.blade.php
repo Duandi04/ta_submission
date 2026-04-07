@@ -13,7 +13,10 @@
                         <i class="bi bi-pencil"></i> Edit
                     </a>
                 @endif
-                <a href="{{ route('student.submissions.index') }}" class="btn btn-secondary">
+                @php
+                    $backUrl = url()->previous() !== url()->current() ? url()->previous() : route('student.submissions.index');
+                @endphp
+                <a href="{{ $backUrl }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Kembali
                 </a>
             </div>

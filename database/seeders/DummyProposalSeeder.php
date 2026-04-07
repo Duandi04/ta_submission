@@ -127,7 +127,7 @@ class DummyProposalSeeder extends Seeder
 
             $thesis = ThesisSubmission::create([
                 'student_id' => $student->id,
-                'supervisor_id' => $supervisor->id,
+                'supervisor_id' => in_array($status, ['approved', 'rejected', 'completed']) ? $supervisor->id : null,
                 'title' => $title,
                 'abstract' => 'Abstrak untuk ' . $title,
                 'research_field' => 'Teknik Perangkat Lunak',
@@ -138,6 +138,15 @@ class DummyProposalSeeder extends Seeder
             ]);
 
             $this->createStatusHistory($thesis, $supervisor);
+
+            // Create proposal file for non-draft submissions
+            if ($status !== 'draft') {
+                \App\Models\SubmissionFile::factory()
+                    ->proposal()
+                    ->forThesis($thesis)
+                    ->uploadedBy($student)
+                    ->create();
+            }
 
             // If under review or completed, it has assessments
             if ((in_array($status, ['under_review', 'completed', 'approved', 'rejected'])) && $rubric) {
@@ -190,18 +199,15 @@ class DummyProposalSeeder extends Seeder
     protected function createAssessments(ThesisSubmission $thesis, User $supervisor, $lecturers, Rubric $rubric): void
     {
         // Find other lecturers for examiner assessments (all lecturers in TPL minus the supervisor)
-        $examiners = $lecturers->where('id', '!=', $supervisor->id)->take(2)->values();
+        $examiners = $lecturers->where('id', '!=', $supervisor->id)->values();
 
-        // Evaluators will be supervisor, and 2 examiners
+        // Evaluators will be supervisor + all other lecturers
         $evaluatorsList = [
             ['user' => $supervisor, 'type' => 'supervisor'],
         ];
         
-        if (isset($examiners[0])) {
-            $evaluatorsList[] = ['user' => $examiners[0], 'type' => 'examiner_1'];
-        }
-        if (isset($examiners[1])) {
-            $evaluatorsList[] = ['user' => $examiners[1], 'type' => 'examiner_2'];
+        foreach ($examiners as $index => $examiner) {
+            $evaluatorsList[] = ['user' => $examiner, 'type' => 'examiner_' . ($index + 1)];
         }
 
         foreach ($evaluatorsList as $evalData) {

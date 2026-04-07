@@ -157,6 +157,10 @@ class AssessmentController extends Controller
         abort_if($assessment->evaluator_id !== Auth::id(), 403);
         abort_if($assessment->is_submitted, 403, 'Penilaian sudah disubmit.');
 
+        if ($assessment->scores()->count() === 0) {
+            return back()->with('error', 'Tidak dapat melakukan submit. Anda belum mengisi draft penilaian.');
+        }
+
         $assessment->update([
             'is_submitted' => true,
             'submitted_at' => now(),

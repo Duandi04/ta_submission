@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', \App\Models\Setting::getValue('campus_name', 'Sistem Pengajuan TA'))</title>
+    <link rel="icon" type="image/webp" href="{{ asset('images/uvers_logo_blue.webp') }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,14 +55,23 @@
     <main id="main-content">
         <div class="content-wrapper">
             @if (session('success'))
-                <div class="alert alert-success border-0 shadow-none mb-4 py-2 small" role="alert">
+                <div class="alert alert-success border-0 shadow-none mb-4 py-2 small alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="padding: 0.8rem 1rem;"></button>
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="alert alert-danger border-0 shadow-none mb-4 py-2 small" role="alert">
+                <div class="alert alert-danger border-0 shadow-none mb-4 py-2 small alert-persistent alert-dismissible fade show" role="alert">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="padding: 0.8rem 1rem;"></button>
+                </div>
+            @endif
+
+            @if (session('info'))
+                <div class="alert alert-info border-0 shadow-none mb-4 py-2 small alert-persistent alert-dismissible fade show" role="alert">
+                    <i class="bi bi-info-circle-fill me-2"></i>{{ session('info') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="padding: 0.8rem 1rem;"></button>
                 </div>
             @endif
 

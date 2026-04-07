@@ -59,8 +59,8 @@
         }
 
         @media print {
-            body { padding: 0; margin: 0; }
-            @page { margin: 2cm; }
+            body { padding: 2cm; margin: 0; }
+            @page { margin: 1cm; }
             .no-print { display: none; }
         }
     </style>
@@ -72,9 +72,14 @@
     </div>
 
     <div class="header">
-        <h1>Laporan Pengajuan Proposal Tugas Akhir Diterima</h1>
-        <p>Program Studi: {{ auth()->user()->programStudi->name ?? '-' }}</p>
-        <p>Tanggal Cetak: {{ now()->format('d/m/Y') }}</p>
+        <div style="margin-bottom: 10px;">
+            <img src="{{ asset('images/uvers_logo_blue.webp') }}" alt="Logo UVERS" style="height: 60px; object-fit: contain;">
+        </div>
+        <div>
+            <h1>Laporan Pengajuan Proposal Tugas Akhir Diterima</h1>
+            <p>Program Studi: {{ auth()->user()->programStudi->name ?? '-' }}</p>
+            <p>Tanggal Cetak: {{ now()->format('d/m/Y') }}</p>
+        </div>
     </div>
 
     <table class="table">

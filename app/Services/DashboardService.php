@@ -133,23 +133,7 @@ class DashboardService
         ];
     }
 
-    protected function getSupervisorStats(User $user): array
-    {
-        return [
-            'supervised_students' => $user->supervisedTheses()->count(),
-            'pending_review' => $user->supervisedTheses()->where('status', 'pending')->count(),
-            'in_progress' => $user->supervisedTheses()->where('status', 'in_progress')->count(),
-        ];
-    }
 
-    protected function getExaminerStats(User $user): array
-    {
-        return [
-            'total_assessments' => $user->assessments()->count(),
-            'pending_assessments' => $user->assessments()->where('is_submitted', false)->count(),
-            'submitted_assessments' => $user->assessments()->where('is_submitted', true)->count(),
-        ];
-    }
 
     protected function getStudentStats(User $user): array
     {

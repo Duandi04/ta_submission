@@ -9,7 +9,10 @@
             <p class="text-muted small mb-0">{{ $student->name }} ({{ $student->nim_nip }})</p>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('dosen.students.index') }}" class="btn btn-outline-secondary shadow-none">
+            @php
+                $backUrl = url()->previous() !== url()->current() ? url()->previous() : route('dosen.students.index');
+            @endphp
+            <a href="{{ $backUrl }}" class="btn btn-outline-secondary shadow-none">
                 <i class="bi bi-arrow-left"></i> Kembali ke Daftar
             </a>
         </div>
@@ -114,17 +117,12 @@
                                                     class="btn btn-sm btn-outline-primary rounded-pill px-3" title="Lihat Hasil Penilaian">
                                                     <i class="bi bi-eye-fill me-1"></i> Detail
                                                 </a>
-                                            @else
+                                            @elseif($submission->status !== 'rejected')
                                                 <a href="{{ route('dosen.assessments.edit', $myAssessment) }}"
                                                     class="btn btn-sm btn-warning rounded-pill px-3 shadow-none ripple text-dark" title="Lanjutkan Draft Penilaian">
                                                     <i class="bi bi-pencil-square me-1"></i> Lanjut Draft
                                                 </a>
                                             @endif
-                                        @else
-                                            <a href="{{ route('dosen.assessments.create', ['submission_id' => $submission->id]) }}"
-                                                class="btn btn-sm btn-primary rounded-pill px-3 shadow-none ripple" title="Mulai Penilaian Baru">
-                                                <i class="bi bi-plus-lg me-1"></i> Beri Nilai
-                                            </a>
                                         @endif
                                     </td>
                                 </tr>

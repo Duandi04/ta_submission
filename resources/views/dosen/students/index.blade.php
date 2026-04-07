@@ -95,8 +95,8 @@
                             <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Pencarian
                         </a>
                     @else
-                        <h4 class="mt-3">Belum Ada Mahasiswa untuk Dinilai</h4>
-                        <p class="text-muted">Anda tidak memiliki mahasiswa yang ditugaskan untuk dinilai oleh Kaprodi.</p>
+                        <h4 class="mt-3">Belum Ada Mahasiswa Bimbingan</h4>
+                        <p class="text-muted">Anda belum memiliki mahasiswa bimbingan dengan pengajuan yang sudah <strong>disetujui</strong>.</p>
                     @endif
                 </div>
             </div>

@@ -10,7 +10,10 @@
         </div>
         <div class="btn-toolbar mb-2 mb-md-0 align-items-center">
             @include('partials.record-navigation', ['route' => 'kaprodi.submissions.show'])
-            <a href="{{ route('kaprodi.submissions.index', request()->query()) }}"
+            @php
+                $backUrl = url()->previous() !== url()->current() ? url()->previous() : route('kaprodi.submissions.index');
+            @endphp
+            <a href="{{ $backUrl }}"
                 class="btn btn-outline-secondary shadow-none">
                 <i class="bi bi-arrow-left"></i> Kembali
             </a>
@@ -71,7 +74,7 @@
                 </div>
             </div>
 
-            <div class="card border-warning shadow-sm mb-4" id="similarity-analysis-card" style="display: none;">
+            <div class="card border-warning shadow-sm mb-4" id="similarity-analysis-card">
                 <div class="card-header bg-warning-subtle text-warning-emphasis py-3 border-0">
                     <span class="fw-bold"><i class="bi bi-search me-2"></i>Analisis Kesamaan Judul (Orisinalitas)</span>
                 </div>
@@ -610,6 +613,9 @@
                         `;
                                 resultsBody.appendChild(tr);
                             });
+                            card.style.display = 'block';
+                        } else {
+                            resultsBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted small py-3">Tidak ada judul yang mirip ditemukan.</td></tr>';
                             card.style.display = 'block';
                         }
                     })

@@ -36,11 +36,11 @@
                                     class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('title') is-invalid @enderror" id="title"
                                 name="title" value="{{ old('title') }}" required maxlength="255">
-                            <div id="similarity-results" class="mt-2" style="display: none;">
+                            <div id="similarity-results" class="mt-2">
                                 <div class="card border-warning bg-light">
                                     <div class="card-body p-2">
                                         <h6 class="card-title text-warning small mb-2">
-                                            <i class="bi bi-exclamation-triangle-fill"></i> Judul Serupa Ditemukan:
+                                            <i class="bi bi-search"></i> Analisis Kesamaan Judul:
                                         </h6>
                                         <ul id="similar-titles-list" class="list-unstyled mb-0 small">
                                             <!-- Similar titles will be injected here -->
@@ -145,7 +145,7 @@
             const title = titleInput.value.trim();
 
             if (title.length < 5) {
-                similarityResults.style.display = 'none';
+                similarTitlesList.innerHTML = '<li class="text-muted small">Ketik judul untuk melihat analisis kesamaan...</li>';
                 return;
             }
 
@@ -173,7 +173,8 @@
                             });
                             similarityResults.style.display = 'block';
                         } else {
-                            similarityResults.style.display = 'none';
+                            similarTitlesList.innerHTML = '<li class="text-muted small">Tidak ada judul yang mirip ditemukan.</li>';
+                            similarityResults.style.display = 'block';
                         }
                     })
                     .catch(error => console.error('Error checking similarity:', error));

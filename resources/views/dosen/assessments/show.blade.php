@@ -19,8 +19,11 @@
                     <i class="bi bi-pencil-square me-1"></i> Edit
                 </a>
             @endif
-            <a href="{{ route('dosen.students.show', $assessment->thesisSubmission->student_id) }}" class="btn btn-outline-secondary shadow-none">
-                <i class="bi bi-arrow-left"></i> Kembali ke Draft Student
+            @php
+                $backUrl = url()->previous() !== url()->current() ? url()->previous() : route('dosen.assessments.index');
+            @endphp
+            <a href="{{ $backUrl }}" class="btn btn-outline-secondary shadow-none">
+                <i class="bi bi-arrow-left"></i> Kembali
             </a>
         </div>
     </div>
@@ -107,7 +110,7 @@
                         </div>
                     @else
                         <div class="px-3 py-2">
-                            <div class="alert alert-warning mb-0 small">
+                            <div class="alert alert-warning mb-0 small alert-dismissible fade show" role="alert">
                                 <i class="bi bi-exclamation-triangle me-1"></i> Data skor tidak tersedia.
                             </div>
                         </div>

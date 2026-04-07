@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="d-flex align-items-center">
             <a class="navbar-brand me-4 d-flex align-items-center" href="{{ route('dashboard') }}">
-                <img src="{{ url(\App\Models\Setting::getValue('app_logo', 'images/logo_uvers.webp')) }}" alt="Logo"
+                <img src="{{ url(\App\Models\Setting::getValue('app_logo', 'images/uvers_logo_blue.webp')) }}" alt="Logo"
                     height="40" class="me-2 rounded dynamic-logo">
                 <span>{{ \App\Models\Setting::getValue('campus_name', 'Sistem TA') }}</span>
             </a>
