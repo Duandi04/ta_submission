@@ -6,18 +6,21 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <div>
             <h1 class="h2">Detail Penilaian</h1>
-            <p class="text-muted small mb-0">{{ $assessment->thesisSubmission->student->name }} -
-                {{ $assessment->thesisSubmission->title }}
+            <p class="text-muted small mb-0">
+                <span class="fw-bold">{{ $assessment->thesisSubmission->student->name }}</span> - {{ $assessment->thesisSubmission->title }}
+            </p>
+            <p class="text-muted extra-small mb-0">
+                <i class="bi bi-clock me-1"></i>Diajukan pada: {{ $assessment->thesisSubmission->created_at->format('d M Y H:i') }}
             </p>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             @if (!$assessment->is_submitted)
-                <a href="{{ route('dosen.assessments.edit', $assessment) }}" class="btn btn-warning me-2">
-                    <i class="bi bi-pencil"></i> Edit
+                <a href="{{ route('dosen.assessments.edit', $assessment) }}" class="btn btn-warning me-2 shadow-none ripple text-dark">
+                    <i class="bi bi-pencil-square me-1"></i> Edit
                 </a>
             @endif
-            <a href="{{ route('dosen.assessments.index') }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Kembali
+            <a href="{{ route('dosen.students.show', $assessment->thesisSubmission->student_id) }}" class="btn btn-outline-secondary shadow-none">
+                <i class="bi bi-arrow-left"></i> Kembali ke Draft Student
             </a>
         </div>
     </div>

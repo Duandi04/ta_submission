@@ -277,6 +277,14 @@ class KaprodiService
             'status' => 'approved',
         ]);
 
+        // Sync supervisors to ALL other submissions for this same student (consistency)
+        ThesisSubmission::where('student_id', $submission->student_id)
+            ->where('id', '!=', $submission->id)
+            ->update([
+                'supervisor_id' => $data['supervisor_id'],
+                'supervisor_2_id' => $data['supervisor_2_id'] ?? null,
+            ]);
+
         \App\Models\ThesisStatus::create([
             'thesis_submission_id' => $submission->id,
             'old_status' => 'under_review',

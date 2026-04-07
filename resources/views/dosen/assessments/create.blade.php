@@ -6,11 +6,16 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <div>
             <h1 class="h2">Buat Penilaian Baru</h1>
-            <p class="text-muted small mb-0">{{ $submission->student->name }} - {{ $submission->title }}</p>
+            <p class="text-muted small mb-0">
+                <span class="fw-bold">{{ $submission->student->name }}</span> - {{ $submission->title }}
+            </p>
+            <p class="text-muted extra-small mb-0">
+                <i class="bi bi-clock me-1"></i>Diajukan pada: {{ $submission->created_at->format('d M Y H:i') }}
+            </p>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('dosen.submissions.show', $submission) }}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Kembali
+            <a href="{{ route('dosen.students.show', $submission->student_id) }}" class="btn btn-secondary shadow-none">
+                <i class="bi bi-arrow-left"></i> Kembali ke Draft Student
             </a>
         </div>
     </div>
@@ -109,7 +114,7 @@
                                         <tr>
                                             <td colspan="3" class="text-end fw-bold ps-3">Total Nilai</td>
                                             <td class="text-center fw-bold text-primary" id="total-score-display">
-                                                {{ number_format($rubric->criteria->sum(fn($c) => (old('scores.' . ($c['id'] ?? $loop->index), 0) * ($c['weight'] ?? ($c['weight_percentage'] ?? 0))) / 100), 1) }}
+                                                {{ number_format(collect($rubric->criteria)->map(fn($c, $i) => (old('scores.' . ($c['id'] ?? $i), 0) * ($c['weight'] ?? ($c['weight_percentage'] ?? 0))) / 100)->sum(), 1) }}
                                             </td>
                                         </tr>
                                     </tfoot>
@@ -143,7 +148,7 @@
                                         </div>
                                         <p class="mb-0 text-muted" style="font-size: 0.75rem;">
                                             Oleh: {{ $similar->student->name }} |
-                                            {{ $similar->created_at->format('d M Y') }}
+                                            <i class="bi bi-clock-history me-1"></i>{{ \Carbon\Carbon::parse($similar->created_at)->format('d M Y H:i') }}
                                         </p>
                                     </div>
                                 @endforeach
@@ -184,8 +189,8 @@
                             <button type="submit" class="btn btn-primary w-100 mb-2">
                                 <i class="bi bi-save me-1"></i> Simpan Draft Penilaian
                             </button>
-                            <a href="{{ route('dosen.submissions.show', $submission) }}"
-                                class="btn btn-outline-secondary w-100">
+                            <a href="{{ route('dosen.students.show', $submission->student_id) }}"
+                                class="btn btn-outline-secondary w-100 shadow-none">
                                 <i class="bi bi-x-circle me-1"></i> Batal
                             </a>
                         </div>

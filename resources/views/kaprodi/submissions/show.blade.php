@@ -116,6 +116,7 @@
                                         <tr>
                                             <td class="ps-3 align-middle">
                                                 <div class="fw-bold">{{ $assessment->evaluator->name ?? 'N/A' }}</div>
+                                                <span class="badge bg-secondary text-white smaller-extra">{{ $assessment->getAnonymousLabel() }}</span>
                                             </td>
                                             <td class="text-center align-middle">
                                                 @if ($assessment->is_submitted)

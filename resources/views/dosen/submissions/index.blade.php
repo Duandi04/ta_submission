@@ -65,40 +65,72 @@
                                 <tr>
                                     <th class="ps-3">No</th>
                                     <th>Mahasiswa</th>
-                                    <th>Judul</th>
-                                    <th>Bidang</th>
-                                    <th>Status</th>
-                                    <th>Tanggal Submit</th>
-                                    <th class="text-end pe-3">Aksi</th>
+                                    <th>Judul Thesis</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Nilai Final</th>
+                                    <th class="text-end pe-3">Aksi Review</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($submissions as $submission)
                                     <tr>
-                                        <td class="ps-3">{{ $loop->iteration + ($submissions->currentPage() - 1) * $submissions->perPage() }}</td>
+                                        <td class="ps-3 text-muted small">{{ $loop->iteration + ($submissions->currentPage() - 1) * $submissions->perPage() }}</td>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <img src="{{ $submission->student->profile_photo_url }}" class="rounded-circle me-2"
-                                                    style="width: 32px; height: 32px; object-fit: cover;" alt="">
+                                                <div class="position-relative me-3">
+                                                    <img src="{{ $submission->student->profile_photo_url }}" class="rounded-circle border border-2 border-white shadow-sm"
+                                                        style="width: 42px; height: 42px; object-fit: cover;" alt="">
+                                                    <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-white rounded-circle" style="width: 12px; height: 12px;"></span>
+                                                </div>
                                                 <div>
-                                                    <div class="fw-bold">{{ $submission->student->name }}</div>
-                                                    <div class="text-muted small">{{ $submission->student->nim_nip }}</div>
+                                                    <div class="fw-bold text-dark">{{ $submission->student->name }}</div>
+                                                    <div class="text-muted small font-monospace">{{ $submission->student->nim_nip }}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>{{ Str::limit($submission->title, 50) }}</td>
-                                        <td>{{ $submission->research_field ?? '-' }}</td>
                                         <td>
-                                            <span class="badge bg-soft-{{ $submission->getStatusBadgeClass() }} text-{{ $submission->getStatusBadgeClass() }} border border-{{ $submission->getStatusBadgeClass() }}-subtle">
-                                                {{ $submission->getStatusLabel() }}
+                                            <div class="fw-semibold text-truncate-2 small" style="max-width: 300px;" title="{{ $submission->title }}">
+                                                {{ $submission->title }}
+                                            </div>
+                                            <div class="text-muted extra-small mt-1">
+                                                <i class="bi bi-tag-fill me-1"></i>{{ $submission->research_field ?? 'Umum' }}
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge rounded-pill bg-soft-{{ $submission->getStatusBadgeClass() }} text-{{ $submission->getStatusBadgeClass() }} px-3 py-2 border border-{{ $submission->getStatusBadgeClass() }}-subtle">
+                                                <i class="bi bi-circle-fill me-1 small"></i> {{ $submission->getStatusLabel() }}
                                             </span>
                                         </td>
-                                        <td class="text-muted small">{{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
+                                        <td class="text-center">
+                                            @if($submission->final_score)
+                                                <span class="h5 mb-0 fw-bold text-primary">{{ number_format($submission->final_score, 1) }}</span>
+                                            @else
+                                                <span class="text-muted small">---</span>
+                                            @endif
+                                        </td>
                                         <td class="text-end pe-3">
-                                            <a href="{{ route('dosen.submissions.show', $submission) }}"
-                                                class="btn btn-sm btn-outline-primary" title="Detail">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
+                                            @php
+                                                $myAssessment = $submission->assessments->where('evaluator_id', auth()->id())->first();
+                                            @endphp
+
+                                            @if($myAssessment)
+                                                @if($myAssessment->is_submitted)
+                                                    <a href="{{ route('dosen.assessments.show', $myAssessment) }}"
+                                                        class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" title="Lihat Hasil Penilaian">
+                                                        <i class="bi bi-check2-all me-1"></i> Teruji
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('dosen.assessments.edit', $myAssessment) }}"
+                                                        class="btn btn-sm btn-warning rounded-pill px-3 shadow-sm" title="Lanjutkan Draft Penilaian">
+                                                        <i class="bi bi-pencil-square me-1"></i> Lanjut Draft
+                                                    </a>
+                                                @endif
+                                            @else
+                                                <a href="{{ route('dosen.assessments.create', ['submission_id' => $submission->id]) }}"
+                                                    class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-sm hover-elevate" title="Mulai Penilaian Baru">
+                                                    <i class="bi bi-plus-lg me-1"></i> Beri Nilai
+                                                </a>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

@@ -26,19 +26,55 @@
         @if($students->count() > 0)
             <div class="row g-4">
                 @foreach($students as $student)
+                    @php
+                        // Get the latest supervised submission and the lecturer's assessment for it
+                        $submission = $student->thesisSubmissions->first();
+                        $myAssessment = $submission ? $submission->assessments->first() : null;
+                    @endphp
                     <div class="col-md-4 col-lg-3">
-                        <div class="card h-100 border-0 shadow-sm">
+                        <div class="card h-100 border-0 shadow-sm card-hover-effect overflow-hidden">
+                            {{-- Top accent or gradient --}}
+                            <div class="h-1 bg-{{ $submission?->getStatusBadgeClass() ?? 'secondary' }}"></div>
+                            
                             <div class="card-body text-center p-4">
-                                <img src="{{ $student->profile_photo_url }}"
-                                    class="rounded-circle img-thumbnail shadow-sm mx-auto mb-3"
-                                    style="width: 64px; height: 64px; object-fit: cover;" alt="Foto {{ $student->name }}">
-                                <h5 class="card-title fw-bold mb-1">{{ $student->name }}</h5>
-                                <p class="text-muted small mb-3">{{ $student->nim_nip }}</p>
-                                <div class="d-grid">
-                                    <a href="{{ route('dosen.students.show', $student) }}" class="btn btn-primary shadow-none">
-                                        Lihat Draft
-                                    </a>
+                                <div class="position-relative d-inline-block mb-3">
+                                    <img src="{{ $student->profile_photo_url }}"
+                                        class="rounded-circle border border-3 border-white shadow-sm"
+                                        style="width: 72px; height: 72px; object-fit: cover;" alt="Foto {{ $student->name }}">
+                                    @if($submission)
+                                    <span class="position-absolute bottom-0 end-0 p-1 bg-{{ $submission->getStatusBadgeClass() }} border border-2 border-white rounded-circle shadow-sm" style="width: 16px; height: 16px;" title="{{ $submission->getStatusLabel() }}"></span>
+                                    @endif
                                 </div>
+
+                                <h5 class="card-title fw-bold mb-1 text-dark text-truncate">{{ $student->name }}</h5>
+                                <p class="text-muted small font-monospace mb-3">{{ $student->nim_nip }}</p>
+
+                                @if($submission)
+                                    <div class="bg-light p-2 rounded-3 mb-3 text-start">
+                                        <div class="extra-small text-muted mb-1 text-uppercase letter-spacing-1 fw-bold">Judul Terakhir:</div>
+                                        <div class="small fw-semibold text-dark text-truncate-2" style="min-height: 2.4rem;">
+                                            {{ $submission->title }}
+                                        </div>
+                                    </div>
+
+                                    @if($submission->final_score)
+                                    <div class="mb-3">
+                                        <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill">
+                                            <i class="bi bi-star-fill me-1"></i> Nilai: {{ number_format($submission->final_score, 1) }}
+                                        </span>
+                                    </div>
+                                    @endif
+
+                                    <div class="d-grid">
+                                        <a href="{{ route('dosen.students.show', $student) }}" class="btn btn-primary btn-sm rounded-pill py-2 shadow-none ripple">
+                                            <i class="bi bi-folder2-open me-1"></i> Lihat Draft
+                                        </a>
+                                    </div>
+                                @else
+                                    <div class="alert alert-light border-0 small mb-0 py-2">
+                                        Mahasiswa belum memiliki pengajuan.
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>

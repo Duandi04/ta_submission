@@ -22,7 +22,7 @@
             @role('dosen|kaprodi')
                 <div class="sidebar-label">Dosen</div>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dosen.students.*') ? 'active' : '' }}"
+                    <a class="nav-link {{ request()->routeIs('dosen.students.index') ? 'active' : '' }}"
                         href="{{ route('dosen.students.index') }}">
                         <i class="bi bi-people-fill"></i>
                         <span>Mahasiswa Bimbingan</span>
@@ -48,13 +48,13 @@
                         <span>Kelola Mahasiswa</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('kaprodi.students.index') || request()->routeIs('kaprodi.students.show') ? 'active' : '' }}"
                         href="{{ route('kaprodi.students.index') }}">
                         <i class="bi bi-people-fill"></i>
                         <span>Proposal Mahasiswa</span>
                     </a>
-                </li>
+                </li> --}}
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('kaprodi.lecturers.manage.*') ? 'active' : '' }}"
                         href="{{ route('kaprodi.lecturers.manage.index') }}">

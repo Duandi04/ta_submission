@@ -120,23 +120,18 @@ class Assessment extends Model
     public function getAnonymousLabel(): string
     {
         $submission = $this->thesisSubmission;
-        
+
         if (!$submission) {
             return 'Dosen Penilai';
         }
 
-        if ($this->evaluator_id === $submission->supervisor_id || $this->evaluator_id === $submission->supervisor_2_id) {
-            return 'Pembimbing';
-        }
+        // Get all assessments for this submission, ordered by ID or creation date
+        $allAssessments = $submission->assessments()
+            ->orderBy('id')
+            ->get();
 
-        $examinerAssessments = $submission->assessments
-            ->where('evaluator_id', '!=', $submission->supervisor_id)
-            ->where('evaluator_id', '!=', $submission->supervisor_2_id)
-            ->sortBy('id')
-            ->values();
-
-        foreach ($examinerAssessments as $index => $exam) {
-            if ($exam->id === $this->id) {
+        foreach ($allAssessments as $index => $assessment) {
+            if ($assessment->id === $this->id) {
                 return 'Dosen ' . ($index + 1);
             }
         }

@@ -101,9 +101,16 @@ class User extends Authenticatable
         return $this->hasMany(ThesisSubmission::class, 'student_id');
     }
 
+    /**
+     * Get all supervised theses where the user is either Primary or Secondary Supervisor.
+     * returns \Illuminate\Database\Eloquent\Builder
+     */
     public function supervisedTheses()
     {
-        return $this->hasMany(ThesisSubmission::class, 'supervisor_id');
+        return ThesisSubmission::where(function($query) {
+            $query->where('supervisor_id', $this->id)
+                  ->orWhere('supervisor_2_id', $this->id);
+        });
     }
 
     public function assessments()
