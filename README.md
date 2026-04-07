@@ -39,6 +39,7 @@ This project has been refactored to ensure high maintainability and scalability:
 For more detailed information, please refer to:
 - [**Architecture & Design**](docs/ARCHITECTURE.md): Technical deep-dive into patterns and structure.
 - [**Kaprodi Features**](docs/FEATURES_KAPRODI.md): Detailed guide for Kaprodi functionalities.
+- [**Similarity Check**](docs/SIMILARITY_CHECK.md): Information about the title similarity detection feature.
 - [**Testing Guide**](docs/TESTING_GUIDE.md): Instructions on running and writing tests.
 
 ## 📥 Installation
