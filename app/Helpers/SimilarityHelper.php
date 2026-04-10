@@ -24,9 +24,11 @@ class SimilarityHelper
                 $obj->id = $submission->id;
                 $obj->title = $submission->title;
                 $obj->student = (object)['name' => $submission->student->name ?? 'Unknown'];
+                $obj->student_nim = $submission->student->nim_nip ?? '-';
                 $obj->similarity_percentage = round($percent, 2);
                 $obj->status = $submission->status;
-                $obj->created_at = $submission->created_at;
+                $obj->status_label = $submission->getStatusLabel();
+                $obj->created_at = $submission->created_at->format('d/m/Y H:i');
                 
                 $similar->push($obj);
             }

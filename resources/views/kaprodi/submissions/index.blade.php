@@ -5,6 +5,11 @@
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 class="h2">Daftar Semua Pengajuan</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="{{ route('kaprodi.submissions.create') }}" class="btn btn-primary shadow-sm rounded-pill">
+                <i class="bi bi-journal-plus me-1"></i> Input Data History
+            </a>
+        </div>
     </div>
 
     {{-- Search & Filter Bar --}}
@@ -26,7 +31,7 @@
                         <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>Sedang Ditinjau</option>
                         <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Diterima</option>
                         <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
+                        {{-- <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option> --}}
                         <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
                     </select>
                 </div>
@@ -127,10 +132,20 @@
                                             {{ $submission->created_at->format('H:i') }}</div>
                                     </td>
                                     <td class="text-end pe-3">
-                                        <a href="{{ route('kaprodi.submissions.show', array_merge(['submission' => $submission->id], request()->query())) }}"
-                                            class="btn btn-sm btn-outline-primary px-3">
-                                            Detail
-                                        </a>
+                                        <div class="btn-group">
+                                            <a href="{{ route('kaprodi.submissions.show', array_merge(['submission' => $submission->id], request()->query())) }}"
+                                                class="btn btn-sm btn-outline-primary px-3">
+                                                Detail
+                                            </a>
+                                            @if($submission->status === 'submitted')
+                                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                                    data-bs-toggle="modal" data-bs-target="#rejectModal"
+                                                    data-submission-id="{{ $submission->id }}"
+                                                    data-submission-title="{{ $submission->title }}">
+                                                    Tolak
+                                                </button>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -160,6 +175,32 @@
             {{ $submissions->appends(request()->query())->links() }}
         </div>
     </form>
+    {{-- Rejection Modal --}}
+    <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rejectModalLabel">Tolak Pengajuan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="rejectForm" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <p class="small text-muted mb-3">Tuliskan alasan penolakan untuk pengajuan: <br><strong id="modal-submission-title"></strong></p>
+                        <div class="mb-3">
+                            <label for="rejection_reason" class="form-label fw-semibold">Alasan Penolakan</label>
+                            <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="4" required
+                                placeholder="Jelaskan alasan pengajuan ditolak..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-danger">Tolak Pengajuan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     </div>
     @endsection
 
@@ -221,6 +262,22 @@
                     placeholder: 'Pilih Dosen Penilai...'
                 });
             }
+        }
+
+        // Rejection Modal Handler
+        const rejectModal = document.getElementById('rejectModal');
+        if (rejectModal) {
+            rejectModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const submissionId = button.getAttribute('data-submission-id');
+                const submissionTitle = button.getAttribute('data-submission-title');
+                
+                const form = rejectModal.querySelector('#rejectForm');
+                const titleEl = rejectModal.querySelector('#modal-submission-title');
+                
+                titleEl.textContent = submissionTitle;
+                form.action = `/kaprodi/submissions/${submissionId}/reject`;
+            });
         }
     }
 

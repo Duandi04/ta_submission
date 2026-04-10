@@ -43,6 +43,15 @@
                                 @enderror
                             </div>
                             <div class="col-md-6">
+                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                    id="email" name="email" value="{{ old('email') }}"
+                                    placeholder="email@dosen.ac.id" required>
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div hidden class="col-md-6">
                                 <label for="program_studi_id" class="form-label">Program Studi <span
                                         class="text-danger">*</span></label>
                                 <input type="hidden" name="program_studi_id" value="{{ $programStudis->first()->id }}">
@@ -52,15 +61,7 @@
                         </div>
 
                         <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                    id="email" name="email" value="{{ old('email') }}"
-                                    placeholder="email@dosen.ac.id" required>
-                                @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            
                             <div class="col-md-6">
                                 <!-- Hidden role selection, default to 'dosen' for Kaprodi management -->
                                 <input type="hidden" name="role" value="dosen">

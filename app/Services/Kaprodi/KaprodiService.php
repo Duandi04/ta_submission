@@ -315,7 +315,7 @@ class KaprodiService
                 'old_status' => $oldStatus,
                 'new_status' => 'rejected',
                 'changed_by' => Auth::id(),
-                'comment' => 'Ditolak otomatis karena pengajuan skripsi lain telah diterima.',
+                'comment' => 'Ditolak otomatis. Judul yang diterima: ' . $submission->title,
             ]);
 
             activity()
@@ -397,6 +397,75 @@ class KaprodiService
     {
         $rubric = Rubric::findOrFail($id);
         return $rubric->delete();
+    }
+    /**
+     * Create a historical submission by Kaprodi.
+     */
+    public function createHistoricalSubmission(array $data)
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
+            $submission = ThesisSubmission::create([
+                'student_id' => $data['student_id'],
+                'supervisor_id' => $data['supervisor_id'],
+                'supervisor_2_id' => $data['supervisor_2_id'] ?? null,
+                'title' => $data['title'],
+                'abstract' => $data['abstract'],
+                'research_field' => $data['research_field'],
+                'status' => 'approved',
+                'is_historical' => true,
+                'submission_date' => $data['submission_date'] ?? now(),
+            ]);
+
+            \App\Models\ThesisStatus::create([
+                'thesis_submission_id' => $submission->id,
+                'old_status' => null,
+                'new_status' => 'draft',
+                'changed_by' => Auth::id(),
+                'comment' => 'Dibuat oleh Kaprodi (Data History)',
+            ]);
+
+            \App\Models\ThesisStatus::create([
+                'thesis_submission_id' => $submission->id,
+                'old_status' => 'draft',
+                'new_status' => 'approved',
+                'changed_by' => Auth::id(),
+                'comment' => 'Disetujui otomatis oleh Kaprodi (Data History)',
+            ]);
+
+            activity()
+                ->performedOn($submission)
+                ->causedBy(Auth::user())
+                ->log('Pengajuan data history dibuat dan disetujui oleh Kaprodi');
+
+            return $submission;
+        });
+    }
+
+    /**
+     * Update a historical submission.
+     */
+    public function updateHistoricalSubmission(int $id, array $data)
+    {
+        $submission = ThesisSubmission::where('is_historical', true)->findOrFail($id);
+
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($submission, $data) {
+            $submission->update([
+                'student_id' => $data['student_id'],
+                'supervisor_id' => $data['supervisor_id'],
+                'supervisor_2_id' => $data['supervisor_2_id'] ?? null,
+                'title' => $data['title'],
+                'abstract' => $data['abstract'],
+                'research_field' => $data['research_field'],
+                'submission_date' => $data['submission_date'] ?? $submission->submission_date,
+            ]);
+
+            activity()
+                ->performedOn($submission)
+                ->causedBy(Auth::user())
+                ->log('Data history pengajuan diperbarui oleh Kaprodi');
+
+            return $submission;
+        });
     }
 }
 

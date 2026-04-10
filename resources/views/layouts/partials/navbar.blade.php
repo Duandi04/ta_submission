@@ -2,9 +2,9 @@
     <div class="container-fluid">
         <div class="d-flex align-items-center">
             <a class="navbar-brand me-4 d-flex align-items-center" href="{{ route('dashboard') }}">
-                <img src="{{ url(\App\Models\Setting::getValue('app_logo', 'images/uvers_logo_blue.webp')) }}" alt="Logo"
+                <img src="{{ asset('images/logo_uvers.webp')}}" alt="Logo"
                     height="40" class="me-2 rounded dynamic-logo">
-                <span>{{ \App\Models\Setting::getValue('campus_name', 'Sistem TA') }}</span>
+                <span>Universitas Universal</span>
             </a>
             <button class="sidebar-toggle" id="sidebarToggle">
                 <i class="bi bi-list"></i>

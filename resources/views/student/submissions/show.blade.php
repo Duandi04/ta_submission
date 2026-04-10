@@ -26,6 +26,16 @@
     @php $hasSidebar = $submission->status === 'draft'; @endphp
     <div class="row">
         <div class="{{ $hasSidebar ? 'col-md-8' : 'col-md-12' }}">
+            @if ($submission->status === 'rejected' && $submission->getRejectionReason())
+                <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center mb-4">
+                    <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                    <div>
+                        <h6 class="fw-bold mb-1">Pengajuan Ditolak</h6>
+                        <p class="mb-0 small">{{ $submission->getRejectionReason() }}</p>
+                    </div>
+                </div>
+            @endif
+
             <!-- Main Info Card -->
             <div class="card mb-3">
                 <div class="card-header">
@@ -61,7 +71,7 @@
                         </tr>
                         <tr>
                             <th>Tanggal Pengajuan</th>
-                            <td>: {{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
+                            <td>: {{ $submission->submission_date?->format('d/m/Y H:i') ?? '-' }}</td>
                         </tr>
                         @if ($submission->defense_date)
                             <tr>
@@ -92,6 +102,7 @@
             </div>
 
             <!-- Files Card -->
+            @include('partials.similarity', ['isDetailView' => true, 'excludeId' => $submission->id])
             <div class="card mb-3">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span><i class="bi bi-paperclip"></i> File Terlampir</span>
@@ -348,7 +359,7 @@
                         </div>
                         <div class="card-footer bg-white border-0 py-3 text-end">
                             <small class="text-muted"><i class="bi bi-calendar-event me-1"></i> Disubmit pada:
-                                {{ $assessment->submitted_at->format('d/m/Y') }}</small>
+                                {{ $assessment->submitted_at->format('d/m/Y H:i') }}</small>
                         </div>
                     </div>
                 @endforeach
@@ -427,7 +438,7 @@
                             <p class="small text-muted mb-3">Anda dapat membatalkan pengajuan ini selama masih dalam status
                                 Draft.</p>
                             <form action="{{ route('student.submissions.cancel', $submission) }}" method="POST"
-                                onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pengajuan ini?')">
+                                data-confirm="Apakah Anda yakin ingin membatalkan pengajuan ini?">
                                 @csrf
                                 @method('PATCH')
                                 <button type="submit" class="btn btn-outline-danger w-100">

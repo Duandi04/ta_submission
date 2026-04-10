@@ -8,7 +8,7 @@
             <div class="image-overlay"></div>
             <div class="brand-content">
                 <div class="mb-4">
-                    <img src="{{ url(\App\Models\Setting::getValue('app_logo', 'images/uvers_logo_blue.webp')) }}" alt="Logo"
+                    <img src="{{ asset('images/logo_uvers.webp') }}" alt="Logo"
                         class="brand-logo glass-logo">
                 </div>
                 <h2 class="brand-title">Sistem Pengajuan TA Teknik Perangkat Lunak</h2>
@@ -29,8 +29,8 @@
         <div class="login-form-side">
             <div class="login-form-content">
                 <div class="login-header-mobile d-lg-none mb-4">
-                    <img src="{{ url(\App\Models\Setting::getValue('app_logo', 'images/logo_uvers.webp')) }}" alt="Logo"
-                        style="height: 60px; object-fit: contain;">
+                    <img src="{{ asset('images/logo_uvers.webp') }}" alt="Logo"
+                        style="height: 70px; object-fit: contain;">
                 </div>
                 
                 <div class="form-title-group">

@@ -86,6 +86,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Global Form Confirmation Handler (using data-confirm)
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        const confirmMessage = form.getAttribute('data-confirm');
+        
+        if (confirmMessage && !form.dataset.confirmed) {
+            e.preventDefault();
+            
+            Swal.fire({
+                title: 'Konfirmasi Tindakan',
+                text: confirmMessage,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Lanjutkan',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'btn btn-primary px-4',
+                    cancelButton: 'btn btn-secondary px-4 me-2'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.dataset.confirmed = "true";
+                    form.submit();
+                }
+            });
+        }
+    });
+
     // AJAX Real-time Search & Filtering Logic
     const ajaxSubmit = (form) => {
         const formData = new FormData(form);

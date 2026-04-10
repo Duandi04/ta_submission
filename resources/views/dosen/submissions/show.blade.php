@@ -70,29 +70,7 @@
                 </div>
             </div>
 
-            <div class="card mb-3 border-warning shadow-sm" id="similarity-analysis-card">
-                <div class="card-header bg-warning text-dark py-2">
-                    <i class="bi bi-search me-2"></i><strong>Analisis Kesamaan Judul (Orisinalitas)</strong>
-                </div>
-                <div class="card-body">
-                    <p class="small text-muted mb-3">Sistem menemukan pengajuan lain dengan judul serupa. Gunakan data ini
-                        untuk mengevaluasi keaslian topik.</p>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Judul Pengajuan</th>
-                                    <th>Mahasiswa</th>
-                                    <th class="text-center">Persentase</th>
-                                </tr>
-                            </thead>
-                            <tbody id="similarity-results-body">
-                                <!-- Results injected here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            @include('partials.similarity', ['isDetailView' => true, 'excludeId' => $submission->id])
 
         </div>
 
@@ -207,46 +185,4 @@
     </div>
 @endsection
 
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Similarity Analysis for Dosen
-            const title = "{{ $submission->title }}";
-            const excludeId = "{{ $submission->id }}";
-            const resultsBody = document.getElementById('similarity-results-body');
-            const card = document.getElementById('similarity-analysis-card');
-
-            fetch('{{ route('similarity.check') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        title: title,
-                        exclude_id: excludeId
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.count > 0) {
-                        resultsBody.innerHTML = '';
-                        data.data.forEach(item => {
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                        <td><span class="fw-medium">${item.title}</span> <span class="badge bg-secondary ms-1 small" style="font-size: 0.6rem;">${item.status}</span></td>
-                        <td><small>${item.student.name}</small></td>
-                        <td class="text-center"><span class="badge bg-warning text-dark">${item.similarity_percentage}%</span></td>
-                    `;
-                            resultsBody.appendChild(tr);
-                        });
-                        card.style.display = 'block';
-                    } else {
-                        resultsBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted small py-3">Tidak ada judul yang mirip ditemukan.</td></tr>';
-                        card.style.display = 'block';
-                    }
-                })
-                .catch(error => console.error('Error fetching similarity data:', error));
-        });
-    </script>
-@endpush
+@endsection

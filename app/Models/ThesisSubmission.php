@@ -24,6 +24,7 @@ class ThesisSubmission extends Model
         'defense_date',
         'notes',
         'final_score',
+        'is_historical',
     ];
 
     protected function casts(): array
@@ -186,5 +187,22 @@ class ThesisSubmission extends Model
             ->with('causer')
             ->latest()
             ->get();
+    }
+
+    /**
+     * Get the rejection reason from status history.
+     */
+    public function getRejectionReason(): ?string
+    {
+        if ($this->status !== 'rejected') {
+            return null;
+        }
+
+        $status = $this->statuses()
+            ->where('new_status', 'rejected')
+            ->latest()
+            ->first();
+
+        return $status ? $status->comment : null;
     }
 }

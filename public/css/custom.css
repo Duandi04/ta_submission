@@ -94,6 +94,59 @@
     .dynamic-logo {
         filter: brightness(0) invert(1);
     }
+
+    /* General Form Elements Dark Mode */
+    .form-control, .form-select {
+        background-color: var(--input-bg) !important;
+        color: var(--text-main) !important;
+        border-color: var(--border-color) !important;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background-color: var(--input-bg) !important;
+        color: var(--text-main) !important;
+        border-color: var(--primary-blue) !important;
+        box-shadow: 0 0 0 0.25rem rgba(2, 132, 199, 0.25) !important;
+    }
+
+    /* TomSelect Dark Mode Overrides */
+    .ts-wrapper.bootstrap5 .ts-control {
+        background-color: var(--input-bg) !important;
+        color: var(--text-main) !important;
+        border-color: var(--border-color) !important;
+    }
+    
+    .ts-wrapper.bootstrap5.multi .ts-control > div {
+        background-color: var(--primary-blue) !important;
+        color: white !important;
+        border-radius: 4px;
+    }
+
+    .ts-wrapper.bootstrap5 .ts-dropdown {
+        background-color: var(--bg-surface) !important;
+        color: var(--text-main) !important;
+        border-color: var(--border-color) !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .ts-wrapper.bootstrap5 .ts-dropdown .option {
+        color: var(--text-main) !important;
+        opacity: 1 !important;
+    }
+
+    .ts-wrapper.bootstrap5 .ts-dropdown .option.active {
+        background-color: var(--primary-blue-hover) !important;
+        color: white !important;
+    }
+
+    .ts-wrapper.bootstrap5 .ts-control input {
+        color: var(--text-main) !important;
+    }
+
+    .ts-wrapper.bootstrap5 .ts-control input::placeholder {
+        color: var(--text-muted) !important;
+        opacity: 1 !important;
+    }
 }
 
 /* Page Load Initialization */
@@ -520,8 +573,8 @@ body {
     bottom: 0;
     background: linear-gradient(
         135deg, 
-        rgba(2, 132, 199, 0.75) 0%, 
-        rgba(3, 105, 161, 0.55) 100%
+        rgba(2, 132, 199, 0.24) 0%, 
+        rgba(3, 105, 161, 0.24) 100%
     );
     z-index: 1;
 }

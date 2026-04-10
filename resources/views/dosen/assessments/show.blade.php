@@ -118,6 +118,8 @@
                 </div>
             </div>
 
+            @include('partials.similarity', ['isDetailView' => true, 'excludeId' => $submission->id])
+
             @if ($assessment->comments || $assessment->strengths || $assessment->weaknesses || $assessment->recommendations)
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white py-3 border-0">

@@ -50,17 +50,17 @@
                                                 {{ $submission->getStatusLabel() }}
                                             </span>
                                         </td>
-                                        <td>{{ $submission->submission_date?->format('d/m/Y') ?? '-' }}</td>
+                                        <td>{{ $submission->submission_date?->format('d/m/Y H:i') ?? '-' }}</td>
                                         <td class="text-end">
                                             <div class="btn-group btn-group-sm">
                                                 <a href="{{ route('student.submissions.show', $submission) }}"
-                                                    class="btn btn-sm btn-outline-primary px-3" title="Lihat Detail">
-                                                    Detail
+                                                    class="btn btn-sm btn-outline-primary" title="Lihat Detail">
+                                                    <i class="bi bi-eye"></i>
                                                 </a>
                                                 @if($submission->canBeEditedByStudent())
                                                     <a href="{{ route('student.submissions.edit', $submission) }}"
-                                                        class="btn btn-sm btn-outline-warning px-3" title="Edit">
-                                                        Edit
+                                                        class="btn btn-sm btn-outline-warning" title="Edit">
+                                                        <i class="bi bi-pencil"></i>
                                                     </a>
                                                 @endif
                                                 @if($submission->status === 'draft')
@@ -68,9 +68,9 @@
                                                         class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger px-3" data-confirm-delete
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm-delete
                                                             title="Hapus">
-                                                            Hapus
+                                                            <i class="bi bi-trash"></i>
                                                         </button>
                                                     </form>
                                                 @endif

@@ -83,6 +83,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports', [KaprodiController::class, 'reportIndex'])->name('reports.index');
         Route::get('/reports/print', [KaprodiController::class, 'reportPrint'])->name('reports.print');
         Route::get('/submissions', [KaprodiController::class, 'submissions'])->name('submissions.index');
+        Route::get('/submissions/create', [KaprodiController::class, 'create'])->name('submissions.create');
+        Route::post('/submissions', [KaprodiController::class, 'store'])->name('submissions.store');
+        Route::get('/submissions/{id}/edit-historical', [KaprodiController::class, 'editHistorical'])->name('submissions.edit-historical');
+        Route::put('/submissions/{id}/historical', [KaprodiController::class, 'updateHistorical'])->name('submissions.update-historical');
         Route::get('/students/{student}', [KaprodiController::class, 'studentDetails'])->name('students.show');
         Route::get('/submissions/{submission}', [KaprodiController::class, 'submissionShow'])->name('submissions.show');
         Route::get('/assessments/{assessment}', [KaprodiController::class, 'assessmentShow'])->name('assessments.show');

@@ -23,7 +23,9 @@
                         <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                         <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Sudah Diajukan</option>
                         <option value="under_review" {{ request('status') == 'under_review' ? 'selected' : '' }}>Sedang Ditinjau</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
+                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Diterima</option>
+                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                        {{-- <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option> --}}
                         <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
                     </select>
                 </div>

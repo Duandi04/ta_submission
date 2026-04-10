@@ -94,7 +94,8 @@ class DummyProposalSeeder extends Seeder
             $this->command->warn('No active rubric found. Skipping assessments.');
         }
 
-        $statuses = ['draft', 'submitted', 'under_review', 'completed', 'cancelled'];
+        $statuses = ['draft', 'submitted', 'under_review', 'completed', 'cancelled', 'rejected'];
+        $unluckyStudents = ['Alex Ferguson', 'Lily', 'Richard'];
 
         foreach ($data as $row) {
             $nim = trim($row[0]);
@@ -122,7 +123,13 @@ class DummyProposalSeeder extends Seeder
 
             if ($status === 'completed') {
                 $hasApproved = ThesisSubmission::where('student_id', $student->id)->where('status', 'approved')->exists();
-                $status = $hasApproved ? 'rejected' : 'approved';
+                $isUnlucky = in_array($name, $unluckyStudents);
+                
+                if ($hasApproved || $isUnlucky) {
+                    $status = 'rejected';
+                } else {
+                    $status = 'approved';
+                }
             }
 
             $thesis = ThesisSubmission::create([

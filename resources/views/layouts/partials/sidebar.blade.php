@@ -32,7 +32,7 @@
                     <a class="nav-link {{ request()->routeIs('dosen.assessments.*') ? 'active' : '' }}"
                         href="{{ route('dosen.assessments.index') }}">
                         <i class="bi bi-clipboard-check-fill"></i>
-                        <span>Penilaian</span>
+                        <span>Proposal Mahasiswa</span>
                     </a>
                 </li>
             @endrole

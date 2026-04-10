@@ -133,36 +133,7 @@
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3 border-0">
-                        <span class="fw-bold"><i class="bi bi-search me-2 text-warning"></i>Judul Serupa</span>
-                    </div>
-                    <div class="card-body px-0 py-2">
-                        @if ($similarSubmissions->count() > 0)
-                            <div class="list-group list-group-flush">
-                                @foreach ($similarSubmissions as $similar)
-                                    <div class="list-group-item">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <h6 class="mb-0 small fw-bold">{{ $similar->title }}</h6>
-                                            <span
-                                                class="badge {{ $similar->similarity_percentage >= 70 ? 'bg-danger' : ($similar->similarity_percentage >= 40 ? 'bg-warning text-dark' : 'bg-success') }}">
-                                                {{ $similar->similarity_percentage }}% Mirip
-                                            </span>
-                                        </div>
-                                        <p class="mb-0 text-muted" style="font-size: 0.75rem;">
-                                            Oleh: {{ $similar->student->name }} |
-                                            <i class="bi bi-clock-history me-1"></i>{{ \Carbon\Carbon::parse($similar->created_at)->format('d M Y H:i') }}
-                                        </p>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="px-3 py-2">
-                                <p class="text-muted small mb-0">Tidak ditemukan judul yang mirip.</p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
+                @include('partials.similarity', ['isDetailView' => true, 'excludeId' => $submission->id])
 
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white py-3 border-0">

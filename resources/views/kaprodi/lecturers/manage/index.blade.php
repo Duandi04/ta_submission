@@ -15,22 +15,12 @@
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form action="{{ route('kaprodi.lecturers.manage.index') }}" method="GET" class="row g-3">
-                <div class="col-md-6">
+                <div class="col-md-10">
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
                         <input type="text" name="search" class="form-control border-start-0 ps-0"
                             placeholder="Cari nama, email, atau NIP..." value="{{ request('search') }}" data-auto-search>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <select name="program_studi_id" class="form-select" data-auto-submit>
-                        <option value="">-- Semua Program Studi --</option>
-                        @foreach ($programStudis as $prodi)
-                            <option value="{{ $prodi->id }}" {{ request('program_studi_id') == $prodi->id ? 'selected' : '' }}>
-                                {{ $prodi->name }}
-                            </option>
-                        @endforeach
-                    </select>
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-secondary w-100">Filter</button>
@@ -71,7 +61,6 @@
                                         @endif
                                     </a>
                                 </th>
-                                <th>Program Studi</th>
                                 <th>Role</th>
                                 <th>
                                     <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'email', 'sort_order' => request('sort_order') == 'asc' ? 'desc' : 'asc']) }}"
@@ -101,7 +90,6 @@
                                             <div class="fw-semibold">{{ $lecturer->name }}</div>
                                         </div>
                                     </td>
-                                    <td>{{ $lecturer->programStudi->name ?? '-' }}</td>
                                     <td>
                                         @foreach ($lecturer->roles as $role)
                                             <span

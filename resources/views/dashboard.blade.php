@@ -64,6 +64,43 @@
             </div>
         </div>
 
+        @php
+            $approvedSubmission = auth()->user()->thesisSubmissions()->where('status', 'approved')->first();
+        @endphp
+
+        @if ($approvedSubmission)
+            <div class="card border-0 shadow-sm mb-4 bg-primary text-white overflow-hidden">
+                <div class="card-body p-4 position-relative">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <h5 class="fw-bold mb-3 text-white-100 small text-uppercase letter-spacing-1">
+                                <i class="bi bi-check2-circle me-1"></i> Judul Tugas Akhir Disetujui
+                            </h5>
+                            <h6 class="fw-bold mb-3">{{ $approvedSubmission->title }}</h3>
+                                <div class="d-flex flex-wrap gap-3 mb-0">
+                                    <div class="bg-white bg-opacity-10 rounded-pill px-3 py-1 small">
+                                        <i class="bi bi-person-check me-1 text-white-50"></i>
+                                        Pembimbing: <span
+                                            class="fw-semibold">{{ $approvedSubmission->supervisor->name ?? '-' }}</span>
+                                    </div>
+                                    <div class="bg-white bg-opacity-10 rounded-pill px-3 py-1 small">
+                                        <i class="bi bi-calendar-check me-1 text-white-50"></i>
+                                        Disetujui: <span
+                                            class="fw-semibold">{{ $approvedSubmission->updated_at->format('d M Y') }}</span>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                            <a href="{{ route('student.submissions.show', $approvedSubmission) }}"
+                                class="btn btn-light fw-bold px-4 py-2 hover-lift">
+                                Lihat Detail Judul <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="card border-0 shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center bg-white py-3">
                 <div class="d-flex align-items-center gap-2 fw-bold">
@@ -430,40 +467,20 @@
         </div>
     @endrole
 
-    @if(auth()->user()->hasRole('dosen') && !auth()->user()->hasRole('kaprodi') && !auth()->user()->hasRole('admin'))
+    @if (auth()->user()->hasRole('dosen') && !auth()->user()->hasRole('kaprodi') && !auth()->user()->hasRole('admin'))
         {{-- Stat Cards --}}
         <div class="row g-4 mb-4">
             <div class="col-md-4">
                 <div class="stats-card stats-primary">
                     <div class="stats-icon-wrapper"><i class="bi bi-people"></i></div>
                     <div>
-                        <h6>Total Bimbingan</h6>
+                        <h6>Total Mahasiswa Bimbingan</h6>
                         <h2>{{ $stats['supervised_total'] ?? 0 }}</h2>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="stats-card stats-warning">
-                    <div class="stats-icon-wrapper"><i class="bi bi-hourglass-split"></i></div>
-                    <div>
-                        <h6>Sedang Berjalan</h6>
-                        <h2>{{ $stats['supervised_ongoing'] ?? 0 }}</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stats-card stats-success">
-                    <div class="stats-icon-wrapper"><i class="bi bi-check2-circle"></i></div>
-                    <div>
-                        <h6>Selesai</h6>
-                        <h2>{{ $stats['supervised_completed'] ?? 0 }}</h2>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="row g-4 mb-4">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="stats-card stats-info">
                     <div class="stats-icon-wrapper"><i class="bi bi-clipboard2-check"></i></div>
                     <div>
@@ -472,7 +489,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="stats-card stats-danger" style="--stats-color: #dc3545; --stats-bg: #fff5f5;">
                     <div class="stats-icon-wrapper"><i class="bi bi-clipboard2-x"></i></div>
                     <div>
@@ -481,6 +498,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+
         </div>
 
         {{-- Supervised Students Table --}}
@@ -514,7 +535,8 @@
                                             <div class="text-muted smaller-text">{{ $thesis->student->nim_nip }}</div>
                                         </td>
                                         <td>
-                                            <div class="text-truncate" style="max-width: 220px;">{{ $thesis->title }}</div>
+                                            <div class="text-truncate" style="max-width: 220px;">{{ $thesis->title }}
+                                            </div>
                                         </td>
                                         <td>
                                             <span class="badge bg-{{ $thesis->getStatusBadgeClass() }} rounded-pill">

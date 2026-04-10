@@ -35,6 +35,7 @@
                                     class="text-danger">*</span></label>
                             <input type="text" class="form-control @error('title') is-invalid @enderror" id="title"
                                 name="title" value="{{ old('title', $submission->title) }}" required maxlength="255">
+                            @include('partials.similarity', ['excludeId' => $submission->id])
                             @error('title')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

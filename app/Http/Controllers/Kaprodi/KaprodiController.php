@@ -228,4 +228,64 @@ class KaprodiController extends Controller
         $this->kaprodiService->deleteRubric($id);
         return redirect()->route('kaprodi.rubrics.index')->with('success', 'Rubrik berhasil dihapus.');
     }
+    public function create()
+    {
+        $students = \App\Models\User::role('mahasiswa')
+            ->where('program_studi_id', \Illuminate\Support\Facades\Auth::user()->program_studi_id)
+            ->orderBy('name')
+            ->get();
+        $lecturers = $this->kaprodiService->getLecturers();
+        return view('kaprodi.submissions.create', compact('students', 'lecturers'));
+    }
+
+    public function store(\Illuminate\Http\Request $request)
+    {
+        $validated = $request->validate([
+            'student_id' => 'required|exists:users,id',
+            'title' => 'required|string|max:255',
+            'abstract' => 'required|string',
+            'research_field' => 'nullable|string|max:100',
+            'supervisor_id' => 'required|exists:users,id',
+            'supervisor_2_id' => 'nullable|exists:users,id|different:supervisor_id',
+            'submission_date' => 'nullable|date',
+        ]);
+
+        try {
+            $this->kaprodiService->createHistoricalSubmission($validated);
+            return redirect()->route('kaprodi.submissions.index')->with('success', 'Data history pengajuan berhasil disimpan.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+    public function editHistorical(int $id)
+    {
+        $submission = \App\Models\ThesisSubmission::where('is_historical', true)->findOrFail($id);
+        $students = \App\Models\User::role('mahasiswa')
+            ->where('program_studi_id', \Illuminate\Support\Facades\Auth::user()->program_studi_id)
+            ->orderBy('name')
+            ->get();
+        $lecturers = $this->kaprodiService->getLecturers();
+        return view('kaprodi.submissions.edit_historical', compact('submission', 'students', 'lecturers'));
+    }
+
+    public function updateHistorical(\Illuminate\Http\Request $request, int $id)
+    {
+        $validated = $request->validate([
+            'student_id' => 'required|exists:users,id',
+            'title' => 'required|string|max:255',
+            'abstract' => 'required|string',
+            'research_field' => 'nullable|string|max:100',
+            'supervisor_id' => 'required|exists:users,id',
+            'supervisor_2_id' => 'nullable|exists:users,id|different:supervisor_id',
+            'submission_date' => 'nullable|date',
+        ]);
+
+        try {
+            $this->kaprodiService->updateHistoricalSubmission($id, $validated);
+            return redirect()->route('kaprodi.submissions.show', $id)->with('success', 'Data history pengajuan berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+    }
 }

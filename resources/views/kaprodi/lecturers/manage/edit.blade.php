@@ -46,16 +46,13 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6" hidden>
                                 <label for="program_studi_id" class="form-label">Program Studi <span
                                         class="text-danger">*</span></label>
                                 <input type="hidden" name="program_studi_id" value="{{ $lecturer->program_studi_id }}">
                                 <input type="text" class="form-control bg-light" id="program_studi_id_display"
                                     value="{{ $lecturer->programStudi->name }}" readonly disabled>
                             </div>
-                        </div>
-
-                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control @error('email') is-invalid @enderror"
@@ -64,6 +61,10 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            
                             <div class="col-md-6">
                                 <!-- Hidden role selection -->
                                 <input type="hidden" name="role"

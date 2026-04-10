@@ -78,7 +78,7 @@
                             <span class="fw-semibold">-</span>
                         @endif
                     </div>
-                    <div class="col-sm-6 mb-4">
+                    <div hidden class="col-sm-6 mb-4">
                         <label class="text-muted small d-block">Program Studi</label>
                         @if ($lecturer->programStudi)
                             <span class="fw-semibold text-primary">
