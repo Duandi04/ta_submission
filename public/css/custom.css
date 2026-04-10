@@ -67,8 +67,17 @@
     --card-border: rgba(56, 189, 248, 0.2);
     --input-bg: #0f172a;
 
-    /* Bootstrap Overrides for Dark Mode */
-    .text-dark {
+    /* Enhanced Text Contrast for Dark Mode */
+    .text-muted, .text-secondary {
+        color: #94a3b8 !important; /* Brighter than default muted */
+    }
+
+    .small.text-muted, .smaller-text.text-muted {
+        color: #acb9ca !important; /* Even brighter for small text */
+    }
+
+    /* Consolidated Text Contrast for Dark Mode */
+    .text-dark:not(.btn, .btn *, .badge, [class*="btn-"]) {
         color: #f1f5f9 !important;
     }
 
@@ -77,7 +86,7 @@
         color: #f1f5f9 !important;
     }
 
-    .bg-white {
+    .bg-white, .input-group-text.bg-white {
         background-color: var(--bg-surface) !important;
         color: var(--text-main) !important;
     }
@@ -89,6 +98,13 @@
     .border {
         border-color: #334155 !important;
     }
+
+    /* Soft Backgrounds in Dark Mode */
+    .bg-soft-primary, .bg-primary-subtle { background-color: rgba(2, 132, 199, 0.15) !important; color: #7dd3fc !important; border-color: rgba(2, 132, 199, 0.2) !important; }
+    .bg-soft-success, .bg-success-subtle { background-color: rgba(16, 185, 129, 0.15) !important; color: #6ee7b7 !important; border-color: rgba(16, 185, 129, 0.2) !important; }
+    .bg-soft-warning, .bg-warning-subtle { background-color: rgba(245, 158, 11, 0.15) !important; color: #fcd34d !important; border-color: rgba(245, 158, 11, 0.2) !important; }
+    .bg-soft-danger, .bg-danger-subtle { background-color: rgba(239, 68, 68, 0.15) !important; color: #fca5a5 !important; border-color: rgba(239, 68, 68, 0.2) !important; }
+    .bg-soft-info, .bg-info-subtle { background-color: rgba(14, 165, 233, 0.15) !important; color: #7dd3fc !important; border-color: rgba(14, 165, 233, 0.2) !important; }
 
     /* Dynamic Logo Filter for Dark Mode */
     .dynamic-logo {
@@ -452,8 +468,23 @@ body {
 .text-primary {
     color: var(--primary-blue) !important;
 }
+
+.text-secondary {
+    color: var(--text-muted) !important;
+}
 .border-primary-subtle {
     border-color: var(--primary-blue-light) !important;
+}
+
+/* Base Soft Backgrounds (Light Mode) */
+.bg-soft-primary { background-color: #f0f9ff; color: #0369a1; }
+.bg-soft-success { background-color: #f0fdf4; color: #15803d; }
+.bg-soft-warning { background-color: #fffbeb; color: #b45309; }
+.bg-soft-danger { background-color: #fef2f2; color: #b91c1c; }
+.bg-soft-info { background-color: #f0f9ff; color: #0369a1; }
+
+.smaller-text {
+    font-size: 0.8rem;
 }
 
 /* Pagination Customization */
@@ -946,11 +977,9 @@ body {
 
 @keyframes alertFadeIn {
     from {
-        opacity: 0;
         transform: translateY(-8px);
     }
     to {
-        opacity: 1;
         transform: translateY(0);
     }
 }

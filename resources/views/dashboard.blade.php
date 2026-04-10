@@ -9,7 +9,7 @@
             <p class="text-muted small mb-0">
                 Selamat datang kembali, <strong>{{ auth()->user()->name }}</strong>.
                 @if (auth()->user()->programStudi)
-                    <span class="mx-1 text-secondary opacity-50">|</span>
+                    <span class="mx-1 text-muted">|</span>
                     <span class="fw-medium text-dark">{{ auth()->user()->programStudi->name }}</span>
                     @if (auth()->user()->programStudi->faculty)
                         <span class="text-secondary small">({{ auth()->user()->programStudi->faculty->name }})</span>
