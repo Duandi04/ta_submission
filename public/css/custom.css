@@ -564,10 +564,10 @@ body {
 .login-card {
     background: var(--card-bg);
     backdrop-filter: blur(20px);
-    border-radius: 24px;
+    border-radius: 28px;
     box-shadow:
-        0 10px 15px -3px rgba(0, 0, 0, 0.1),
-        0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        0 15px 35px -5px rgba(0, 0, 0, 0.1),
+        0 30px 60px -15px rgba(0, 0, 0, 0.2);
     border: 1px solid var(--card-border);
     overflow: hidden;
     display: flex;
@@ -582,14 +582,25 @@ body {
 .login-image-side {
     position: relative;
     flex: 1.1;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     display: none;
     flex-direction: column;
     justify-content: center;
     padding: 4rem;
     color: white;
+    overflow: hidden; /* Ensure background doesn't bleed */
+}
+
+.login-image-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(3px);
+    transform: scale(1.08); /* Scale slightly to hide blurred edges */
+    z-index: 0;
 }
 
 .login-card.split-layout .login-image-side {
@@ -604,8 +615,8 @@ body {
     bottom: 0;
     background: linear-gradient(
         135deg, 
-        rgba(2, 132, 199, 0.24) 0%, 
-        rgba(3, 105, 161, 0.24) 100%
+        rgba(2, 132, 199, 0.3) 0%, 
+        rgba(3, 105, 161, 0.45) 100%
     );
     z-index: 1;
 }
@@ -679,17 +690,32 @@ body {
     max-width: 380px;
 }
 
+.brand-logo-img {
+    height: 85px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 6px rgba(14, 165, 233, 0.15));
+    transition: transform 0.3s ease;
+}
+
+.brand-logo-img:hover {
+    transform: scale(1.05);
+}
+
 .form-title {
-    font-size: 1.85rem;
-    font-weight: 700;
-    color: var(--primary-blue);
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin-bottom: 0.5rem;
 }
 
 .form-subtitle {
     color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.5;
+    font-size: 1rem;
+    line-height: 1.6;
 }
 
 @media (max-width: 991.98px) {

@@ -21,5 +21,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        if (str_contains(request()->getHost(), 'ngrok-free.app')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }
