@@ -71,14 +71,8 @@
                         </tr>
                         <tr>
                             <th>Tanggal Pengajuan</th>
-                            <td>: {{ $submission->submission_date?->format('d/m/Y H:i') ?? '-' }}</td>
+                            <td>: {{ $submission->created_at?->format('d/m/Y H:i') ?? '-' }}</td>
                         </tr>
-                        @if ($submission->defense_date)
-                            <tr>
-                                <th>Tanggal Sidang</th>
-                                <td>: {{ $submission->defense_date->format('d/m/Y') }}</td>
-                            </tr>
-                        @endif
                         @if ($submission->final_score)
                             <tr>
                                 <th>Nilai Akhir</th>

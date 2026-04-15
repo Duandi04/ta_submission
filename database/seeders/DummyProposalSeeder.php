@@ -95,7 +95,7 @@ class DummyProposalSeeder extends Seeder
         }
 
         $statuses = ['draft', 'submitted', 'under_review', 'completed', 'cancelled', 'rejected'];
-        $unluckyStudents = ['Alex Ferguson', 'Lily', 'Richard'];
+        $unluckyStudents = ['Alex Ferguson', 'Lily', 'Richard', 'Duandi'];
 
         foreach ($data as $row) {
             $nim = trim($row[0]);
@@ -134,7 +134,7 @@ class DummyProposalSeeder extends Seeder
 
             $thesis = ThesisSubmission::create([
                 'student_id' => $student->id,
-                'supervisor_id' => in_array($status, ['approved', 'rejected', 'completed']) ? $supervisor->id : null,
+                'supervisor_id' => in_array($status, ['approved']) ? $supervisor->id : null,
                 'title' => $title,
                 'abstract' => 'Abstrak untuk ' . $title,
                 'research_field' => 'Teknik Perangkat Lunak',
