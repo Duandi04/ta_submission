@@ -41,6 +41,7 @@ For more detailed information, please refer to:
 - [**Kaprodi Features**](docs/FEATURES_KAPRODI.md): Detailed guide for Kaprodi functionalities.
 - [**Similarity Check**](docs/SIMILARITY_CHECK.md): Information about the title similarity detection feature.
 - [**Testing Guide**](docs/TESTING_GUIDE.md): Instructions on running and writing tests.
+- [**Configuration Guide**](docs/CONFIGURATION.md): Setup instructions for Sentry and Cloudflare R2.
 
 ## 📥 Installation
 
