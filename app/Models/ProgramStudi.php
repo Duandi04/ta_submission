@@ -10,7 +10,13 @@ use Spatie\Activitylog\LogOptions;
 class ProgramStudi extends Model
 {
     use HasFactory, LogsActivity;
-    protected $fillable = ['name', 'code', 'faculty_id'];
+    protected $fillable = ['name', 'code', 'faculty_id', 'submission_start', 'submission_end'];
+
+    protected $casts = [
+        'submission_start' => 'datetime',
+        'submission_end' => 'datetime',
+    ];
+
 
     public function getActivitylogOptions(): LogOptions
     {

@@ -1,14 +1,15 @@
 <nav class="navbar navbar-expand-lg fixed-top shadow-none border-bottom">
     <div class="container-fluid">
-        <div class="d-flex align-items-center">
-            <a class="navbar-brand me-4 d-flex align-items-center" href="{{ route('dashboard') }}">
-                <img src="{{ asset('images/logo_uvers.webp')}}" alt="Logo"
-                    height="40" class="me-2 rounded dynamic-logo">
-                <span>Universitas Universal</span>
-            </a>
+        <div class="d-flex align-items-center gap-2">
             <button class="sidebar-toggle" id="sidebarToggle">
                 <i class="bi bi-list"></i>
             </button>
+            <a class="navbar-brand ms-2 ms-lg-4 d-flex align-items-center" href="{{ route('dashboard') }}">
+                <img src="{{ asset('images/logo_uvers.webp')}}" alt="Logo"
+                    height="32" class="me-2 rounded dynamic-logo d-none d-sm-block">
+                <span class="d-none d-sm-inline text-truncate" style="max-width: 200px;">Universitas Universal</span>
+                <span class="d-inline d-sm-none fw-bold">UVERS TA</span>
+            </a>
         </div>
 
         <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"

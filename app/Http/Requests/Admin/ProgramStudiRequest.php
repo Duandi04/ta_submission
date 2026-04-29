@@ -27,6 +27,8 @@ class ProgramStudiRequest extends FormRequest
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:program_studis,code,' . $programStudiId,
             'faculty_id' => 'required|exists:faculties,id',
+            'submission_start' => 'nullable|date',
+            'submission_end' => 'nullable|date|after_or_equal:submission_start',
         ];
     }
 }

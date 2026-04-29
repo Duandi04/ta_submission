@@ -22,7 +22,8 @@ class KaprodiSettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'max_thesis_drafts' => 'required|integer|min:1',
+            'max_batches' => 'required|integer|min:1',
+            'attempts_per_batch' => 'required|integer|min:1',
         ];
     }
 }

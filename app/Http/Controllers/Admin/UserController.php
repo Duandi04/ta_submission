@@ -58,7 +58,12 @@ class UserController extends Controller
         }
 
         $user = User::create($userData);
-        $user->assignRole($validated['role']);
+        
+        $roles = [$validated['role']];
+        if ($validated['role'] === 'kaprodi') {
+            $roles[] = 'dosen';
+        }
+        $user->assignRole($roles);
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
     }
@@ -129,7 +134,12 @@ class UserController extends Controller
         }
 
         $user->update($userData);
-        $user->syncRoles([$validated['role']]);
+
+        $roles = [$validated['role']];
+        if ($validated['role'] === 'kaprodi') {
+            $roles[] = 'dosen';
+        }
+        $user->syncRoles($roles);
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil diperbarui.');
     }

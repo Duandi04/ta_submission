@@ -6,26 +6,39 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainContent = document.getElementById('main-content');
     const sidebarToggle = document.getElementById('sidebarToggle');
     
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
     // Load sidebar state from localStorage
     const sidebarState = localStorage.getItem('sidebarState');
-    if (sidebarState === 'collapsed') {
+    if (sidebarState === 'collapsed' && window.innerWidth > 991.98) {
         sidebar?.classList.add('collapsed');
         mainContent?.classList.add('expanded');
     }
 
     sidebarToggle?.addEventListener('click', function() {
-        sidebar?.classList.toggle('collapsed');
-        mainContent?.classList.toggle('expanded');
-        
-        // Remove the initialization class once user starts interacting
-        document.documentElement.classList.remove('sidebar-collapsed-init');
-        
-        // Save state to localStorage
-        if (sidebar?.classList.contains('collapsed')) {
-            localStorage.setItem('sidebarState', 'collapsed');
+        if (window.innerWidth <= 991.98) {
+            sidebar?.classList.toggle('show');
+            sidebarOverlay?.classList.toggle('show');
         } else {
-            localStorage.setItem('sidebarState', 'expanded');
+            sidebar?.classList.toggle('collapsed');
+            mainContent?.classList.toggle('expanded');
+            
+            // Remove the initialization class once user starts interacting
+            document.documentElement.classList.remove('sidebar-collapsed-init');
+            
+            // Save state to localStorage
+            if (sidebar?.classList.contains('collapsed')) {
+                localStorage.setItem('sidebarState', 'collapsed');
+            } else {
+                localStorage.setItem('sidebarState', 'expanded');
+            }
         }
+    });
+
+    // Close sidebar when clicking overlay on mobile
+    sidebarOverlay?.addEventListener('click', function() {
+        sidebar?.classList.remove('show');
+        sidebarOverlay.classList.remove('show');
     });
 
     // Auto-hide alerts after 5 seconds (only for success messages, other info/danger/warning will persist)

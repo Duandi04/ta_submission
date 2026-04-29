@@ -62,7 +62,12 @@ class LecturerController extends Controller
         }
 
         $user = User::create($userData);
-        $user->assignRole($validated['role']);
+        
+        $roles = [$validated['role']];
+        if ($validated['role'] === 'kaprodi') {
+            $roles[] = 'dosen';
+        }
+        $user->assignRole($roles);
 
         return redirect()->route('kaprodi.lecturers.manage.index')->with('success', 'Dosen berhasil ditambahkan.');
     }
@@ -133,7 +138,12 @@ class LecturerController extends Controller
         }
 
         $lecturer->update($userData);
-        $lecturer->syncRoles([$validated['role']]);
+
+        $roles = [$validated['role']];
+        if ($validated['role'] === 'kaprodi') {
+            $roles[] = 'dosen';
+        }
+        $lecturer->syncRoles($roles);
 
         return redirect()->route('kaprodi.lecturers.manage.index')->with('success', 'Dosen berhasil diperbarui.');
     }

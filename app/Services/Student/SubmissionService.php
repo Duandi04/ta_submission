@@ -25,11 +25,11 @@ class SubmissionService
     }
 
 
-    /**
-     * Store a revision file.
-     */
     public function storeRevision(ThesisSubmission $submission, ?UploadedFile $file = null): void
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        // No longer limiting file revisions per submission
         if ($file) {
             $this->uploadFile($submission, $file, 'revision');
         }
@@ -39,20 +39,61 @@ class SubmissionService
             ->log('Uploaded revision file');
     }
 
-    /**
-     * Create a new thesis submission.
-     */
     public function create(array $data, ?UploadedFile $file = null): ThesisSubmission
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        $currentCount = $user->thesisSubmissions()->count();
+        
+        // 1. Check Deadline
+        $prodi = $user->programStudi;
+        if ($prodi && ($prodi->submission_start || $prodi->submission_end)) {
+            $now = now();
+            if ($prodi->submission_start && $now->lt($prodi->submission_start)) {
+                throw ValidationException::withMessages([
+                    'deadline' => "Masa pengajuan belum dimulai. Mulai pada: " . $prodi->submission_start->format('d/m/Y H:i')
+                ]);
+            }
+            if ($prodi->submission_end && $now->gt($prodi->submission_end)) {
+                throw ValidationException::withMessages([
+                    'deadline' => "Masa pengajuan telah berakhir pada: " . $prodi->submission_end->format('d/m/Y H:i')
+                ]);
+            }
+        }
 
-        $maxDrafts = (int) Setting::getValue('max_thesis_drafts', 3);
-        if (!$user->can_exceed_submission_limit && $currentCount >= $maxDrafts) {
-            throw ValidationException::withMessages([
-                'limit' => "Anda telah mencapai batas maksimal pengunggahan draft ({$maxDrafts} draft). Silakan hubungi Kaprodi jika ada kendala."
-            ]);
+        // 2. Check Submission Limit (Strict Batch Logic)
+        $attemptsPerBatch = (int) Setting::getValue('attempts_per_batch', 3);
+        $maxBatches = (int) Setting::getValue('max_batches', 2);
+        $maxTotal = $attemptsPerBatch * $maxBatches;
+
+        $allSubmissions = $user->thesisSubmissions()->orderBy('id', 'asc')->get();
+        $totalCount = $allSubmissions->count();
+
+        if (!$user->can_exceed_submission_limit) {
+            // Check if already has approved submission
+            if ($allSubmissions->where('status', 'approved')->count() > 0) {
+                throw ValidationException::withMessages([
+                    'limit' => "Anda sudah memiliki pengajuan yang disetujui. Tidak diperbolehkan membuat pengajuan baru."
+                ]);
+            }
+
+            // Check global total limit
+            if ($totalCount >= $maxTotal) {
+                throw ValidationException::withMessages([
+                    'limit' => "Anda telah mencapai batas maksimal total pengajuan ({$maxTotal} kali)."
+                ]);
+            }
+
+            // Check if current batch is "full" and needs all rejected before refill
+            if ($totalCount > 0 && $totalCount % $attemptsPerBatch === 0) {
+                $lastBatch = $allSubmissions->take(-$attemptsPerBatch);
+                $allFinished = $lastBatch->every(fn($s) => in_array($s->status, ['rejected', 'cancelled']));
+
+                if (!$allFinished) {
+                    throw ValidationException::withMessages([
+                        'limit' => "Batch pengajuan Anda saat ini ({$attemptsPerBatch} judul) belum selesai diproses. Anda hanya dapat memulai batch baru jika semua pengajuan di batch sebelumnya telah ditolak."
+                    ]);
+                }
+            }
         }
 
         $submission = $user->thesisSubmissions()->create([

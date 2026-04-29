@@ -12,14 +12,112 @@
         </div>
     </div>
 
-    @if(Auth::user()->can_exceed_submission_limit)
+    @php
+        $user = auth()->user();
+        $prodi = $user->programStudi;
+        $now = now();
+        $maxSub = \App\Models\Setting::getValue('max_submissions', 3);
+        $count = $user->thesisSubmissions()->count();
+        $isWithinDeadline = true;
+        
+        if ($prodi && ($prodi->submission_start || $prodi->submission_end)) {
+            if ($prodi->submission_start && $now->lt($prodi->submission_start)) $isWithinDeadline = false;
+            if ($prodi->submission_end && $now->gt($prodi->submission_end)) $isWithinDeadline = false;
+        }
+    @endphp
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                        <i class="bi bi-calendar-event fs-4 text-primary"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-1 fw-bold text-dark">Batas Waktu Pengajuan</h6>
+                        @if($prodi && ($prodi->submission_start || $prodi->submission_end))
+                            <div class="small">
+                                @if($prodi->submission_start)
+                                    <span class="text-{{ $now->lt($prodi->submission_start) ? 'warning' : 'success' }}">
+                                        Buka: {{ $prodi->submission_start->format('d/m/Y H:i') }}
+                                    </span>
+                                @endif
+                                @if($prodi->submission_end)
+                                    <span class="mx-1 text-muted">•</span>
+                                    <span class="text-{{ $now->gt($prodi->submission_end) ? 'danger' : 'info' }}">
+                                        Tutup: {{ $prodi->submission_end->format('d/m/Y H:i') }}
+                                    </span>
+                                @endif
+                            </div>
+                        @else
+                            <span class="text-muted small">Tidak ada batasan waktu khusus.</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        @php
+            $attemptsPerBatch = \App\Models\Setting::getValue('attempts_per_batch', 3);
+            $maxBatches = \App\Models\Setting::getValue('max_batches', 2);
+            $maxTotal = $attemptsPerBatch * $maxBatches;
+            
+            $allSub = $user->thesisSubmissions()->orderBy('id', 'asc')->get();
+            $count = $allSub->count();
+
+            // Batch logic
+            $currentBatchCount = $count % $attemptsPerBatch;
+            if ($count > 0 && $currentBatchCount === 0) {
+                $lastBatch = $allSub->take(-$attemptsPerBatch);
+                $isBatchFinished = $lastBatch->every(fn($s) => in_array($s->status, ['rejected', 'cancelled']));
+                $slotsInBatch = $isBatchFinished ? $attemptsPerBatch : 0;
+            } else {
+                $slotsInBatch = $attemptsPerBatch - $currentBatchCount;
+            }
+        @endphp
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-{{ $slotsInBatch <= 0 ? 'danger' : 'primary' }} bg-opacity-10 p-3 me-3">
+                        <i class="bi bi-activity fs-4 text-{{ $slotsInBatch <= 0 ? 'danger' : 'primary' }}"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-1 fw-bold text-dark">Slot Pengajuan Batch</h6>
+                        <span class="badge {{ $slotsInBatch <= 0 ? 'bg-danger' : 'bg-primary' }}">
+                            {{ $slotsInBatch }} dari {{ $attemptsPerBatch }} tersedia
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-{{ $count >= $maxTotal ? 'danger' : 'success' }} bg-opacity-10 p-3 me-3">
+                        <i class="bi bi-journal-check fs-4 text-{{ $count >= $maxTotal ? 'danger' : 'success' }}"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-1 fw-bold text-dark">Total Jatah Pengajuan</h6>
+                        <span class="badge {{ $count >= $maxTotal ? 'bg-danger' : 'bg-success' }}">
+                            {{ max(0, $maxTotal - $count) }} kali lagi
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if($user->can_exceed_submission_limit)
         <div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-4">
             <i class="bi bi-info-circle-fill fs-4 me-3 text-primary"></i>
             <div>
-                <strong>Pemberitahuan Khusus:</strong> Anda mendapatkan pengecualian untuk mengunggah draft proposal melebihi batas maksimal reguler prodi.
+                <strong>Pemberitahuan Khusus:</strong> Anda mendapatkan pengecualian untuk membuat pengajuan melebihi batas maksimal reguler.
             </div>
         </div>
     @endif
+
 
     <div id="ajax-container">
         @if($submissions->count() > 0)

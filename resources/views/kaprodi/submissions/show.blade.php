@@ -36,11 +36,13 @@
                     <p class="text-muted small mb-3">
                         <i class="bi bi-tag me-1"></i>{{ $submission->research_field ?? 'Umum' }}
                         <span class="mx-2">|</span>
-                        <span
-                            class="badge bg-{{ $submission->getStatusBadgeClass() }}">{{ $submission->getStatusLabel() }}</span>
+                        <span class="badge bg-{{ $submission->getStatusBadgeClass() }}">{{ $submission->getStatusLabel() }}</span>
+                        <span class="mx-2">|</span>
+                        <span class="text-muted"><i class="bi bi-files me-1"></i>{{ $submission->files->count() }} Dokumen</span>
                         <span class="mx-2">|</span>
                         <span class="text-muted"><i class="bi bi-clock me-1"></i>{{ $submission->created_at ? $submission->created_at->format('d/m/Y H:i') : '-' }}</span>
                     </p>
+
                     <hr>
                     <h6 class="fw-bold mb-2">Abstrak</h6>
                     <p class="text-muted" style="white-space: pre-line;">{{ $submission->abstract }}</p>
