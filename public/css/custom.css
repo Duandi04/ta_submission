@@ -72,23 +72,52 @@
         color: #94a3b8 !important; /* Brighter than default muted */
     }
 
-    .small.text-muted, .smaller-text.text-muted {
+    .small.text-muted, .smaller-text.text-muted, .smaller-extra.text-muted {
         color: #acb9ca !important; /* Even brighter for small text */
     }
 
     /* Consolidated Text Contrast for Dark Mode */
-    .text-dark:not(.btn, .btn *, .badge, [class*="btn-"]) {
+    .text-dark:not(.btn-primary, .btn-success, .btn-danger, .btn-info, .btn-secondary, .btn-warning, .btn-dark) {
         color: #f1f5f9 !important;
     }
 
-    .bg-light {
+    /* Keep dark text ONLY on solid warning/light elements that stay bright */
+    .badge.bg-warning.text-dark:not(.bg-warning-subtle, .bg-soft-warning),
+    .btn-warning.text-dark {
+        color: #1e293b !important;
+    }
+
+    /* Shadow adjustments for dark mode */
+    .shadow-sm { box-shadow: 0 .125rem .25rem rgba(0,0,0,.5) !important; }
+    .shadow { box-shadow: 0 .5rem 1rem rgba(0,0,0,.5) !important; }
+    .shadow-lg { box-shadow: 0 1rem 3rem rgba(0,0,0,.5) !important; }
+
+    .bg-light, .btn-white, .btn-light {
         background-color: #334155 !important;
         color: #f1f5f9 !important;
+        border-color: #475569 !important;
+    }
+
+    .btn-white:hover, .btn-light:hover {
+        background-color: #475569 !important;
+        color: #ffffff !important;
+    }
+
+    .btn-white.disabled, .btn-light.disabled, .btn-white:disabled, .btn-light:disabled {
+        background-color: #1e293b !important;
+        color: #64748b !important;
+        border-color: #334155 !important;
     }
 
     .bg-white, .input-group-text.bg-white {
         background-color: var(--bg-surface) !important;
         color: var(--text-main) !important;
+    }
+
+    .bg-dark {
+        background-color: #334155 !important;
+        color: #f1f5f9 !important;
+        border: 1px solid #475569 !important;
     }
 
     .text-muted {
@@ -105,6 +134,23 @@
     .bg-soft-warning, .bg-warning-subtle { background-color: rgba(245, 158, 11, 0.15) !important; color: #fcd34d !important; border-color: rgba(245, 158, 11, 0.2) !important; }
     .bg-soft-danger, .bg-danger-subtle { background-color: rgba(239, 68, 68, 0.15) !important; color: #fca5a5 !important; border-color: rgba(239, 68, 68, 0.2) !important; }
     .bg-soft-info, .bg-info-subtle { background-color: rgba(14, 165, 233, 0.15) !important; color: #7dd3fc !important; border-color: rgba(14, 165, 233, 0.2) !important; }
+    .bg-soft-secondary, .bg-secondary-subtle { background-color: rgba(148, 163, 184, 0.15) !important; color: #cbd5e1 !important; border-color: rgba(148, 163, 184, 0.2) !important; }
+
+    .btn-outline-secondary {
+        color: #cbd5e1 !important;
+        border-color: #475569 !important;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #475569 !important;
+        color: #ffffff !important;
+    }
+
+    /* Fix text classes inside subtle badges */
+    .badge[class*="bg-soft-"].text-dark, .badge[class*="-subtle"].text-dark,
+    .badge[class*="bg-soft-"].text-secondary, .badge[class*="-subtle"].text-secondary {
+        color: inherit !important; /* Let the color from the bg-soft rule take over */
+    }
 
     /* Dynamic Logo Filter for Dark Mode */
     .dynamic-logo {
@@ -485,6 +531,16 @@ body {
 
 .smaller-text {
     font-size: 0.8rem;
+}
+
+.smaller-extra {
+    font-size: 0.725rem;
+}
+
+.smallest-badge {
+    font-size: 0.65rem;
+    padding: 0.25em 0.5em;
+    font-weight: 500;
 }
 
 /* Pagination Customization */

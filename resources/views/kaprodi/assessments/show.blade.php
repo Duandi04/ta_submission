@@ -82,7 +82,6 @@
                 </div>
             </div>
 
-            @if ($assessment->comments || $assessment->strengths || $assessment->weaknesses)
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white py-3 border-0">
                         <span class="fw-bold"><i class="bi bi-chat-left-text me-2 text-info"></i>Komentar & Masukan</span>
@@ -118,7 +117,6 @@
                         @endif
                     </div>
                 </div>
-            @endif
         </div>
 
         <div class="col-lg-4">

@@ -140,7 +140,7 @@
                                                 @endif
                                             </td>
                                         </tr>
-                                        @if ($assessment->is_submitted)
+                                        <!-- @if ($assessment->is_submitted)
                                             <tr>
                                                 <td colspan="4" class="bg-light p-3 border-bottom">
                                                     <div class="card border-0 shadow-sm">
@@ -192,7 +192,7 @@
                                                     </div>
                                                 </td>
                                             </tr>
-                                        @endif
+                                        @endif -->
                                     @endforeach
                                 </tbody>
                             </table>
@@ -207,7 +207,7 @@
             </div>
 
             <!-- Comment Summary Section -->
-            <div class="card border-0 shadow-sm mb-4">
+            <!-- <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white py-3 border-0">
                     <span class="fw-bold"><i class="bi bi-chat-quote me-2 text-info"></i>Rekapitulasi Komentar</span>
                 </div>
@@ -255,7 +255,7 @@
                         <p class="text-muted text-center small my-3">Belum ada komentar dari dosen penilai.</p>
                     @endif
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <div class="col-lg-4">
