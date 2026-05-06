@@ -46,6 +46,7 @@
                                     </a>
                                 </th>
                                 <th>Jumlah Mahasiswa/Dosen</th>
+                                <th>Deadline Pengajuan</th>
                                 <th class="text-end pe-3">Aksi</th>
                             </tr>
                         </thead>
@@ -64,6 +65,21 @@
                                     <td>{{ $prodi->faculty->name }}</td>
                                     <td><span class="badge bg-light text-dark border">{{ $prodi->code }}</span></td>
                                     <td>{{ $prodi->users_count }}</td>
+                                    <td>
+                                        @if($prodi->submission_start || $prodi->submission_end)
+                                            <div class="small">
+                                                @if($prodi->submission_start)
+                                                    <div class="text-success"><i class="bi bi-play-circle me-1"></i>{{ $prodi->submission_start->format('d/m/Y H:i') }}</div>
+                                                @endif
+                                                @if($prodi->submission_end)
+                                                    <div class="text-danger"><i class="bi bi-stop-circle me-1"></i>{{ $prodi->submission_end->format('d/m/Y H:i') }}</div>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="text-muted small">Tidak dibatasi</span>
+                                        @endif
+                                    </td>
+
                                     <td class="text-end pe-3">
                                         <div class="btn-group">
                                             <a href="{{ route('admin.program-studis.show', array_merge(['program_studi' => $prodi->id], request()->query())) }}"

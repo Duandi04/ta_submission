@@ -50,6 +50,9 @@
 
     <!-- Sidebar -->
     @include('layouts.partials.sidebar')
+    
+    <!-- Sidebar Overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
     <!-- Main Content -->
     <main id="main-content">

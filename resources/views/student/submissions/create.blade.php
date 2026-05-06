@@ -97,14 +97,78 @@
                     <i class="bi bi-info-circle"></i> Informasi
                 </div>
                 <div class="card-body">
+                    <h6>Informasi Penting</h6>
+                    <ul class="small list-unstyled">
+                        @php
+                            $prodi = auth()->user()->programStudi;
+                            $now = now();
+                            $attemptsPerBatch = \App\Models\Setting::getValue('attempts_per_batch', 3);
+                            $maxBatches = \App\Models\Setting::getValue('max_batches', 2);
+                            $maxTotal = $attemptsPerBatch * $maxBatches;
+                            
+                            $allSub = auth()->user()->thesisSubmissions()->orderBy('id', 'asc')->get();
+                            $totalUsed = $allSub->count();
+                            
+                            // Current batch progress
+                            $currentBatchCount = $totalUsed % $attemptsPerBatch;
+                            if ($totalUsed > 0 && $currentBatchCount === 0) {
+                                // Check if last batch is fully rejected
+                                $lastBatch = $allSub->take(-$attemptsPerBatch);
+                                $isBatchFinished = $lastBatch->every(fn($s) => in_array($s->status, ['rejected', 'cancelled']));
+                                $slotsInBatch = $isBatchFinished ? $attemptsPerBatch : 0;
+                            } else {
+                                $slotsInBatch = $attemptsPerBatch - $currentBatchCount;
+                            }
+                        @endphp
+                        
+                        <li class="mb-3">
+                            <strong>Slot Pengajuan Batch:</strong><br>
+                            <span class="badge {{ $slotsInBatch <= 0 ? 'bg-danger' : 'bg-primary' }}">
+                                {{ $slotsInBatch }} dari {{ $attemptsPerBatch }} tersedia di batch ini
+                            </span>
+                            <div class="x-small text-muted mt-1">
+                                @if($totalUsed > 0 && $totalUsed % $attemptsPerBatch === 0 && !($isBatchFinished ?? true))
+                                    Batch saat ini penuh. Tunggu semua judul ditolak untuk membuka batch baru.
+                                @else
+                                    Jumlah pengajuan judul yang dapat Anda buat dalam siklus saat ini.
+                                @endif
+                            </div>
+                        </li>
+
+                        <li class="mb-3">
+                            <strong>Total Sisa Kesempatan:</strong><br>
+                            <span class="badge {{ $totalUsed >= $maxTotal ? 'bg-danger' : 'bg-success' }}">
+                                {{ max(0, $maxTotal - $totalUsed) }} kali lagi
+                            </span>
+                            <div class="x-small text-muted mt-1">Batas total seluruh judul ({{ $maxTotal }} kali).</div>
+                        </li>
+
+                        @if($prodi && ($prodi->submission_start || $prodi->submission_end))
+                            <li class="mb-2">
+                                <strong>Batas Waktu:</strong><br>
+                                @if($prodi->submission_start)
+                                    <div class="text-{{ $now->lt($prodi->submission_start) ? 'warning' : 'success' }} small">
+                                        Mulai: {{ $prodi->submission_start->format('d/m/Y H:i') }}
+                                    </div>
+                                @endif
+                                @if($prodi->submission_end)
+                                    <div class="text-{{ $now->gt($prodi->submission_end) ? 'danger' : 'info' }} small">
+                                        Berakhir: {{ $prodi->submission_end->format('d/m/Y H:i') }}
+                                    </div>
+                                @endif
+                            </li>
+                        @endif
+                    </ul>
+
+                    <hr>
+
                     <h6>Panduan Pengajuan</h6>
                     <ol class="small">
                         <li>Isi semua kolom yang wajib diisi (*)</li>
                         <li>Pastikan judul sesuai dengan topik penelitian</li>
                         <li>Abstrak harus menjelaskan tujuan, metode, dan kontribusi penelitian</li>
-                        <li>Pilih dosen pembimbing (Akan ditetapkan oleh Kaprodi)</li>
-                        <li>Upload file proposal dalam format yang ditentukan</li>
-                        <li>Setelah disimpan, Anda dapat mengedit pengajuan sampai diajukan</li>
+                        <li>Dosen pembimbing akan ditetapkan oleh Kaprodi</li>
+                        <li>Upload file proposal dalam format PDF, DOC, atau DOCX</li>
                     </ol>
 
                     <hr>
@@ -113,12 +177,13 @@
                     <ul class="small">
                         <li><span class="badge bg-secondary">Draft</span> - Dapat diedit</li>
                         <li><span class="badge bg-info">Diajukan</span> - Menunggu review</li>
-                        <li><span class="badge bg-warning">Ditinjau</span> - Sedang direview</li>
+                        <li><span class="badge bg-warning text-dark">Ditinjau</span> - Sedang direview</li>
                         <li><span class="badge bg-success">Disetujui</span> - Lanjut ke tahap sidang</li>
                     </ul>
                 </div>
             </div>
         </div>
+
     </div>
 @endsection
 

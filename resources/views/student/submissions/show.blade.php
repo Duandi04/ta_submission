@@ -14,7 +14,8 @@
                     </a>
                 @endif
                 @php
-                    $backUrl = url()->previous() !== url()->current() ? url()->previous() : route('student.submissions.index');
+                    $backUrl =
+                        url()->previous() !== url()->current() ? url()->previous() : route('student.submissions.index');
                 @endphp
                 <a href="{{ $backUrl }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Kembali
@@ -153,7 +154,9 @@
                         @endif
 
                         <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
-                            <h6 class="mb-0 fw-bold"><i class="bi bi-clock-history text-warning"></i> Riwayat Revisi</h6>
+                            <div>
+                                <h6 class="mb-0 fw-bold"><i class="bi bi-clock-history text-warning"></i> Riwayat Revisi</h6>
+                            </div>
                             <button type="button" class="btn btn-sm btn-primary rounded-pill" data-bs-toggle="modal"
                                 data-bs-target="#uploadRevisionModal">
                                 <i class="bi bi-plus"></i> Unggah Revisi

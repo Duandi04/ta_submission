@@ -361,7 +361,12 @@ class KaprodiService
      */
     public function getRubrics()
     {
-        return Rubric::latest()->get();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        return Rubric::where('program_studi_id', $user->program_studi_id)
+            ->orWhereNull('program_studi_id')
+            ->latest()
+            ->get();
     }
 
     /**
@@ -369,7 +374,13 @@ class KaprodiService
      */
     public function getRubricById(int $id)
     {
-        return Rubric::findOrFail($id);
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        return Rubric::where('id', $id)
+            ->where(function ($query) use ($user) {
+                $query->where('program_studi_id', $user->program_studi_id)
+                    ->orWhereNull('program_studi_id');
+            })->firstOrFail();
     }
 
     /**
@@ -377,6 +388,9 @@ class KaprodiService
      */
     public function createRubric(array $data)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $data['program_studi_id'] = $user->program_studi_id;
         return Rubric::create($data);
     }
 
@@ -385,7 +399,15 @@ class KaprodiService
      */
     public function updateRubric(int $id, array $data)
     {
-        $rubric = Rubric::findOrFail($id);
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $rubric = Rubric::where('id', $id)
+            ->where(function ($query) use ($user) {
+                $query->where('program_studi_id', $user->program_studi_id)
+                    ->orWhereNull('program_studi_id');
+            })
+            ->firstOrFail();
+            
         $rubric->update($data);
         return $rubric;
     }
@@ -395,7 +417,15 @@ class KaprodiService
      */
     public function deleteRubric(int $id)
     {
-        $rubric = Rubric::findOrFail($id);
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $rubric = Rubric::where('id', $id)
+            ->where(function ($query) use ($user) {
+                $query->where('program_studi_id', $user->program_studi_id)
+                    ->orWhereNull('program_studi_id');
+            })
+            ->firstOrFail();
+            
         return $rubric->delete();
     }
     /**

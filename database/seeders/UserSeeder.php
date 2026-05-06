@@ -33,6 +33,11 @@ class UserSeeder extends Seeder
         $programStudis = ProgramStudi::all();
 
         foreach ($programStudis as $prodi) {
+            // Skip TPL as it's handled separately in DummyProposalSeeder
+            if ($prodi->code === 'TPL') {
+                continue;
+            }
+
             $prodiCode = strtolower($prodi->code);
 
             // 1. Kaprodi per Prodi

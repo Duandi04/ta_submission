@@ -17,18 +17,29 @@
                     <form action="{{ route('kaprodi.settings.update') }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label for="max_thesis_drafts" class="form-label">Maksimal Draft TA Terkirim</label>
+                            <label for="max_batches" class="form-label">Maksimal Batch Pengajuan (SIklus)</label>
                             <div class="input-group">
-                                <input type="number" class="form-control" id="max_thesis_drafts" name="max_thesis_drafts"
-                                    value="{{ $settings['max_thesis_drafts'] ?? 3 }}" min="1">
-                                <span class="input-group-text">Draft</span>
+                                <input type="number" class="form-control" id="max_batches" name="max_batches"
+                                    value="{{ $settings['max_batches'] ?? 2 }}" min="1">
+                                <span class="input-group-text">Batch</span>
                             </div>
-                            <div class="form-text">Jumlah maksimal proposal/draft yang dapat diunggah oleh setiap mahasiswa.
+                            <div class="form-text text-muted small">Berapa kali siklus pengajuan yang diizinkan (Total Max = Batch * Pengajuan per Batch).</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="attempts_per_batch" class="form-label">Maksimal Pengajuan per Batch (Slot Aktif)</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="attempts_per_batch" name="attempts_per_batch"
+                                    value="{{ $settings['attempts_per_batch'] ?? 3 }}" min="1">
+                                <span class="input-group-text">Pengajuan</span>
                             </div>
+                            <div class="form-text text-muted small">Berapa banyak judul yang dapat diajukan secara aktif dalam satu batch.</div>
                         </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">Simpan Konfigurasi</button>
                         </div>
+
                     </form>
                 </div>
             </div>

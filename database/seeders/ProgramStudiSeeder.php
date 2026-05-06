@@ -1,11 +1,11 @@
 <?php
-
+ 
 namespace Database\Seeders;
-
+ 
 use App\Models\Faculty;
 use App\Models\ProgramStudi;
 use Illuminate\Database\Seeder;
-
+ 
 class ProgramStudiSeeder extends Seeder
 {
     /**
@@ -13,16 +13,34 @@ class ProgramStudiSeeder extends Seeder
      */
     public function run(): void
     {
-        $ft = Faculty::where('code', 'FT')->first();
-        $fik = Faculty::where('code', 'FIK')->first();
-
-        if ($ft) {
-            ProgramStudi::updateOrCreate(['code' => 'IF'], ['name' => 'Teknik Informatika', 'faculty_id' => $ft->id]);
-            ProgramStudi::updateOrCreate(['code' => 'SI'], ['name' => 'Sistem Informasi', 'faculty_id' => $ft->id]);
-        }
-
-        if ($fik) {
-            ProgramStudi::updateOrCreate(['code' => 'TI'], ['name' => 'Teknologi Informasi', 'faculty_id' => $fik->id]);
+        $data = [
+            'FB' => [
+                ['code' => 'AKT', 'name' => 'Akuntansi'],
+                ['code' => 'MNJ', 'name' => 'Manajemen'],
+            ],
+            'FAKOM' => [
+                ['code' => 'SI', 'name' => 'Sistem Informasi'],
+                ['code' => 'IF', 'name' => 'Teknik Informatika'],
+                ['code' => 'TPL', 'name' => 'Teknik Perangkat Lunak'],
+            ],
+            'FPBB' => [
+                ['code' => 'PBM', 'name' => 'Pendidikan Bahasa Mandarin'],
+            ],
+            'FTEK' => [
+                ['code' => 'TID', 'name' => 'Teknik Industri'],
+            ],
+        ];
+ 
+        foreach ($data as $facultyCode => $prodis) {
+            $faculty = Faculty::where('code', $facultyCode)->first();
+            if ($faculty) {
+                foreach ($prodis as $prodiData) {
+                    ProgramStudi::updateOrCreate(
+                        ['code' => $prodiData['code']],
+                        ['name' => $prodiData['name'], 'faculty_id' => $faculty->id]
+                    );
+                }
+            }
         }
     }
 }

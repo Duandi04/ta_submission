@@ -57,6 +57,28 @@
                             @enderror
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="submission_start" class="form-label">Mulai Pengajuan</label>
+                                <input type="datetime-local" class="form-control @error('submission_start') is-invalid @enderror" 
+                                       id="submission_start" name="submission_start" 
+                                       value="{{ old('submission_start', isset($programStudi) && $programStudi->submission_start ? $programStudi->submission_start->format('Y-m-d\TH:i') : '') }}">
+                                @error('submission_start')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="submission_end" class="form-label">Batas Akhir Pengajuan</label>
+                                <input type="datetime-local" class="form-control @error('submission_end') is-invalid @enderror" 
+                                       id="submission_end" name="submission_end" 
+                                       value="{{ old('submission_end', isset($programStudi) && $programStudi->submission_end ? $programStudi->submission_end->format('Y-m-d\TH:i') : '') }}">
+                                @error('submission_end')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+
                         <div class="d-grid mt-4">
                             <button type="submit" class="btn btn-primary btn-lg shadow-none">
                                 <i class="bi bi-check-circle me-1"></i> Simpan Data Prodi

@@ -51,14 +51,14 @@ class DummyProposalSeeder extends Seeder
 
         // Ensure Fakultas Komputer exists
         $faculty = Faculty::firstOrCreate(
-            ['name' => 'Komputer'],
-            ['code' => 'FKOM']
+            ['code' => 'FAKOM'],
+            ['name' => 'Fakultas Komputer']
         );
 
         // Ensure Program Studi Teknik Perangkat Lunak exists
         $prodi = ProgramStudi::firstOrCreate(
-            ['name' => 'Teknik Perangkat Lunak'],
-            ['code' => 'TPL', 'faculty_id' => $faculty->id]
+            ['code' => 'TPL'],
+            ['name' => 'Teknik Perangkat Lunak', 'faculty_id' => $faculty->id]
         );
 
         $lecturersData = [
@@ -89,9 +89,21 @@ class DummyProposalSeeder extends Seeder
             $lecturers->push($user);
         }
 
-        $rubric = Rubric::where('is_active', true)->first();
+        $rubric = Rubric::where('program_studi_id', $prodi->id)->first();
         if (!$rubric) {
-            $this->command->warn('No active rubric found. Skipping assessments.');
+            $rubric = Rubric::create([
+                'name' => 'Rubrik Penilaian Proposal TA - ' . $prodi->code,
+                'program_studi_id' => $prodi->id,
+                'description' => 'Rubrik khusus untuk penilaian proposal Tugas Akhir ' . $prodi->name,
+                'criteria' => [
+                    ['name' => 'Latar Belakang & Urgensi', 'weight' => 25, 'description' => 'Kualitas argumen dan urgensi penelitian'],
+                    ['name' => 'Rumusan Masalah', 'weight' => 15, 'description' => 'Ketajaman perumusan masalah'],
+                    ['name' => 'Metodologi Penelitian', 'weight' => 35, 'description' => 'Ketepatan metode yang diusulkan'],
+                    ['name' => 'Kontribusi Penelitian', 'weight' => 15, 'description' => 'Manfaat dan kontribusi hasil'],
+                    ['name' => 'Teknik Penulisan', 'weight' => 10, 'description' => 'Kesesuaian dengan pedoman'],
+                ],
+                'is_active' => true
+            ]);
         }
 
         $statuses = ['draft', 'submitted', 'under_review', 'completed', 'cancelled', 'rejected'];

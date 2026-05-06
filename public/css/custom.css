@@ -520,6 +520,25 @@ body {
     color: #cbd5e1;
 }
 
+/* Sidebar Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1025;
+    visibility: hidden;
+    opacity: 0;
+    transition: all var(--transition-speed) ease;
+}
+
+.sidebar-overlay.show {
+    visibility: visible;
+    opacity: 1;
+}
+
 /* Responsive */
 @media (max-width: 991.98px) {
     #sidebar {
