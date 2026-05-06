@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
 use App\Helpers\NavigationHelper;
+use App\Exports\UserExport;
+use App\Imports\UserImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -148,5 +151,34 @@ class StudentController extends Controller
             abort(404);
         $student->delete();
         return redirect()->route('kaprodi.students.manage.index')->with('success', 'Mahasiswa berhasil dihapus.');
+    }
+
+    public function export(Request $request)
+    {
+        $user = Auth::user();
+        $fileName = 'mahasiswa_' . $user->programStudi->name . '_' . now()->format('Y-m-d') . '.xlsx';
+        
+        return Excel::download(new UserExport('mahasiswa', $user->program_studi_id, $request->search), $fileName);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        try {
+            Excel::import(new UserImport('mahasiswa'), $request->file('file'));
+            return redirect()->back()->with('success', 'Data mahasiswa berhasil diimpor.');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errorMessages = [];
+            foreach ($failures as $failure) {
+                $errorMessages[] = "Baris " . $failure->row() . " (" . $failure->attribute() . "): " . implode(', ', $failure->errors());
+            }
+            return redirect()->back()->with('error', 'Gagal impor! Periksa data Anda:')->with('import_errors', $errorMessages);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
     }
 }

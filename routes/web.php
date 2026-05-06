@@ -60,6 +60,8 @@ Route::middleware('auth')->group(function () {
     // Kaprodi routes
     Route::middleware('role:kaprodi')->prefix('kaprodi')->name('kaprodi.')->group(function () {
         // Management Routes (Students & Lecturers)
+        Route::get('students/manage/export', [KaprodiStudentController::class, 'export'])->name('students.manage.export');
+        Route::post('students/manage/import', [KaprodiStudentController::class, 'import'])->name('students.manage.import');
         Route::resource('students/manage', KaprodiStudentController::class)->names([
             'index' => 'students.manage.index',
             'create' => 'students.manage.create',
@@ -69,6 +71,8 @@ Route::middleware('auth')->group(function () {
             'update' => 'students.manage.update',
             'destroy' => 'students.manage.destroy',
         ]);
+        Route::get('lecturers/manage/export', [KaprodiLecturerController::class, 'export'])->name('lecturers.manage.export');
+        Route::post('lecturers/manage/import', [KaprodiLecturerController::class, 'import'])->name('lecturers.manage.import');
         Route::resource('lecturers/manage', KaprodiLecturerController::class)->names([
             'index' => 'lecturers.manage.index',
             'create' => 'lecturers.manage.create',
@@ -106,6 +110,8 @@ Route::middleware('auth')->group(function () {
 
     // Admin routes
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('users/export', [UserController::class, 'export'])->name('users.export');
+        Route::post('users/import', [UserController::class, 'import'])->name('users.import');
         Route::resource('users', UserController::class);
         Route::get('/submissions', [AdminSubmissionController::class, 'index'])->name('submissions.index');
         Route::get('/submissions/{submission}', [AdminSubmissionController::class, 'show'])->name('submissions.show');

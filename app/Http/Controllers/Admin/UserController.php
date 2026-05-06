@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\NavigationHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UserRequest;
+use App\Exports\UserExport;
+use App\Imports\UserImport;
 use App\Models\ProgramStudi;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -147,5 +150,40 @@ class UserController extends Controller
         return redirect()
             ->route('admin.users.index')
             ->with('success', 'Pengguna berhasil dihapus!');
+    }
+
+    public function export(Request $request)
+    {
+        $role = $request->role;
+        $programStudiId = $request->program_studi_id;
+        $search = $request->search;
+
+        $fileName = 'users_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        if ($role) {
+            $fileName = $role . '_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        }
+
+        return Excel::download(new UserExport($role, $programStudiId, $search), $fileName);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        try {
+            Excel::import(new UserImport, $request->file('file'));
+            return redirect()->back()->with('success', 'Data pengguna berhasil diimpor.');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errorMessages = [];
+            foreach ($failures as $failure) {
+                $errorMessages[] = "Baris " . $failure->row() . " (" . $failure->attribute() . "): " . implode(', ', $failure->errors());
+            }
+            return redirect()->back()->with('error', 'Gagal impor! Periksa data Anda:')->with('import_errors', $errorMessages);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
     }
 }

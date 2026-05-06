@@ -5,7 +5,13 @@
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 class="h2">Daftar Mahasiswa</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+            <button type="button" class="btn btn-outline-success shadow-none" data-bs-toggle="modal" data-bs-target="#importModal">
+                <i class="bi bi-file-earmark-excel me-1"></i> Import
+            </button>
+            <a href="{{ route('kaprodi.students.manage.export', request()->query()) }}" class="btn btn-outline-primary shadow-none">
+                <i class="bi bi-download me-1"></i> Export
+            </a>
             <a href="{{ route('kaprodi.students.manage.create') }}" class="btn btn-primary shadow-none">
                 <i class="bi bi-plus-circle me-1"></i> Tambah Mahasiswa
             </a>
@@ -168,6 +174,39 @@
 
         <div class="mt-3">
             {{ $students->appends(request()->query())->links() }}
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ route('kaprodi.students.manage.import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="importModalLabel">Import Mahasiswa via Excel</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            <small>
+                                <i class="bi bi-info-circle me-1"></i> Pastikan file Excel memiliki kolom berikut:
+                                <strong>nama, email, nim_nip, password, telepon, alamat, program_studi, angkatan</strong>.
+                                <br>
+                                <em>Data yang sudah ada (berdasarkan Email atau NIM) akan diperbarui otomatis.</em>
+                            </small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="file" class="form-label">Pilih File Excel (.xlsx, .xls)</label>
+                            <input type="file" class="form-control" id="file" name="file" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Unggah & Import</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 @endsection

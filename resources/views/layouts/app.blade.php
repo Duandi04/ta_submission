@@ -64,6 +64,13 @@
             @if (session('error'))
                 <div class="alert alert-danger border-0 shadow-none mb-4 py-2 small alert-persistent alert-dismissible fade show" role="alert">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                    @if (session('import_errors'))
+                        <ul class="mt-2 mb-0 ps-3">
+                            @foreach (session('import_errors') as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="padding: 0.8rem 1rem;"></button>
                 </div>
             @endif
