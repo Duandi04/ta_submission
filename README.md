@@ -12,6 +12,7 @@ A web-based application for managing the Thesis (Tugas Akhir) submission process
 - **Admin Module**: Manage users, faculties, study programs, and system-wide configurations.
 - **Activity Logging**: Full audit trail for every action using `spatie/laravel-activitylog`.
 - **Clean Code Architecture**: Adheres to modern best practices (FormRequests, Service Layer, Thin Controllers).
+- **Responsive Design**: Mobile-friendly layout for optimal experience on all devices.
 
 ## 🛠 Technology Stack
 
