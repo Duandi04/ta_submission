@@ -48,28 +48,32 @@
     <div id="ajax-container">
         <div id="batch-action-bar" class="card border-0 shadow-sm mb-4 d-none">
             <div class="card-body bg-light border rounded">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                <div class="text-nowrap">
                     <span id="selected-count" class="fw-bold me-2">0</span> pengajuan terpilih
                 </div>
-                <div class="d-flex gap-2">
-                    <select name="batch_rubric_id" class="form-select w-auto" form="batch-assign-form" required>
+                <div class="d-flex flex-column flex-sm-row gap-2 flex-grow-1 justify-content-lg-end">
+                    <select name="batch_rubric_id" class="form-select" style="width: auto; min-width: 180px;" form="batch-assign-form" required>
                         <option value="">-- Pilih Rubrik --</option>
                         @foreach ($rubrics as $rubric)
                             <option value="{{ $rubric->id }}">{{ $rubric->name }}</option>
                         @endforeach
                     </select>
-                    <select name="batch_assessor_ids[]" id="batch-assessor-select" class="form-select w-auto" multiple form="batch-assign-form"
-                        required style="min-width: 200px;" data-placeholder="Pilih Dosen Penilai...">
-                        @foreach ($lecturers as $lecturer)
-                            <option value="{{ $lecturer->id }}">{{ $lecturer->name }}</option>
-                        @endforeach
-                    </select>
-                    <button type="submit" name="action" value="assign" class="btn btn-primary" form="batch-assign-form"
-                        onclick="return confirm('Terapkan dosen penilai ke pengajuan terpilih?')">
-                        Terapkan Penilai
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" onclick="resetBatch()">Batal</button>
+                    <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
+                        <select name="batch_assessor_ids[]" id="batch-assessor-select" class="form-select" multiple form="batch-assign-form"
+                            required data-placeholder="Pilih Dosen Penilai...">
+                            @foreach ($lecturers as $lecturer)
+                                <option value="{{ $lecturer->id }}">{{ $lecturer->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" name="action" value="assign" class="btn btn-primary text-nowrap" form="batch-assign-form"
+                            onclick="return confirm('Terapkan dosen penilai ke pengajuan terpilih?')">
+                            Terapkan Penilai
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="resetBatch()">Batal</button>
+                    </div>
                 </div>
             </div>
         </div>
