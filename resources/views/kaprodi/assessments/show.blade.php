@@ -26,7 +26,7 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white py-3 border-0">
-                    <span class="fw-bold"><i class="bi bi-list-ul me-2 text-primary"></i>Rincian Penilaian</span>
+                    <span class="fw-bold"><i class="bi bi-list-ul fs-5 me-2 text-primary"></i>Rincian Penilaian</span>
                 </div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded text-center">
