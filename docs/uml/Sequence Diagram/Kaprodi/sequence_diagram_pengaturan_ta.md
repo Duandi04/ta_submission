@@ -1,46 +1,30 @@
 # Sequence Diagram - Pengaturan TA
 
-Diagram ini menunjukkan interaksi sistem saat Ketua Program Studi (Kaprodi) melihat dan memperbarui konfigurasi atau pengaturan tugas akhir program studi (misalnya batas tanggal pengajuan, format dokumen, limit revisi, dll.).
+Diagram ini menunjukkan interaksi sistem saat Ketua Program Studi (Kaprodi) melihat dan memperbarui konfigurasi atau pengaturan tugas akhir program studi (maksimal batch pengajuan, maksimal pengajuan per batch).
 
 ```mermaid
 sequenceDiagram
-    actor Kaprodi as Lifeline1: Kaprodi
-    participant UI as UI Pengaturan TA Page
-    participant Ctrl as Kaprodi\KaprodiController
-    participant Svc as KaprodiService
+    actor Kaprodi as Kaprodi
+    participant UI as Halaman Pengaturan TA
+    participant Ctrl as KaprodiController
     participant Model as Model Setting
 
-    Kaprodi->>UI: 1: Membuka Halaman Pengaturan TA
+    Kaprodi->>UI: 1: Membuka Halaman Pengaturan
     activate UI
-    UI->>Ctrl: 2: settings()
-    activate Ctrl
-    Ctrl->>Svc: 3: getSettings()
-    activate Svc
-    Svc->>Model: 4: Query all settings
-    activate Model
-    Model-->>Svc: 5: Settings Data
-    deactivate Model
-    Svc-->>Ctrl: 6: Settings List
-    deactivate Svc
-    Ctrl-->>UI: 7: Render Halaman Pengaturan
-    deactivate Ctrl
-    UI-->>Kaprodi: 8: Menampilkan Konfigurasi Sistem Saat Ini
+    UI-->>Kaprodi: 2: Menampilkan Halaman Pengaturan sistem
     deactivate UI
 
-    Kaprodi->>UI: 9: Mengubah pengaturan (batas tanggal, kuota bimbingan, file extension, dll.) & klik simpan
+    Kaprodi->>UI: 3: Mengubah pengaturan batch sistem dan pengajuan per batch
+    Kaprodi->>UI: 4: Klik menyimpan konfigurasi
     activate UI
-    UI->>Ctrl: 10: updateSettings(KaprodiSettingsRequest)
+    UI->>Ctrl: 5: updateSettings(max_batches, attempts_per_batch)
     activate Ctrl
-    Ctrl->>Svc: 11: updateSettings(data)
-    activate Svc
-    Svc->>Model: 12: update or create settings keys
+    Ctrl->>Model: 6: update(max_batches, attempts_per_batch)
     activate Model
-    Model-->>Svc: 13: Settings Saved in DB
+    Model-->>Ctrl: 7: Konfigurasi berhasil disimpan
     deactivate Model
-    Svc-->>Ctrl: 14: Success
-    deactivate Svc
-    Ctrl-->>UI: 15: Redirect Back dengan Pesan Sukses
+    Ctrl-->>UI: 8: Redirect Back dengan Pesan Sukses
     deactivate Ctrl
-    UI-->>Kaprodi: 16: Menampilkan Pengaturan Terbaru yang Telah Diterapkan
+    UI-->>Kaprodi: 9: Selesai (Menampilkan pengaturan terbaru)
     deactivate UI
 ```

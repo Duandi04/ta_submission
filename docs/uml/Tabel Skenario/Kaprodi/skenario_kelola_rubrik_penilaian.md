@@ -24,7 +24,7 @@
 | :---: | --- | --- |
 | 1 | Kaprodi mengklik tombol "Tambah Rubrik" | Menampilkan Form Tambah Rubrik & Kriteria Penilaian |
 | 2 | Kaprodi mengisi nama rubrik dan menambahkan baris kriteria penilaian (nama kriteria, bobot persen), lalu klik "Simpan" | Memvalidasi input form (akumulasi bobot kriteria harus sama dengan 100%) |
-| 3 | - | Validasi Sukses: Membuat record rubrik baru di model `Rubric` dan menyimpan detail kriteria ke model `AssessmentCriterion` |
+| 3 | - | Validasi Sukses: Membuat record rubrik baru di model `Rubric` dengan data kriteria tersimpan langsung dalam atribut JSON `criteria` |
 | 4 | - | Mengalihkan kembali ke daftar rubrik dengan pesan sukses *"Rubrik berhasil ditambahkan"* |
 
 ---
@@ -35,7 +35,7 @@
 | :---: | --- | --- |
 | 1 | Kaprodi memilih salah satu rubrik lalu mengklik "Edit" | Menampilkan Form Edit Rubrik dengan data saat ini terisi |
 | 2 | Kaprodi memperbarui nama rubrik atau persentase bobot kriteria, lalu klik "Perbarui" | Memvalidasi input data perubahan (total bobot kriteria tetap harus 100%) |
-| 3 | - | Validasi Sukses: Menyimpan pembaruan data rubrik dan menyesuaikan data kriteria |
+| 3 | - | Validasi Sukses: Menyimpan pembaruan data rubrik beserta daftar kriteria yang telah diperbarui ke atribut JSON `criteria` |
 | 4 | - | Mengalihkan kembali ke daftar dengan pesan sukses *"Rubrik berhasil diperbarui"* |
 
 ---
@@ -46,5 +46,5 @@
 | :---: | --- | --- |
 | 1 | Kaprodi mengklik tombol "Hapus" pada rubrik tertentu | Menampilkan modal dialog konfirmasi penghapusan |
 | 2 | Kaprodi mengklik "Ya, Hapus" | Mengirimkan permintaan hapus ke `KaprodiController->destroyRubric(id)` |
-| 3 | - | Menghapus data rubrik dan semua kriteria terkait dari database |
+| 3 | - | Menghapus data rubrik (otomatis menghapus seluruh kriteria di dalamnya) dari database |
 | 4 | - | Menampilkan notifikasi sukses *"Rubrik berhasil dihapus"* |

@@ -1,92 +1,79 @@
 # Sequence Diagram - Kelola Mahasiswa (Read, Create, Update, Import, Export)
 
-Diagram ini menunjukkan interaksi sistem saat Ketua Program Studi (Kaprodi) mengelola data mahasiswa, meliputi proses melihat daftar & detail (Read), tambah (Create), edit (Update), impor massal dari file (Import), dan ekspor data ke Excel (Export). Langkah awal membuka halaman diletakkan di luar percabangan agar runtun secara logis.
+Diagram ini menunjukkan interaksi sistem saat Ketua Program Studi (Kaprodi) mengelola data mahasiswa, meliputi proses melihat daftar & detail (Read), tambah (Create), edit (Update), impor massal dari file (Import), dan ekspor data ke Excel (Export).
 
 ```mermaid
 sequenceDiagram
-    actor Kaprodi as Lifeline1: Kaprodi
-    participant UI as UI Kelola Mahasiswa Page
-    participant Ctrl as Kaprodi\StudentController
+    actor Kaprodi as Kaprodi
+    participant UI as Halaman Kelola Mahasiswa
+    participant Ctrl as KaprodiController
     participant Model as Model User
-    participant Exc as Maatwebsite\Excel
 
     %% ==========================================
-    %% TAHAP AWAL: MEMBUKA HALAMAN KELOLA MAHASISWA (COMMON STEP)
+    %% TAHAP AWAL: MEMBUKA HALAMAN KELOLA MAHASISWA
     %% ==========================================
     Kaprodi->>UI: 1: Membuka Halaman Kelola Mahasiswa
     activate UI
-    UI->>Ctrl: 2: index(Request)
-    activate Ctrl
-    Ctrl->>Model: 3: Query data mahasiswa (role mahasiswa & prodi_id)
-    activate Model
-    Model-->>Ctrl: 4: Data Mahasiswa
-    deactivate Model
-    Ctrl-->>UI: 5: Render Halaman Daftar Mahasiswa
-    deactivate Ctrl
-    UI-->>Kaprodi: 6: Menampilkan Halaman Daftar Mahasiswa & Pilihan Aksi
+    UI-->>Kaprodi: 2: Menampilkan Halaman Daftar Mahasiswa & Pilihan Aksi
     deactivate UI
 
     %% ==========================================
     %% TAHAP LANJUTAN: PILIHAN TINDAKAN (ALT BLOCK)
     %% ==========================================
     alt Aksi: Tambah Mahasiswa Baru (Create)
-        Kaprodi->>UI: 7: Mengisi form mahasiswa baru & klik simpan
+        Kaprodi->>UI: 3: Mengisi form mahasiswa baru & klik simpan
         activate UI
-        UI->>Ctrl: 8: store(UserRequest)
+        UI->>Ctrl: 4: store(name, nim, email)
         activate Ctrl
-        Ctrl->>Model: 9: User::create(userData) & assignRole('mahasiswa')
+        Ctrl->>Model: 5: create(name, nim, email, role = 'mahasiswa')
         activate Model
-        Model-->>Ctrl: 10: User Created & Role Assigned
+        Model-->>Ctrl: 6: Data mahasiswa berhasil disimpan
         deactivate Model
-        Ctrl-->>UI: 11: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 7: Redirect dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 12: Menampilkan Mahasiswa Baru di Daftar
+        UI-->>Kaprodi: 8: Menampilkan Mahasiswa Baru di Daftar
         deactivate UI
 
     else Aksi: Ubah Data Mahasiswa (Update)
-        Kaprodi->>UI: 7: Mengubah data mahasiswa & klik perbarui
+        Kaprodi->>UI: 3: Mengubah data mahasiswa & klik perbarui
         activate UI
-        UI->>Ctrl: 8: update(UserRequest, studentId)
+        UI->>Ctrl: 4: update(studentId, name, nim, email)
         activate Ctrl
-        Ctrl->>Model: 9: $student->update(userData)
+        Ctrl->>Model: 5: update(name, nim, email)
         activate Model
-        Model-->>Ctrl: 10: User Updated
+        Model-->>Ctrl: 6: Data mahasiswa berhasil diperbarui
         deactivate Model
-        Ctrl-->>UI: 11: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 7: Redirect dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 12: Menampilkan Data Terupdate di Daftar
+        UI-->>Kaprodi: 8: Menampilkan Data Terupdate di Daftar
         deactivate UI
 
     else Aksi: Impor Mahasiswa Dari Excel (Import)
-        Kaprodi->>UI: 7: Mengunggah file Excel/CSV & klik import
+        Kaprodi->>UI: 3: Mengunggah file Excel/CSV & klik import
         activate UI
-        UI->>Ctrl: 8: import(Request)
+        UI->>Ctrl: 4: import(excel_file)
         activate Ctrl
-        Ctrl->>Exc: 9: Excel::import(new UserImport('mahasiswa'), file)
-        activate Exc
-        Exc->>Model: 10: Insert multiple mahasiswa
+        Ctrl->>Model: 5: importFromExcel(excel_file)
         activate Model
-        Model-->>Exc: 11: Data Stored
+        Model-->>Ctrl: 6: Data mahasiswa berhasil diimpor
         deactivate Model
-        Exc-->>Ctrl: 12: Import Success
-        deactivate Exc
-        Ctrl-->>UI: 13: Redirect Back dengan Pesan Sukses
+        Ctrl-->>UI: 7: Redirect Back dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 14: Menampilkan Daftar Mahasiswa Hasil Import
+        UI-->>Kaprodi: 8: Menampilkan Daftar Mahasiswa Hasil Import
         deactivate UI
 
     else Aksi: Ekspor Mahasiswa Ke Excel (Export)
-        Kaprodi->>UI: 7: Mengklik tombol Export Mahasiswa
+        Kaprodi->>UI: 3: Mengklik tombol Export Mahasiswa
         activate UI
-        UI->>Ctrl: 8: export(Request)
+        UI->>Ctrl: 4: export()
         activate Ctrl
-        Ctrl->>Exc: 9: Excel::download(new UserExport('mahasiswa'), filename)
-        activate Exc
-        Exc-->>Ctrl: 10: Stream File Download (.xlsx)
-        deactivate Exc
-        Ctrl-->>UI: 11: Return Download Response
+        Ctrl->>Model: 5: exportToExcel()
+        activate Model
+        Model-->>Ctrl: 6: File Excel (.xlsx)
+        deactivate Model
+        Ctrl-->>UI: 7: Return Download Response
         deactivate Ctrl
-        UI-->>Kaprodi: 12: File Excel Terunduh Otomatis
+        UI-->>Kaprodi: 8: File Excel Terunduh Otomatis
         deactivate UI
     end
 ```
