@@ -4,40 +4,33 @@ Diagram ini menunjukkan interaksi sistem saat Ketua Program Studi (Kaprodi) menc
 
 ```mermaid
 sequenceDiagram
-    actor Kaprodi as Lifeline1: Kaprodi
-    participant UI as UI Laporan Page
-    participant Ctrl as Kaprodi\KaprodiController
-    participant Model as Model User
-    participant Submission as Model ThesisSubmission
+    actor Kaprodi as Kaprodi
+    participant UI as Halaman Laporan
+    participant Ctrl as KaprodiController
+    participant Model as Model ThesisSubmission
 
-    Kaprodi->>UI: 1: Membuka Menu Laporan Pengajuan Proposal
+    %% ==========================================
+    %% TAHAP AWAL: MEMBUKA HALAMAN LAPORAN
+    %% ==========================================
+    Kaprodi->>UI: 1: Membuka Halaman Laporan
     activate UI
-    UI->>Ctrl: 2: reportIndex()
-    activate Ctrl
-    Ctrl->>Model: 3: query Mahasiswa dengan status proposal 'approved'
-    activate Model
-    Model->>Submission: 4: fetch approved submissions & supervisors
-    activate Submission
-    Submission-->>Model: 5: Submissions Data
-    deactivate Submission
-    Model-->>Ctrl: 6: Students & Proposals Data
-    deactivate Model
-    Ctrl-->>UI: 7: Render Halaman Laporan Pengajuan
-    deactivate Ctrl
-    UI-->>Kaprodi: 8: Menampilkan Daftar Laporan Mahasiswa & Pembimbing
+    UI-->>Kaprodi: 2: Menampilkan Daftar Laporan Mahasiswa & Pembimbing
     deactivate UI
 
-    Kaprodi->>UI: 9: Mengklik Tombol Cetak Laporan
+    %% ==========================================
+    %% TAHAP LANJUTAN: CETAK LAPORAN
+    %% ==========================================
+    Kaprodi->>UI: 3: Mengklik Tombol Cetak Laporan
     activate UI
-    UI->>Ctrl: 10: reportPrint()
+    UI->>Ctrl: 4: reportPrint()
     activate Ctrl
-    Ctrl->>Model: 11: query Mahasiswa dengan status proposal 'approved' (print-optimized)
+    Ctrl->>Model: 5: getApprovedSubmissions()
     activate Model
-    Model-->>Ctrl: 12: Students & Proposals Data
+    Model-->>Ctrl: 6: Data Laporan Mahasiswa & Pembimbing
     deactivate Model
-    Ctrl-->>UI: 13: Render Halaman Print View
+    Ctrl-->>UI: 7: Render Halaman Print View
     deactivate Ctrl
-    UI->>UI: 14: Trigger Browser window.print()
-    UI-->>Kaprodi: 15: Menampilkan Print Dialog Sistem & Cetak PDF / Hardcopy
+    UI->>UI: 8: Trigger Browser window.print()
+    UI-->>Kaprodi: 9: Menampilkan Print Dialog Sistem & Cetak PDF / Hardcopy
     deactivate UI
 ```
