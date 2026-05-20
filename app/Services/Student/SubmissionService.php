@@ -61,8 +61,9 @@ class SubmissionService
         }
 
         // 2. Check Submission Limit (Strict Batch Logic)
-        $attemptsPerBatch = (int) Setting::getValue('attempts_per_batch', 3);
-        $maxBatches = (int) Setting::getValue('max_batches', 2);
+        $prodi = $user->programStudi;
+        $attemptsPerBatch = $prodi ? (int) ($prodi->attempts_per_batch ?? 3) : (int) Setting::getValue('attempts_per_batch', 3);
+        $maxBatches = $prodi ? (int) ($prodi->max_batches ?? 2) : (int) Setting::getValue('max_batches', 2);
         $maxTotal = $attemptsPerBatch * $maxBatches;
 
         $allSubmissions = $user->thesisSubmissions()->orderBy('id', 'asc')->get();

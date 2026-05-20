@@ -3,31 +3,42 @@
 Diagram ini menunjukkan interaksi antara aktor (pengguna sistem) dengan fungsi-fungsi utama.
 
 ```mermaid
-usecaseDiagram
-    actor Mahasiswa
-    actor Dosen
-    actor Kaprodi
+flowchart TB
+    %% ==========================================
+    %% DEFINISI AKTOR (STYLING SEPERTI AKTOR)
+    %% ==========================================
+    Mahasiswa((Mahasiswa))
+    Dosen((Dosen))
+    Kaprodi((Kaprodi))
 
-    rectangle "Sistem Pengajuan Tugas Akhir" {
-        %% Use cases for Mahasiswa
-        usecase "Buat Pengajuan Draft Tugas Akhir" as UC1
-        usecase "Unggah Dokumen (Proposal/Bab/Akhir)" as UC2
-        usecase "Lihat Status & Komentar Bimbingan" as UC3
-        usecase "Unggah Revisi Dokumen" as UC4
+    %% ==========================================
+    %% BATAS SISTEM (SYSTEM BOUNDARY)
+    %% ==========================================
+    subgraph Sistem["Sistem Pengajuan Tugas Akhir"]
+        direction TB
+        
+        %% Use Cases Mahasiswa
+        UC1["Buat Pengajuan Draft Tugas Akhir"]
+        UC2["Unggah Dokumen (Proposal/Bab/Akhir)"]
+        UC3["Lihat Status & Komentar Bimbingan"]
+        UC4["Unggah Revisi Dokumen"]
 
-        %% Use cases for Dosen (Pembimbing / Penguji)
-        usecase "Lihat Daftar Mahasiswa Bimbingan/Ujian" as UC5
-        usecase "Melihat & Meninjau Dokumen Mahasiswa" as UC6
-        usecase "Memberikan Komentar & Keputusan Revisi" as UC7
-        usecase "Menyetujui Dokumen Mahasiswa" as UC8
-        usecase "Memberikan Penilaian Sidang (Assessment)" as UC9
+        %% Use Cases Dosen
+        UC5["Lihat Daftar Mahasiswa Bimbingan/Ujian"]
+        UC6["Melihat & Meninjau Dokumen Mahasiswa"]
+        UC7["Memberikan Komentar & Keputusan Revisi"]
+        UC8["Menyetujui Dokumen Mahasiswa"]
+        UC9["Memberikan Penilaian Sidang (Assessment)"]
 
-        %% Use cases for Kaprodi
-        usecase "Pantau Seluruh Pengajuan" as UC10
-        usecase "Menugaskan Dosen Pembimbing/Penguji" as UC11
-        usecase "Menjadwalkan Tanggal Sidang" as UC12
-    }
+        %% Use Cases Kaprodi
+        UC10["Pantau Seluruh Pengajuan"]
+        UC11["Menugaskan Dosen Pembimbing/Penguji"]
+        UC12["Menjadwalkan Tanggal Sidang"]
+    end
 
+    %% ==========================================
+    %% HUBUNGAN AKTOR KE USE CASES
+    %% ==========================================
     Mahasiswa --> UC1
     Mahasiswa --> UC2
     Mahasiswa --> UC3
@@ -43,6 +54,9 @@ usecaseDiagram
     Kaprodi --> UC11
     Kaprodi --> UC12
 
-    UC9 ..> UC5 : <<include>>
-    UC6 ..> UC5 : <<include>>
+    %% ==========================================
+    %% HUBUNGAN ANTAR USE CASES (INCLUDES / EXTENDS)
+    %% ==========================================
+    UC9 -.->|include| UC5
+    UC6 -.->|include| UC5
 ```

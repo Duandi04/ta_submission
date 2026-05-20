@@ -1,26 +1,39 @@
-# Tabel Skenario - Kelola Detail Pengajuan
+# Tabel Skenario - Kelola & Detail Pengajuan
 
 | Elemen Skenario | Keterangan |
 | --- | --- |
-| **Nama Fitur** | Kelola Detail Pengajuan |
+| **Nama Fitur** | Kelola & Detail Pengajuan (Create, Submit Draft, Hapus Draft) |
 | **Aktor** | Mahasiswa |
-| **Deskripsi** | Menggambarkan alur mahasiswa memodifikasi draf proposal, mengunggah revisi berkas proposal, atau mengubah judul dan abstrak |
-| **Kondisi Awal** | Mahasiswa telah membuat pengajuan tugas akhir sebelumnya dan berada di Halaman Detail Pengajuan |
-| **Kondisi Akhir** | Perubahan detail pengajuan dan berkas baru tersimpan di database |
+| **Deskripsi** | Menggambarkan alur mahasiswa membuat pengajuan proposal baru, melihat detail draft, menyerahkan draft secara final ("Ajukan Sekarang"), atau membatalkan draf pengajuan ("Batalkan Pengajuan") |
+| **Kondisi Awal** | Mahasiswa telah masuk ke sistem dan berada di Halaman Daftar Pengajuan |
+| **Kondisi Akhir** | Proposal baru disimpan dengan status Draft, diserahkan ke Dosen, atau draf dibatalkan/dihapus secara permanen |
 
-## Alur Utama (Basic Flow)
+## Alur Utama (Basic Flow - Pilihan A: Membuat Pengajuan Baru)
 
 | Langkah | Aksi Aktor (User) | Reaksi Sistem (System) |
 | :---: | --- | --- |
-| 1 | Mahasiswa memilih tombol "Ubah Pengajuan" | Menampilkan Form Edit Pengajuan terisi judul dan abstrak lama |
-| 2 | Mahasiswa mengubah judul/abstrak, mengunggah file proposal terbaru (.docx/.pdf), lalu menekan tombol "Simpan Perubahan" | Menerima data masukan dan memvalidasi file berkas (tipe file, ukuran berkas) |
-| 3 | - | Validasi sukses: Memperbarui record judul/abstrak di model `ThesisSubmission` |
-| 4 | - | Menyimpan file baru ke penyimpanan lokal (`Storage`) dan memperbarui record di `SubmissionFile` |
-| 5 | - | Menampilkan pesan sukses *"Pengajuan berhasil diperbarui"* dan menampilkan detail terbaru |
+| 1 | Klik tombol "Buat Pengajuan Baru" | Menampilkan Form Pengajuan Baru |
+| 2 | Mengisi judul, abstrak, mengunggah berkas proposal (.docx/.pdf), lalu klik "Kirim" | Menerima data masukan dan memvalidasi file berkas |
+| 3 | - | Menyimpan data ke tabel database `thesis_submissions` dengan status **Draft** dan file ke Storage |
+| 4 | - | Redirect ke Daftar Pengajuan dengan pesan sukses *"Proposal baru berhasil disimpan"* |
+
+## Alur Utama (Basic Flow - Pilihan B: Mengajukan Draft secara Final)
+
+| Langkah | Aksi Aktor (User) | Reaksi Sistem (System) |
+| :---: | --- | --- |
+| 1 | Klik tombol "Detail" pada pengajuan berstatus **Draft** | Menampilkan Halaman Detail Pengajuan Draft |
+| 2 | Klik tombol "Ajukan Sekarang" | Mengubah status pengajuan di database menjadi **submitted** (Diajukan) |
+| 3 | - | Redirect ke Daftar Pengajuan dengan pesan sukses *"Proposal berhasil diajukan"* |
 
 ## Alur Alternatif / Eksepsi (Alternative Flow)
 
-* **2a. Validasi File Gagal (Ukuran Terlalu Besar / Ekstensi Salah):**
-  1. Sistem mendeteksi berkas yang diunggah berformat ilegal (misal: .png) atau melebihi batas ukuran (misal: > 10MB).
-  2. Sistem menampilkan pesan error *"Format file harus PDF/Word"* atau *"Ukuran file maksimal 10MB"*.
-  3. Perubahan tidak disimpan dan mahasiswa dikembalikan ke form isian.
+* **Pilihan C. Membatalkan / Menghapus Draft Pengajuan:**
+  1. Pada Halaman Detail Pengajuan Draft (Langkah 1 Pilihan B), Mahasiswa klik tombol "Batalkan Pengajuan".
+  2. Sistem menghapus berkas fisik dari storage.
+  3. Sistem menghapus baris data pengajuan dari database (`thesis_submissions` & `submission_files`).
+  4. Redirect ke Halaman Daftar Pengajuan dengan pesan sukses *"Pengajuan berhasil dibatalkan"*.
+
+* **Validasi Form Gagal (Format Data / File Tidak Valid):**
+  1. Pada Langkah 2 Pilihan A, sistem mendeteksi berkas berformat ilegal (misal: .png) atau melebihi batas ukuran (misal: > 10MB).
+  2. Sistem menampilkan pesan error validasi berwarna merah di form.
+  3. Data tidak disimpan ke database dan mahasiswa tetap di halaman form.

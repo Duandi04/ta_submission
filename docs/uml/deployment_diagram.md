@@ -33,7 +33,7 @@ graph TD
 
     subgraph Database_Server_Node [Database Server Node]
         DB[Database Engine <br> MySQL / MariaDB Server]:::database
-        Storage[Relational Tables <br> users, submissions, rubrics, settings]:::database
+        Storage[Relational Tables <br> users, submissions, rubrics, program_studis]:::database
     end
 
     %% Protocols and Connections

@@ -92,9 +92,13 @@ classDiagram
         +Integer order
     }
 
-    class Setting {
-        +Integer maksimalBatchPengajuanSiklus
-        +Integer maksimalPengajuanPerBatchSlotAktif
+    class ProgramStudi {
+        +String name
+        +String code
+        +Date submission_start
+        +Date submission_end
+        +Integer max_batches
+        +Integer attempts_per_batch
     }
 
     %% ==========================================
@@ -107,6 +111,7 @@ classDiagram
     %% ==========================================
     %% HUBUNGAN ASOSIASI DAN MULTIPLISITAS (UMUM)
     %% ==========================================
+    User "*" -- "1" ProgramStudi : Terdaftar Di
     Mahasiswa "1" -- "*" ThesisSubmission : Mengajukan
     Dosen "1" -- "*" ThesisSubmission : Membimbing
     Dosen "1" -- "*" Assessment : Menilai
@@ -118,7 +123,7 @@ classDiagram
     %% ==========================================
     Kaprodi "1" -- "*" Mahasiswa : Mengelola
     Kaprodi "1" -- "*" Dosen : Mengelola
-    Kaprodi "1" -- "1" Setting : Mengatur
+    Kaprodi "1" -- "1" ProgramStudi : Mengatur
     Kaprodi "1" -- "*" ThesisSubmission : Mengelola & Mencetak Laporan
     Kaprodi "1" -- "*" Rubric : Mengelola
 

@@ -105,7 +105,16 @@ class KaprodiService
      */
     public function getSettings()
     {
-        return Setting::all()->pluck('value', 'key');
+        $prodi = Auth::user()->programStudi;
+        if (!$prodi) {
+            return collect();
+        }
+        return collect([
+            'max_batches' => $prodi->max_batches ?? 2,
+            'attempts_per_batch' => $prodi->attempts_per_batch ?? 3,
+            'submission_start' => $prodi->submission_start,
+            'submission_end' => $prodi->submission_end,
+        ]);
     }
 
     /**
@@ -113,8 +122,14 @@ class KaprodiService
      */
     public function updateSettings(array $settings)
     {
-        foreach ($settings as $key => $value) {
-            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+        $prodi = Auth::user()->programStudi;
+        if ($prodi) {
+            $prodi->update([
+                'max_batches' => $settings['max_batches'],
+                'attempts_per_batch' => $settings['attempts_per_batch'],
+                'submission_start' => $settings['submission_start'] ?? null,
+                'submission_end' => $settings['submission_end'] ?? null,
+            ]);
         }
     }
 

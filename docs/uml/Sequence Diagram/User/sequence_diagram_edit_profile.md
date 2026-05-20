@@ -9,23 +9,28 @@ sequenceDiagram
     participant Ctrl as ProfileController
     participant Model as Model User
 
-    User->>UI: 1: Mengisi form edit profile & klik simpan
+    User->>UI: 1: Membuka Halaman Profil
     activate UI
-    UI->>Ctrl: 2: updateProfile(request)
+    UI-->>User: 2: Menampilkan Data Profil Saat Ini
+    deactivate UI
+
+    User->>UI: 3: Mengisi form edit profil & klik Simpan Perubahan
+    activate UI
+    UI->>Ctrl: 4: updateProfile(request)
     activate Ctrl
-    Ctrl->>Ctrl: 3: Validate input data
+    Ctrl->>Ctrl: 5: Validate input data
     
     alt Sukses (Validasi Berhasil)
-        Ctrl->>Model: 4: update(userData) & upload photo
+        Ctrl->>Model: 6: update(userData) & upload photo
         activate Model
-        Model-->>Ctrl: 5: Profile Updated
+        Model-->>Ctrl: 7: Profile Updated
         deactivate Model
-        Ctrl-->>UI: 6: Edit Profile Sukses
-        UI-->>User: 7: Menampilkan Profil Baru & Pesan Sukses
+        Ctrl-->>UI: 8: Redirect Back dengan Pesan Sukses
+        UI-->>User: 9: Menampilkan Profil Baru & Alert Sukses
     else Gagal (Validasi Error)
-        Ctrl-->>UI: 8: Edit Profile Gagal
+        Ctrl-->>UI: 10: Redirect Back dengan Input & Errors
         deactivate Ctrl
-        UI-->>User: 9: Menampilkan Pesan Error
+        UI-->>User: 11: Menampilkan Pesan Error di Form Profil
     end
     deactivate UI
 ```

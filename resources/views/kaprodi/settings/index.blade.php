@@ -35,6 +35,21 @@
                             </div>
                             <div class="form-text text-muted small">Berapa banyak judul yang dapat diajukan secara aktif dalam satu batch.</div>
                         </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="submission_start" class="form-label">Waktu Mulai Pengajuan</label>
+                                <input type="datetime-local" class="form-control" id="submission_start" name="submission_start"
+                                    value="{{ isset($settings['submission_start']) && $settings['submission_start'] ? \Carbon\Carbon::parse($settings['submission_start'])->format('Y-m-d\TH:i') : '' }}">
+                                <div class="form-text text-muted small">Tanggal & waktu pembukaan masa pengajuan.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="submission_end" class="form-label">Waktu Deadline Pengajuan</label>
+                                <input type="datetime-local" class="form-control" id="submission_end" name="submission_end"
+                                    value="{{ isset($settings['submission_end']) && $settings['submission_end'] ? \Carbon\Carbon::parse($settings['submission_end'])->format('Y-m-d\TH:i') : '' }}">
+                                <div class="form-text text-muted small">Tanggal & waktu batas akhir pengajuan (deadline).</div>
+                            </div>
+                        </div>
                         
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-primary">Simpan Konfigurasi</button>

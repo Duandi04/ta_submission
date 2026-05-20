@@ -21,31 +21,51 @@ sequenceDiagram
     %% TAHAP LANJUTAN: PILIHAN TINDAKAN (ALT BLOCK)
     %% ==========================================
     alt Aksi: Tambah Mahasiswa Baru (Create)
-        Kaprodi->>UI: 3: Mengisi form mahasiswa baru & klik simpan
+        Kaprodi->>UI: 3: Klik tombol "Tambah Mahasiswa"
         activate UI
-        UI->>Ctrl: 4: store(name, nim, email)
+        UI->>Ctrl: 4: create()
         activate Ctrl
-        Ctrl->>Model: 5: create(name, nim, email, role = 'mahasiswa')
-        activate Model
-        Model-->>Ctrl: 6: Data mahasiswa berhasil disimpan
-        deactivate Model
-        Ctrl-->>UI: 7: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 5: Menampilkan Form Tambah Mahasiswa
         deactivate Ctrl
-        UI-->>Kaprodi: 8: Menampilkan Mahasiswa Baru di Daftar
+        deactivate UI
+        
+        Kaprodi->>UI: 6: Mengisi form mahasiswa baru & klik simpan
+        activate UI
+        UI->>Ctrl: 7: store(name, nim, email)
+        activate Ctrl
+        Ctrl->>Model: 8: create(name, nim, email, role = 'mahasiswa')
+        activate Model
+        Model-->>Ctrl: 9: Data mahasiswa berhasil disimpan
+        deactivate Model
+        Ctrl-->>UI: 10: Redirect dengan Pesan Sukses
+        deactivate Ctrl
+        UI-->>Kaprodi: 11: Menampilkan Mahasiswa Baru di Daftar
         deactivate UI
 
     else Aksi: Ubah Data Mahasiswa (Update)
-        Kaprodi->>UI: 3: Mengubah data mahasiswa & klik perbarui
+        Kaprodi->>UI: 3: Klik tombol "Edit" pada salah satu mahasiswa
         activate UI
-        UI->>Ctrl: 4: update(studentId, name, nim, email)
+        UI->>Ctrl: 4: edit(studentId)
         activate Ctrl
-        Ctrl->>Model: 5: update(name, nim, email)
+        Ctrl->>Model: 5: findOrFail(studentId)
         activate Model
-        Model-->>Ctrl: 6: Data mahasiswa berhasil diperbarui
+        Model-->>Ctrl: 6: Data Mahasiswa
         deactivate Model
-        Ctrl-->>UI: 7: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 7: Menampilkan Form Edit Mahasiswa dengan data terisi
         deactivate Ctrl
-        UI-->>Kaprodi: 8: Menampilkan Data Terupdate di Daftar
+        deactivate UI
+
+        Kaprodi->>UI: 8: Mengubah data mahasiswa & klik perbarui
+        activate UI
+        UI->>Ctrl: 9: update(studentId, name, nim, email)
+        activate Ctrl
+        Ctrl->>Model: 10: update(name, nim, email)
+        activate Model
+        Model-->>Ctrl: 11: Data mahasiswa berhasil diperbarui
+        deactivate Model
+        Ctrl-->>UI: 12: Redirect dengan Pesan Sukses
+        deactivate Ctrl
+        UI-->>Kaprodi: 13: Menampilkan Data Terupdate di Daftar
         deactivate UI
 
     else Aksi: Impor Mahasiswa Dari Excel (Import)

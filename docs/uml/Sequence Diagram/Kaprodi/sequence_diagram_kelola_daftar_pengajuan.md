@@ -24,18 +24,29 @@ sequenceDiagram
     %% CONDITIONAL FLOW BASED ON STATE
     alt [Jika Berkas adalah Data History/Riwayat]
         
-        %% Edit Historical Data
-        Kaprodi->>UI: 5a: Mengubah rincian data history pengajuan & klik perbarui
+        Kaprodi->>UI: 5a: Klik tombol "Edit History"
         activate UI
-        UI->>Ctrl: 6a: updateHistorical(id, title, abstract, student_id)
+        UI->>Ctrl: 6a: editHistorical(id)
         activate Ctrl
-        Ctrl->>Model: 7a: update(id, title, abstract, student_id)
+        Ctrl->>Model: 7a: findOrFail(id)
         activate Model
-        Model-->>Ctrl: 8a: Data berhasil diperbarui
+        Model-->>Ctrl: 8a: Data History
         deactivate Model
-        Ctrl-->>UI: 9a: Redirect ke detail dengan notifikasi sukses
+        Ctrl-->>UI: 9a: Menampilkan Form Edit History
         deactivate Ctrl
-        UI-->>Kaprodi: 10a: Data History Pengajuan Berhasil Diperbarui
+        deactivate UI
+
+        Kaprodi->>UI: 10a: Mengisi rincian data history baru & klik perbarui
+        activate UI
+        UI->>Ctrl: 11a: updateHistorical(id, title, abstract, student_id)
+        activate Ctrl
+        Ctrl->>Model: 12a: update(id, title, abstract, student_id)
+        activate Model
+        Model-->>Ctrl: 13a: Data berhasil diperbarui
+        deactivate Model
+        Ctrl-->>UI: 14a: Redirect ke detail dengan notifikasi sukses
+        deactivate Ctrl
+        UI-->>Kaprodi: 15a: Data History Pengajuan Berhasil Diperbarui
         deactivate UI
 
     else [Jika Berkas adalah Pengajuan Reguler]
@@ -119,17 +130,25 @@ sequenceDiagram
 
     %% 3. INDEPENDENT ACTION: ADD HISTORICAL DATA
     opt Tindakan Mandiri: Tambah Data History Pengajuan
-        Kaprodi->>UI: 13: Membuka Form Tambah History & Mengisi Form Pengajuan
+        Kaprodi->>UI: 13: Klik tombol "Tambah Data History"
         activate UI
-        UI->>Ctrl: 14: store(title, abstract, student_id, is_historical = true)
+        UI->>Ctrl: 14: createHistorical()
         activate Ctrl
-        Ctrl->>Model: 15: create(title, abstract, student_id, is_historical = true)
-        activate Model
-        Model-->>Ctrl: 16: Historical Record Created
-        deactivate Model
-        Ctrl-->>UI: 17: Redirect ke daftar pengajuan
+        Ctrl-->>UI: 15: Menampilkan Form Tambah Data History
         deactivate Ctrl
-        UI-->>Kaprodi: 18: Data History Pengajuan Berhasil Disimpan & Tampil di Tabel
+        deactivate UI
+
+        Kaprodi->>UI: 16: Mengisi detail data history pengajuan & klik simpan
+        activate UI
+        UI->>Ctrl: 17: store(title, abstract, student_id, is_historical = true)
+        activate Ctrl
+        Ctrl->>Model: 18: create(title, abstract, student_id, is_historical = true)
+        activate Model
+        Model-->>Ctrl: 19: Historical Record Created
+        deactivate Model
+        Ctrl-->>UI: 20: Redirect ke daftar pengajuan
+        deactivate Ctrl
+        UI-->>Kaprodi: 21: Data History Pengajuan Berhasil Disimpan & Tampil di Tabel
         deactivate UI
     end
 ```

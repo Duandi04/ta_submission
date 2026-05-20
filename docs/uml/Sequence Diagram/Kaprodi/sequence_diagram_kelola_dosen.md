@@ -21,31 +21,51 @@ sequenceDiagram
     %% TAHAP LANJUTAN: PILIHAN TINDAKAN (ALT BLOCK)
     %% ==========================================
     alt Aksi: Tambah Dosen Baru (Create)
-        Kaprodi->>UI: 3: Mengisi form dosen baru & klik simpan
+        Kaprodi->>UI: 3: Klik tombol "Tambah Dosen"
         activate UI
-        UI->>Ctrl: 4: store(name, nip, email)
+        UI->>Ctrl: 4: create()
         activate Ctrl
-        Ctrl->>Model: 5: create(name, nip, email, role = 'dosen')
-        activate Model
-        Model-->>Ctrl: 6: Data dosen berhasil disimpan
-        deactivate Model
-        Ctrl-->>UI: 7: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 5: Menampilkan Form Tambah Dosen
         deactivate Ctrl
-        UI-->>Kaprodi: 8: Menampilkan Dosen Baru di Daftar
+        deactivate UI
+        
+        Kaprodi->>UI: 6: Mengisi form dosen baru & klik simpan
+        activate UI
+        UI->>Ctrl: 7: store(name, nip, email)
+        activate Ctrl
+        Ctrl->>Model: 8: create(name, nip, email, role = 'dosen')
+        activate Model
+        Model-->>Ctrl: 9: Data dosen berhasil disimpan
+        deactivate Model
+        Ctrl-->>UI: 10: Redirect dengan Pesan Sukses
+        deactivate Ctrl
+        UI-->>Kaprodi: 11: Menampilkan Dosen Baru di Daftar
         deactivate UI
 
     else Aksi: Ubah Data Dosen (Update)
-        Kaprodi->>UI: 3: Mengubah data dosen & klik perbarui
+        Kaprodi->>UI: 3: Klik tombol "Edit" pada salah satu dosen
         activate UI
-        UI->>Ctrl: 4: update(lecturerId, name, nip, email)
+        UI->>Ctrl: 4: edit(lecturerId)
         activate Ctrl
-        Ctrl->>Model: 5: update(name, nip, email)
+        Ctrl->>Model: 5: findOrFail(lecturerId)
         activate Model
-        Model-->>Ctrl: 6: Data dosen berhasil diperbarui
+        Model-->>Ctrl: 6: Data Dosen
         deactivate Model
-        Ctrl-->>UI: 7: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 7: Menampilkan Form Edit Dosen dengan data terisi
         deactivate Ctrl
-        UI-->>Kaprodi: 8: Menampilkan Data Terupdate di Daftar
+        deactivate UI
+
+        Kaprodi->>UI: 8: Mengubah data dosen & klik perbarui
+        activate UI
+        UI->>Ctrl: 9: update(lecturerId, name, nip, email)
+        activate Ctrl
+        Ctrl->>Model: 10: update(name, nip, email)
+        activate Model
+        Model-->>Ctrl: 11: Data dosen berhasil diperbarui
+        deactivate Model
+        Ctrl-->>UI: 12: Redirect dengan Pesan Sukses
+        deactivate Ctrl
+        UI-->>Kaprodi: 13: Menampilkan Data Terupdate di Daftar
         deactivate UI
 
     else Aksi: Impor Dosen Dari Excel (Import)

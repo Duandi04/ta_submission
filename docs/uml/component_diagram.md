@@ -47,7 +47,7 @@ graph TD
         UserModel[User Model]:::model
         ThesisModel[ThesisSubmission Model]:::model
         RubricModel[Rubric Model]:::model
-        SettingModel[Setting Model]:::model
+        ProgramStudiModel[ProgramStudi Model]:::model
         AssessModel[Assessment Model]:::model
     end
 
@@ -83,7 +83,7 @@ graph TD
     AssessServ --> AssessModel
     KaprodiServ --> ThesisModel
     KaprodiServ --> RubricModel
-    KaprodiServ --> SettingModel
+    KaprodiServ --> ProgramStudiModel
 
     %% External Integrations Connections
     KaprodiServ --> ExcelLib

@@ -9,22 +9,27 @@ sequenceDiagram
     participant Ctrl as AuthController
     participant Model as Model User
 
-    User->>UI: 1: Memasukkan data login
+    User->>UI: 1: Membuka Halaman Login
     activate UI
-    UI->>Ctrl: 2: GetUserController / login(request)
+    UI-->>User: 2: Menampilkan Form Login
+    deactivate UI
+
+    User->>UI: 3: Mengisi kredensial (email & password) & klik Login
+    activate UI
+    UI->>Ctrl: 4: login(request)
     activate Ctrl
-    Ctrl->>Model: 3: ValidateData / attempt(credentials)
+    Ctrl->>Model: 5: attempt(credentials)
     activate Model
-    Model-->>Ctrl: 4: ValidData / UserData
+    Model-->>Ctrl: 6: Data User & Kecocokan Kredensial
     deactivate Model
     
     alt Sukses
-        Ctrl-->>UI: 5: Login Sukses (Session created)
-        UI-->>User: 6: Menampilkan Halaman Dashboard
+        Ctrl-->>UI: 7: Redirect ke Dashboard (Sesi dibuat)
+        UI-->>User: 8: Menampilkan Halaman Dashboard Utama
     else Gagal
-        Ctrl-->>UI: 7: Login Gagal (Invalid credentials)
+        Ctrl-->>UI: 9: Mengembalikan dengan error (Invalid credentials)
         deactivate Ctrl
-        UI-->>User: 8: Menampilkan Pesan Error
+        UI-->>User: 10: Menampilkan Form Login dengan Alert Error
     end
     deactivate UI
 ```

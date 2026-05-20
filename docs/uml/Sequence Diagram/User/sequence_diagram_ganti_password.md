@@ -9,26 +9,31 @@ sequenceDiagram
     participant Ctrl as ProfileController
     participant Model as Model User
 
-    User->>UI: 1: Memasukkan password lama, password baru & konfirmasi
+    User->>UI: 1: Membuka Halaman Ubah Password (pada Profil)
     activate UI
-    UI->>Ctrl: 2: updatePassword(request)
+    UI-->>User: 2: Menampilkan Form Ubah Password
+    deactivate UI
+
+    User->>UI: 3: Memasukkan password lama, password baru & konfirmasi
+    activate UI
+    UI->>Ctrl: 4: updatePassword(request)
     activate Ctrl
-    Ctrl->>Model: 3: Hash::check(password_lama)
+    Ctrl->>Model: 5: Hash::check(password_lama)
     activate Model
-    Model-->>Ctrl: 4: Verification Status
+    Model-->>Ctrl: 6: Verification Status
     deactivate Model
 
-    alt Sukses (Password Lama Cocok)
-        Ctrl->>Model: 5: update(['password' => Hash::make(password_baru)])
+    alt Sukses (Password Lama Cocok & Validasi Berhasil)
+        Ctrl->>Model: 7: update(['password' => Hash::make(password_baru)])
         activate Model
-        Model-->>Ctrl: 6: Password Updated
+        Model-->>Ctrl: 8: Password Updated
         deactivate Model
-        Ctrl-->>UI: 7: Ganti Password Sukses
-        UI-->>User: 8: Menampilkan Pesan Sukses
-    else Gagal (Password Lama Salah / Konfirmasi Tidak Cocok)
-        Ctrl-->>UI: 9: Ganti Password Gagal
+        Ctrl-->>UI: 9: Redirect Back dengan Pesan Sukses
+        UI-->>User: 10: Menampilkan Alert Sukses Password Diperbarui
+    else Gagal (Password Lama Salah / Konfirmasi Tidak Cocok / Validasi Error)
+        Ctrl-->>UI: 11: Redirect Back dengan Alert Error
         deactivate Ctrl
-        UI-->>User: 10: Menampilkan Pesan Error
+        UI-->>User: 12: Menampilkan Form dengan Detail Error
     end
     deactivate UI
 ```
