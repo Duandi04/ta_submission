@@ -32,8 +32,9 @@ sequenceDiagram
         activate Model
         Model-->>Ctrl: 8a: Data History
         deactivate Model
-        Ctrl-->>UI: 9a: Menampilkan Form Edit History
+        Ctrl-->>UI: 9a: Mengembalikan View Form Edit History
         deactivate Ctrl
+        UI-->>Kaprodi: 9b: Menampilkan Form Edit History
         deactivate UI
 
         Kaprodi->>UI: 10a: Mengisi rincian data history baru & klik perbarui
@@ -134,8 +135,9 @@ sequenceDiagram
         activate UI
         UI->>Ctrl: 14: createHistorical()
         activate Ctrl
-        Ctrl-->>UI: 15: Menampilkan Form Tambah Data History
+        Ctrl-->>UI: 15: Mengembalikan View Form Tambah Data History
         deactivate Ctrl
+        UI-->>Kaprodi: 15b: Menampilkan Form Tambah Data History
         deactivate UI
 
         Kaprodi->>UI: 16: Mengisi detail data history pengajuan & klik simpan

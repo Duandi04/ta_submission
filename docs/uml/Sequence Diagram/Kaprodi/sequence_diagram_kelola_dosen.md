@@ -7,6 +7,7 @@ sequenceDiagram
     actor Kaprodi as Kaprodi
     participant UI as Halaman Kelola Dosen
     participant Ctrl as KaprodiController
+    participant Excel as Facade Excel
     participant Model as Model User
 
     %% ==========================================
@@ -25,8 +26,9 @@ sequenceDiagram
         activate UI
         UI->>Ctrl: 4: create()
         activate Ctrl
-        Ctrl-->>UI: 5: Menampilkan Form Tambah Dosen
+        Ctrl-->>UI: 5: Mengembalikan View Form Tambah Dosen
         deactivate Ctrl
+        UI-->>Kaprodi: 5b: Menampilkan Form Tambah Dosen
         deactivate UI
         
         Kaprodi->>UI: 6: Mengisi form dosen baru & klik simpan
@@ -51,8 +53,9 @@ sequenceDiagram
         activate Model
         Model-->>Ctrl: 6: Data Dosen
         deactivate Model
-        Ctrl-->>UI: 7: Menampilkan Form Edit Dosen dengan data terisi
+        Ctrl-->>UI: 7: Mengembalikan View Form Edit Dosen dengan data terisi
         deactivate Ctrl
+        UI-->>Kaprodi: 7b: Menampilkan Form Edit Dosen dengan data terisi
         deactivate UI
 
         Kaprodi->>UI: 8: Mengubah data dosen & klik perbarui
@@ -73,13 +76,17 @@ sequenceDiagram
         activate UI
         UI->>Ctrl: 4: import(excel_file)
         activate Ctrl
-        Ctrl->>Model: 5: importFromExcel(excel_file)
+        Ctrl->>Excel: 5: import(new DosenImport, excel_file)
+        activate Excel
+        Excel->>Model: 6: Batch Create/Insert data dosen
         activate Model
-        Model-->>Ctrl: 6: Data dosen berhasil diimpor
+        Model-->>Excel: 7: Data disimpan ke DB
         deactivate Model
-        Ctrl-->>UI: 7: Redirect Back dengan Pesan Sukses
+        Excel-->>Ctrl: 8: Proses import selesai
+        deactivate Excel
+        Ctrl-->>UI: 9: Redirect Back dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 8: Menampilkan Daftar Dosen Hasil Import
+        UI-->>Kaprodi: 10: Menampilkan Daftar Dosen Hasil Import
         deactivate UI
 
     else Aksi: Ekspor Dosen Ke Excel (Export)
@@ -87,13 +94,17 @@ sequenceDiagram
         activate UI
         UI->>Ctrl: 4: export()
         activate Ctrl
-        Ctrl->>Model: 5: exportToExcel()
+        Ctrl->>Excel: 5: download(new DosenExport, 'data_dosen.xlsx')
+        activate Excel
+        Excel->>Model: 6: Get Collection / Query Dosen
         activate Model
-        Model-->>Ctrl: 6: File Excel (.xlsx)
+        Model-->>Excel: 7: Data Collection Dosen
         deactivate Model
-        Ctrl-->>UI: 7: Return Download Response
+        Excel-->>Ctrl: 8: File Excel (.xlsx) Download Response
+        deactivate Excel
+        Ctrl-->>UI: 9: Return Download Response
         deactivate Ctrl
-        UI-->>Kaprodi: 8: File Excel Terunduh Otomatis
+        UI-->>Kaprodi: 10: File Excel Terunduh Otomatis
         deactivate UI
     end
 ```

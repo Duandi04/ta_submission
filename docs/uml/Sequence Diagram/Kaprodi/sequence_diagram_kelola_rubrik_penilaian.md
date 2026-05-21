@@ -25,8 +25,9 @@ sequenceDiagram
         activate UI
         UI->>Ctrl: 4: createRubric()
         activate Ctrl
-        Ctrl-->>UI: 5: Menampilkan Form Tambah Rubrik Baru
+        Ctrl-->>UI: 5: Mengembalikan View Form Tambah Rubrik Baru
         deactivate Ctrl
+        UI-->>Kaprodi: 5b: Menampilkan Form Tambah Rubrik Baru
         deactivate UI
 
         Kaprodi->>UI: 6: Mengisi detail rubrik & kriteria penilaian, lalu klik simpan
@@ -51,8 +52,9 @@ sequenceDiagram
         activate Model
         Model-->>Ctrl: 6: Data Rubrik
         deactivate Model
-        Ctrl-->>UI: 7: Menampilkan Form Edit Rubrik dengan data terisi
+        Ctrl-->>UI: 7: Mengembalikan View Form Edit Rubrik dengan data terisi
         deactivate Ctrl
+        UI-->>Kaprodi: 7b: Menampilkan Form Edit Rubrik dengan data terisi
         deactivate UI
 
         Kaprodi->>UI: 8: Mengubah detail rubrik & kriteria, lalu klik perbarui

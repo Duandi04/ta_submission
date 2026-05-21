@@ -26,6 +26,7 @@ sequenceDiagram
         Model-->>Ctrl: 7: Profile Updated
         deactivate Model
         Ctrl-->>UI: 8: Redirect Back dengan Pesan Sukses
+        deactivate Ctrl
         UI-->>User: 9: Menampilkan Profil Baru & Alert Sukses
     else Gagal (Validasi Error)
         Ctrl-->>UI: 10: Redirect Back dengan Input & Errors

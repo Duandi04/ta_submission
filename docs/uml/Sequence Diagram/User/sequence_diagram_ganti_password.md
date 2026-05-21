@@ -29,6 +29,7 @@ sequenceDiagram
         Model-->>Ctrl: 8: Password Updated
         deactivate Model
         Ctrl-->>UI: 9: Redirect Back dengan Pesan Sukses
+        deactivate Ctrl
         UI-->>User: 10: Menampilkan Alert Sukses Password Diperbarui
     else Gagal (Password Lama Salah / Konfirmasi Tidak Cocok / Validasi Error)
         Ctrl-->>UI: 11: Redirect Back dengan Alert Error

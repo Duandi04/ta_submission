@@ -23,16 +23,19 @@ sequenceDiagram
     deactivate M_Submission
     Ctrl-->>UI_List: 5: Menampilkan Daftar Pengajuan
     deactivate Ctrl
+    deactivate UI_List
 
     %% ALIRAN PILIHAN TINDAKAN
     alt Aksi: Membuat Pengajuan Proposal Baru (Create)
         Mahasiswa->>UI_List: 6a: Klik "Buat Pengajuan Baru"
+        activate UI_List
         UI_List->>Ctrl: 7a: create()
         activate Ctrl
-        Ctrl-->>UI_Form: 8a: Menampilkan Form Pengajuan Baru
+        Ctrl-->>UI_Form: 8a: Mengembalikan View Form Pengajuan Baru
         deactivate Ctrl
         activate UI_Form
         deactivate UI_List
+        UI_Form-->>Mahasiswa: 8b: Menampilkan Form Pengajuan Baru
 
         Mahasiswa->>UI_Form: 9a: Mengisi judul, abstrak, unggah file, & klik "Kirim"
         UI_Form->>Ctrl: 10a: store(request)
@@ -47,11 +50,11 @@ sequenceDiagram
         M_File-->>Ctrl: 15a: File Berhasil Disimpan
         deactivate M_File
         Ctrl-->>UI_List: 16a: Redirect ke Daftar Pengajuan dengan Pesan Sukses
+        deactivate UI_Form
         activate UI_List
         UI_List-->>Mahasiswa: 17a: Proposal baru tampil di tabel dengan status "Draft" / "Diajukan"
         deactivate UI_List
         deactivate Ctrl
-        deactivate UI_Form
 
     else Aksi: Kelola Pengajuan Berstatus "Draft" via Halaman Detail
         Mahasiswa->>UI_List: 6b: Klik "Detail" pada pengajuan berstatus "Draft"
@@ -62,10 +65,11 @@ sequenceDiagram
         activate M_Submission
         M_Submission-->>Ctrl: 9b: Detail Data Draft Proposal
         deactivate M_Submission
-        Ctrl-->>UI_Detail: 10b: Menampilkan Halaman Detail Pengajuan Draft
+        Ctrl-->>UI_Detail: 10b: Mengembalikan View Detail Pengajuan Draft
         deactivate Ctrl
         activate UI_Detail
         deactivate UI_List
+        UI_Detail-->>Mahasiswa: 10c: Menampilkan Halaman Detail Pengajuan Draft
 
         alt Sub-Aksi 1: Klik "Ajukan Sekarang" (Kirim Pengajuan)
             Mahasiswa->>UI_Detail: 11b: Klik tombol "Ajukan Sekarang"
