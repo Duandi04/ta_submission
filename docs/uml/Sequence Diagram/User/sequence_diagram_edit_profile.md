@@ -21,17 +21,17 @@ sequenceDiagram
     Ctrl->>Ctrl: 5: Validate input data
     
     alt Sukses (Validasi Berhasil)
-        Ctrl->>Model: 6: update(userData) & upload photo
+        Ctrl->>Model: 6a: update(userData) & upload photo
         activate Model
-        Model-->>Ctrl: 7: Profile Updated
+        Model-->>Ctrl: 7a: Profile Updated
         deactivate Model
-        Ctrl-->>UI: 8: Redirect Back dengan Pesan Sukses
+        Ctrl-->>UI: 8a: Redirect Back dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>User: 9: Menampilkan Profil Baru & Alert Sukses
+        UI-->>User: 9a: Menampilkan Profil Baru & Alert Sukses
     else Gagal (Validasi Error)
-        Ctrl-->>UI: 10: Redirect Back dengan Input & Errors
+        Ctrl-->>UI: 6b: Redirect Back dengan Input & Errors
         deactivate Ctrl
-        UI-->>User: 11: Menampilkan Pesan Error di Form Profil
+        UI-->>User: 7b: Menampilkan Pesan Error di Form Profil
     end
     deactivate UI
 ```

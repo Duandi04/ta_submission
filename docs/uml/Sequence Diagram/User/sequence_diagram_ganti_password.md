@@ -24,17 +24,17 @@ sequenceDiagram
     deactivate Model
 
     alt Sukses (Password Lama Cocok & Validasi Berhasil)
-        Ctrl->>Model: 7: update(['password' => Hash::make(password_baru)])
+        Ctrl->>Model: 7a: update(['password' => Hash::make(password_baru)])
         activate Model
-        Model-->>Ctrl: 8: Password Updated
+        Model-->>Ctrl: 8a: Password Updated
         deactivate Model
-        Ctrl-->>UI: 9: Redirect Back dengan Pesan Sukses
+        Ctrl-->>UI: 9a: Redirect Back dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>User: 10: Menampilkan Alert Sukses Password Diperbarui
+        UI-->>User: 10a: Menampilkan Alert Sukses Password Diperbarui
     else Gagal (Password Lama Salah / Konfirmasi Tidak Cocok / Validasi Error)
-        Ctrl-->>UI: 11: Redirect Back dengan Alert Error
+        Ctrl-->>UI: 7b: Redirect Back dengan Alert Error
         deactivate Ctrl
-        UI-->>User: 12: Menampilkan Form dengan Detail Error
+        UI-->>User: 8b: Menampilkan Form dengan Detail Error
     end
     deactivate UI
 ```

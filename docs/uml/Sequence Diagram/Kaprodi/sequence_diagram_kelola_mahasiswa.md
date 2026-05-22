@@ -22,89 +22,89 @@ sequenceDiagram
     %% TAHAP LANJUTAN: PILIHAN TINDAKAN (ALT BLOCK)
     %% ==========================================
     alt Aksi: Tambah Mahasiswa Baru (Create)
-        Kaprodi->>UI: 3: Klik tombol "Tambah Mahasiswa"
+        Kaprodi->>UI: 3a: Klik tombol "Tambah Mahasiswa"
         activate UI
-        UI->>Ctrl: 4: create()
+        UI->>Ctrl: 4a: create()
         activate Ctrl
-        Ctrl-->>UI: 5: Mengembalikan View Form Tambah Mahasiswa
+        Ctrl-->>UI: 5a: Mengembalikan View Form Tambah Mahasiswa
         deactivate Ctrl
-        UI-->>Kaprodi: 5b: Menampilkan Form Tambah Mahasiswa
+        UI-->>Kaprodi: 6a: Menampilkan Form Tambah Mahasiswa
         deactivate UI
         
-        Kaprodi->>UI: 6: Mengisi form mahasiswa baru & klik simpan
+        Kaprodi->>UI: 7a: Mengisi form mahasiswa baru & klik simpan
         activate UI
-        UI->>Ctrl: 7: store(name, nim, email)
+        UI->>Ctrl: 8a: store(name, nim, email)
         activate Ctrl
-        Ctrl->>Model: 8: create(name, nim, email, role = 'mahasiswa')
+        Ctrl->>Model: 9a: create(name, nim, email, role = 'mahasiswa')
         activate Model
-        Model-->>Ctrl: 9: Data mahasiswa berhasil disimpan
+        Model-->>Ctrl: 10a: Data mahasiswa berhasil disimpan
         deactivate Model
-        Ctrl-->>UI: 10: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 11a: Redirect dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 11: Menampilkan Mahasiswa Baru di Daftar
+        UI-->>Kaprodi: 12a: Menampilkan Mahasiswa Baru di Daftar
         deactivate UI
 
     else Aksi: Ubah Data Mahasiswa (Update)
-        Kaprodi->>UI: 3: Klik tombol "Edit" pada salah satu mahasiswa
+        Kaprodi->>UI: 3b: Klik tombol "Edit" pada salah satu mahasiswa
         activate UI
-        UI->>Ctrl: 4: edit(studentId)
+        UI->>Ctrl: 4b: edit(studentId)
         activate Ctrl
-        Ctrl->>Model: 5: findOrFail(studentId)
+        Ctrl->>Model: 5b: findOrFail(studentId)
         activate Model
-        Model-->>Ctrl: 6: Data Mahasiswa
+        Model-->>Ctrl: 6b: Data Mahasiswa
         deactivate Model
-        Ctrl-->>UI: 7: Mengembalikan View Form Edit Mahasiswa dengan data terisi
+        Ctrl-->>UI: 7b: Mengembalikan View Form Edit Mahasiswa dengan data terisi
         deactivate Ctrl
-        UI-->>Kaprodi: 7b: Menampilkan Form Edit Mahasiswa dengan data terisi
+        UI-->>Kaprodi: 8b: Menampilkan Form Edit Mahasiswa dengan data terisi
         deactivate UI
 
-        Kaprodi->>UI: 8: Mengubah data mahasiswa & klik perbarui
+        Kaprodi->>UI: 9b: Mengubah data mahasiswa & klik perbarui
         activate UI
-        UI->>Ctrl: 9: update(studentId, name, nim, email)
+        UI->>Ctrl: 10b: update(studentId, name, nim, email)
         activate Ctrl
-        Ctrl->>Model: 10: update(name, nim, email)
+        Ctrl->>Model: 11b: update(name, nim, email)
         activate Model
-        Model-->>Ctrl: 11: Data mahasiswa berhasil diperbarui
+        Model-->>Ctrl: 12b: Data mahasiswa berhasil diperbarui
         deactivate Model
-        Ctrl-->>UI: 12: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 13b: Redirect dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 13: Menampilkan Data Terupdate di Daftar
+        UI-->>Kaprodi: 14b: Menampilkan Data Terupdate di Daftar
         deactivate UI
 
     else Aksi: Impor Mahasiswa Dari Excel (Import)
-        Kaprodi->>UI: 3: Mengunggah file Excel/CSV & klik import
+        Kaprodi->>UI: 3c: Mengunggah file Excel/CSV & klik import
         activate UI
-        UI->>Ctrl: 4: import(excel_file)
+        UI->>Ctrl: 4c: import(excel_file)
         activate Ctrl
-        Ctrl->>Excel: 5: import(new MahasiswaImport, excel_file)
+        Ctrl->>Excel: 5c: import(new MahasiswaImport, excel_file)
         activate Excel
-        Excel->>Model: 6: Batch Create/Insert data mahasiswa
+        Excel->>Model: 6c: Batch Create/Insert data mahasiswa
         activate Model
-        Model-->>Excel: 7: Data disimpan ke DB
+        Model-->>Excel: 7c: Data disimpan ke DB
         deactivate Model
-        Excel-->>Ctrl: 8: Proses import selesai
+        Excel-->>Ctrl: 8c: Proses import selesai
         deactivate Excel
-        Ctrl-->>UI: 9: Redirect Back dengan Pesan Sukses
+        Ctrl-->>UI: 9c: Redirect Back dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 10: Menampilkan Daftar Mahasiswa Hasil Import
+        UI-->>Kaprodi: 10c: Menampilkan Daftar Mahasiswa Hasil Import
         deactivate UI
 
     else Aksi: Ekspor Mahasiswa Ke Excel (Export)
-        Kaprodi->>UI: 3: Mengklik tombol Export Mahasiswa
+        Kaprodi->>UI: 3d: Mengklik tombol Export Mahasiswa
         activate UI
-        UI->>Ctrl: 4: export()
+        UI->>Ctrl: 4d: export()
         activate Ctrl
-        Ctrl->>Excel: 5: download(new MahasiswaExport, 'data_mahasiswa.xlsx')
+        Ctrl->>Excel: 5d: download(new MahasiswaExport, 'data_mahasiswa.xlsx')
         activate Excel
-        Excel->>Model: 6: Get Collection / Query Mahasiswa
+        Excel->>Model: 6d: Get Collection / Query Mahasiswa
         activate Model
-        Model-->>Excel: 7: Data Collection Mahasiswa
+        Model-->>Excel: 7d: Data Collection Mahasiswa
         deactivate Model
-        Excel-->>Ctrl: 8: File Excel (.xlsx) Download Response
+        Excel-->>Ctrl: 8d: File Excel (.xlsx) Download Response
         deactivate Excel
-        Ctrl-->>UI: 9: Return Download Response
+        Ctrl-->>UI: 9d: Return Download Response
         deactivate Ctrl
-        UI-->>Kaprodi: 10: File Excel Terunduh Otomatis
+        UI-->>Kaprodi: 10d: File Excel Terunduh Otomatis
         deactivate UI
     end
 ```

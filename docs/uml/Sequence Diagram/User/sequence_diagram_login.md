@@ -24,12 +24,12 @@ sequenceDiagram
     deactivate Model
     
     alt Sukses
-        Ctrl-->>UI: 7: Redirect ke Dashboard (Sesi dibuat)
-        UI-->>User: 8: Menampilkan Halaman Dashboard Utama
+        Ctrl-->>UI: 7a: Redirect ke Dashboard (Sesi dibuat)
+        UI-->>User: 8a: Menampilkan Halaman Dashboard Utama
     else Gagal
-        Ctrl-->>UI: 9: Mengembalikan dengan error (Invalid credentials)
+        Ctrl-->>UI: 7b: Mengembalikan dengan error (Invalid credentials)
         deactivate Ctrl
-        UI-->>User: 10: Menampilkan Form Login dengan Alert Error
+        UI-->>User: 8b: Menampilkan Form Login dengan Alert Error
     end
     deactivate UI
 ```

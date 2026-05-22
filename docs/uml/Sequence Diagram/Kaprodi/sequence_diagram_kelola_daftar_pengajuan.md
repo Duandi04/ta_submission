@@ -34,20 +34,20 @@ sequenceDiagram
         deactivate Model
         Ctrl-->>UI: 9a: Mengembalikan View Form Edit History
         deactivate Ctrl
-        UI-->>Kaprodi: 9b: Menampilkan Form Edit History
+        UI-->>Kaprodi: 10a: Menampilkan Form Edit History
         deactivate UI
 
-        Kaprodi->>UI: 10a: Mengisi rincian data history baru & klik perbarui
+        Kaprodi->>UI: 11a: Mengisi rincian data history baru & klik perbarui
         activate UI
-        UI->>Ctrl: 11a: updateHistorical(id, title, abstract, student_id)
+        UI->>Ctrl: 12a: updateHistorical(id, title, abstract, student_id)
         activate Ctrl
-        Ctrl->>Model: 12a: update(id, title, abstract, student_id)
+        Ctrl->>Model: 13a: update(id, title, abstract, student_id)
         activate Model
-        Model-->>Ctrl: 13a: Data berhasil diperbarui
+        Model-->>Ctrl: 14a: Data berhasil diperbarui
         deactivate Model
-        Ctrl-->>UI: 14a: Redirect ke detail dengan notifikasi sukses
+        Ctrl-->>UI: 15a: Redirect ke detail dengan notifikasi sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 15a: Data History Pengajuan Berhasil Diperbarui
+        UI-->>Kaprodi: 16a: Data History Pengajuan Berhasil Diperbarui
         deactivate UI
 
     else [Jika Berkas adalah Pengajuan Reguler]
@@ -69,60 +69,60 @@ sequenceDiagram
                 deactivate UI
                 
             else Tindakan: Tolak Pengajuan Awal
-                Kaprodi->>UI: 5c: Mengklik Tolak, mengisi alasan penolakan, lalu klik Konfirmasi
+                Kaprodi->>UI: 5b: Mengklik Tolak, mengisi alasan penolakan, lalu klik Konfirmasi
                 activate UI
-                UI->>Ctrl: 6c: rejectSubmission(id, rejection_reason)
+                UI->>Ctrl: 6b: rejectSubmission(id, rejection_reason)
                 activate Ctrl
-                Ctrl->>Model: 7c: update(status = 'rejected', rejection_reason)
+                Ctrl->>Model: 7b: update(status = 'rejected', rejection_reason)
                 activate Model
-                Model-->>Ctrl: 8c: Data berhasil diperbarui
+                Model-->>Ctrl: 8b: Data berhasil diperbarui
                 deactivate Model
-                Ctrl-->>UI: 9c: Redirect back dengan notifikasi sukses
+                Ctrl-->>UI: 9b: Redirect back dengan notifikasi sukses
                 deactivate Ctrl
-                UI-->>Kaprodi: 10c: Status Berubah menjadi 'Ditolak'
+                UI-->>Kaprodi: 10b: Status Berubah menjadi 'Ditolak'
                 deactivate UI
             end
 
         else [Jika Status Berkas adalah 'Sedang Ditinjau']
             
             alt [Jika masih ada dosen penilai yang belum memberikan nilai]
-                Kaprodi->>UI: 5d: Memantau progres penilaian
+                Kaprodi->>UI: 5b: Memantau progres penilaian
                 activate UI
-                UI-->>Kaprodi: 6d: Menampilkan pesan menunggu penilaian selesai
+                UI-->>Kaprodi: 6b: Menampilkan pesan menunggu penilaian selesai
                 deactivate UI
-
+ 
             else [Jika semua dosen penilai sudah memberikan nilai]
-                Kaprodi->>UI: 5e: Membuka detail pengajuan dengan seluruh nilai lengkap
+                Kaprodi->>UI: 5b: Membuka detail pengajuan dengan seluruh nilai lengkap
                 activate UI
-                UI-->>Kaprodi: 6e: Form Atur Dosen Pembimbing Aktif
+                UI-->>Kaprodi: 6b: Form Atur Dosen Pembimbing Aktif
                 deactivate UI
                 
                 alt Tindakan: Terima Pengajuan & Tetapkan Pembimbing
-                    Kaprodi->>UI: 7e: Memilih Dosen Pembimbing 1 & 2, lalu klik Terima Pengajuan
+                    Kaprodi->>UI: 7b: Memilih Dosen Pembimbing 1 & 2, lalu klik Terima Pengajuan
                     activate UI
-                    UI->>Ctrl: 8e: acceptSubmission(id, supervisor_id, supervisor_2_id)
+                    UI->>Ctrl: 8b: acceptSubmission(id, supervisor_id, supervisor_2_id)
                     activate Ctrl
-                    Ctrl->>Model: 9e: update(status = 'approved', supervisor_id, supervisor_2_id)
+                    Ctrl->>Model: 9b: update(status = 'approved', supervisor_id, supervisor_2_id)
                     activate Model
-                    Model-->>Ctrl: 10e: Data berhasil diperbarui
+                    Model-->>Ctrl: 10b: Data berhasil diperbarui
                     deactivate Model
-                    Ctrl-->>UI: 11e: Redirect back dengan notifikasi sukses
+                    Ctrl-->>UI: 11b: Redirect back dengan notifikasi sukses
                     deactivate Ctrl
-                    UI-->>Kaprodi: 12e: Status Berubah menjadi 'Disetujui'
+                    UI-->>Kaprodi: 12b: Status Berubah menjadi 'Disetujui'
                     deactivate UI
                     
                 else Tindakan: Tolak Hasil Ujian
-                    Kaprodi->>UI: 7f: Mengklik Tolak, mengisi catatan tidak lulus/revisi, lalu klik Konfirmasi
+                    Kaprodi->>UI: 7b: Mengklik Tolak, mengisi catatan tidak lulus/revisi, lalu klik Konfirmasi
                     activate UI
-                    UI->>Ctrl: 8f: rejectSubmission(id, rejection_reason)
+                    UI->>Ctrl: 8b: rejectSubmission(id, rejection_reason)
                     activate Ctrl
-                    Ctrl->>Model: 9f: update(status = 'rejected', rejection_reason)
+                    Ctrl->>Model: 9b: update(status = 'rejected', rejection_reason)
                     activate Model
-                    Model-->>Ctrl: 10f: Data berhasil diperbarui
+                    Model-->>Ctrl: 10b: Data berhasil diperbarui
                     deactivate Model
-                    Ctrl-->>UI: 11f: Redirect back dengan notifikasi sukses
+                    Ctrl-->>UI: 11b: Redirect back dengan notifikasi sukses
                     deactivate Ctrl
-                    UI-->>Kaprodi: 12f: Status Berubah menjadi 'Ditolak'
+                    UI-->>Kaprodi: 12b: Status Berubah menjadi 'Ditolak'
                     deactivate UI
                 end
             end
@@ -137,20 +137,20 @@ sequenceDiagram
         activate Ctrl
         Ctrl-->>UI: 15: Mengembalikan View Form Tambah Data History
         deactivate Ctrl
-        UI-->>Kaprodi: 15b: Menampilkan Form Tambah Data History
+        UI-->>Kaprodi: 16: Menampilkan Form Tambah Data History
         deactivate UI
 
-        Kaprodi->>UI: 16: Mengisi detail data history pengajuan & klik simpan
+        Kaprodi->>UI: 17: Mengisi detail data history pengajuan & klik simpan
         activate UI
-        UI->>Ctrl: 17: store(title, abstract, student_id, is_historical = true)
+        UI->>Ctrl: 18: store(title, abstract, student_id, is_historical = true)
         activate Ctrl
-        Ctrl->>Model: 18: create(title, abstract, student_id, is_historical = true)
+        Ctrl->>Model: 19: create(title, abstract, student_id, is_historical = true)
         activate Model
-        Model-->>Ctrl: 19: Historical Record Created
+        Model-->>Ctrl: 20: Historical Record Created
         deactivate Model
-        Ctrl-->>UI: 20: Redirect ke daftar pengajuan
+        Ctrl-->>UI: 21: Redirect ke daftar pengajuan
         deactivate Ctrl
-        UI-->>Kaprodi: 21: Data History Pengajuan Berhasil Disimpan & Tampil di Tabel
+        UI-->>Kaprodi: 22: Data History Pengajuan Berhasil Disimpan & Tampil di Tabel
         deactivate UI
     end
 ```

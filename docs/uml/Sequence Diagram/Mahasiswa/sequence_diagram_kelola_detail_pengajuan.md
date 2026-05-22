@@ -35,24 +35,24 @@ sequenceDiagram
         deactivate Ctrl
         activate UI_Form
         deactivate UI_List
-        UI_Form-->>Mahasiswa: 8b: Menampilkan Form Pengajuan Baru
-
-        Mahasiswa->>UI_Form: 9a: Mengisi judul, abstrak, unggah file, & klik "Kirim"
-        UI_Form->>Ctrl: 10a: store(request)
+        UI_Form-->>Mahasiswa: 9a: Menampilkan Form Pengajuan Baru
+ 
+        Mahasiswa->>UI_Form: 10a: Mengisi judul, abstrak, unggah file, & klik "Kirim"
+        UI_Form->>Ctrl: 11a: store(request)
         activate Ctrl
-        Ctrl->>Ctrl: 11a: Validasi input & berkas
-        Ctrl->>M_Submission: 12a: create(submissionData)
+        Ctrl->>Ctrl: 12a: Validasi input & berkas
+        Ctrl->>M_Submission: 13a: create(submissionData)
         activate M_Submission
-        M_Submission-->>Ctrl: 13a: Proposal Baru Disimpan
+        M_Submission-->>Ctrl: 14a: Proposal Baru Disimpan
         deactivate M_Submission
-        Ctrl->>M_File: 14a: storeFile(fileData)
+        Ctrl->>M_File: 15a: storeFile(fileData)
         activate M_File
-        M_File-->>Ctrl: 15a: File Berhasil Disimpan
+        M_File-->>Ctrl: 16a: File Berhasil Disimpan
         deactivate M_File
-        Ctrl-->>UI_List: 16a: Redirect ke Daftar Pengajuan dengan Pesan Sukses
+        Ctrl-->>UI_List: 17a: Redirect ke Daftar Pengajuan dengan Pesan Sukses
         deactivate UI_Form
         activate UI_List
-        UI_List-->>Mahasiswa: 17a: Proposal baru tampil di tabel dengan status "Draft" / "Diajukan"
+        UI_List-->>Mahasiswa: 18a: Proposal baru tampil di tabel dengan status "Draft" / "Diajukan"
         deactivate UI_List
         deactivate Ctrl
 
@@ -69,37 +69,37 @@ sequenceDiagram
         deactivate Ctrl
         activate UI_Detail
         deactivate UI_List
-        UI_Detail-->>Mahasiswa: 10c: Menampilkan Halaman Detail Pengajuan Draft
-
+        UI_Detail-->>Mahasiswa: 11b: Menampilkan Halaman Detail Pengajuan Draft
+ 
         alt Sub-Aksi 1: Klik "Ajukan Sekarang" (Kirim Pengajuan)
-            Mahasiswa->>UI_Detail: 11b: Klik tombol "Ajukan Sekarang"
-            UI_Detail->>Ctrl: 12b: submitProposal(submissionId)
+            Mahasiswa->>UI_Detail: 12b: Klik tombol "Ajukan Sekarang"
+            UI_Detail->>Ctrl: 13b: submitProposal(submissionId)
             activate Ctrl
-            Ctrl->>M_Submission: 13b: update(status = 'submitted')
+            Ctrl->>M_Submission: 14b: update(status = 'submitted')
             activate M_Submission
-            M_Submission-->>Ctrl: 14b: Status Pengajuan Berubah
+            M_Submission-->>Ctrl: 15b: Status Pengajuan Berubah
             deactivate M_Submission
-            Ctrl-->>UI_List: 15b: Redirect ke Daftar Pengajuan dengan Notifikasi Sukses
+            Ctrl-->>UI_List: 16b: Redirect ke Daftar Pengajuan dengan Notifikasi Sukses
             activate UI_List
-            UI_List-->>Mahasiswa: 16b: Menampilkan Status Terbaru "Diajukan" di Tabel
+            UI_List-->>Mahasiswa: 17b: Menampilkan Status Terbaru "Diajukan" di Tabel
             deactivate UI_List
             deactivate Ctrl
-
+ 
         else Sub-Aksi 2: Klik "Batalkan Pengajuan" (Hapus Draft)
-            Mahasiswa->>UI_Detail: 11c: Klik tombol "Batalkan Pengajuan"
-            UI_Detail->>Ctrl: 12c: destroy(submissionId)
+            Mahasiswa->>UI_Detail: 12b: Klik tombol "Batalkan Pengajuan"
+            UI_Detail->>Ctrl: 13b: destroy(submissionId)
             activate Ctrl
-            Ctrl->>M_File: 13c: deleteAssociatedFiles(submissionId)
+            Ctrl->>M_File: 14b: deleteAssociatedFiles(submissionId)
             activate M_File
-            M_File-->>Ctrl: 14c: File Terhapus
+            M_File-->>Ctrl: 15b: File Terhapus
             deactivate M_File
-            Ctrl->>M_Submission: 15c: delete(submissionId)
+            Ctrl->>M_Submission: 16b: delete(submissionId)
             activate M_Submission
-            M_Submission-->>Ctrl: 16c: Data Pengajuan Dihapus dari DB
+            M_Submission-->>Ctrl: 17b: Data Pengajuan Dihapus dari DB
             deactivate M_Submission
-            Ctrl-->>UI_List: 17c: Redirect ke Daftar Pengajuan dengan Notifikasi Penghapusan
+            Ctrl-->>UI_List: 18b: Redirect ke Daftar Pengajuan dengan Notifikasi Penghapusan
             activate UI_List
-            UI_List-->>Mahasiswa: 18c: Pengajuan terhapus dari tabel daftar
+            UI_List-->>Mahasiswa: 19b: Pengajuan terhapus dari tabel daftar
             deactivate UI_List
             deactivate Ctrl
         end

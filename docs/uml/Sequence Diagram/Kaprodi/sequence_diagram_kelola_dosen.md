@@ -22,89 +22,89 @@ sequenceDiagram
     %% TAHAP LANJUTAN: PILIHAN TINDAKAN (ALT BLOCK)
     %% ==========================================
     alt Aksi: Tambah Dosen Baru (Create)
-        Kaprodi->>UI: 3: Klik tombol "Tambah Dosen"
+        Kaprodi->>UI: 3a: Klik tombol "Tambah Dosen"
         activate UI
-        UI->>Ctrl: 4: create()
+        UI->>Ctrl: 4a: create()
         activate Ctrl
-        Ctrl-->>UI: 5: Mengembalikan View Form Tambah Dosen
+        Ctrl-->>UI: 5a: Mengembalikan View Form Tambah Dosen
         deactivate Ctrl
-        UI-->>Kaprodi: 5b: Menampilkan Form Tambah Dosen
+        UI-->>Kaprodi: 6a: Menampilkan Form Tambah Dosen
         deactivate UI
         
-        Kaprodi->>UI: 6: Mengisi form dosen baru & klik simpan
+        Kaprodi->>UI: 7a: Mengisi form dosen baru & klik simpan
         activate UI
-        UI->>Ctrl: 7: store(name, nip, email)
+        UI->>Ctrl: 8a: store(name, nip, email)
         activate Ctrl
-        Ctrl->>Model: 8: create(name, nip, email, role = 'dosen')
+        Ctrl->>Model: 9a: create(name, nip, email, role = 'dosen')
         activate Model
-        Model-->>Ctrl: 9: Data dosen berhasil disimpan
+        Model-->>Ctrl: 10a: Data dosen berhasil disimpan
         deactivate Model
-        Ctrl-->>UI: 10: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 11a: Redirect dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 11: Menampilkan Dosen Baru di Daftar
+        UI-->>Kaprodi: 12a: Menampilkan Dosen Baru di Daftar
         deactivate UI
 
     else Aksi: Ubah Data Dosen (Update)
-        Kaprodi->>UI: 3: Klik tombol "Edit" pada salah satu dosen
+        Kaprodi->>UI: 3b: Klik tombol "Edit" pada salah satu dosen
         activate UI
-        UI->>Ctrl: 4: edit(lecturerId)
+        UI->>Ctrl: 4b: edit(lecturerId)
         activate Ctrl
-        Ctrl->>Model: 5: findOrFail(lecturerId)
+        Ctrl->>Model: 5b: findOrFail(lecturerId)
         activate Model
-        Model-->>Ctrl: 6: Data Dosen
+        Model-->>Ctrl: 6b: Data Dosen
         deactivate Model
-        Ctrl-->>UI: 7: Mengembalikan View Form Edit Dosen dengan data terisi
+        Ctrl-->>UI: 7b: Mengembalikan View Form Edit Dosen dengan data terisi
         deactivate Ctrl
-        UI-->>Kaprodi: 7b: Menampilkan Form Edit Dosen dengan data terisi
+        UI-->>Kaprodi: 8b: Menampilkan Form Edit Dosen dengan data terisi
         deactivate UI
 
-        Kaprodi->>UI: 8: Mengubah data dosen & klik perbarui
+        Kaprodi->>UI: 9b: Mengubah data dosen & klik perbarui
         activate UI
-        UI->>Ctrl: 9: update(lecturerId, name, nip, email)
+        UI->>Ctrl: 10b: update(lecturerId, name, nip, email)
         activate Ctrl
-        Ctrl->>Model: 10: update(name, nip, email)
+        Ctrl->>Model: 11b: update(name, nip, email)
         activate Model
-        Model-->>Ctrl: 11: Data dosen berhasil diperbarui
+        Model-->>Ctrl: 12b: Data dosen berhasil diperbarui
         deactivate Model
-        Ctrl-->>UI: 12: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 13b: Redirect dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 13: Menampilkan Data Terupdate di Daftar
+        UI-->>Kaprodi: 14b: Menampilkan Data Terupdate di Daftar
         deactivate UI
 
     else Aksi: Impor Dosen Dari Excel (Import)
-        Kaprodi->>UI: 3: Mengunggah file Excel/CSV & klik import
+        Kaprodi->>UI: 3c: Mengunggah file Excel/CSV & klik import
         activate UI
-        UI->>Ctrl: 4: import(excel_file)
+        UI->>Ctrl: 4c: import(excel_file)
         activate Ctrl
-        Ctrl->>Excel: 5: import(new DosenImport, excel_file)
+        Ctrl->>Excel: 5c: import(new DosenImport, excel_file)
         activate Excel
-        Excel->>Model: 6: Batch Create/Insert data dosen
+        Excel->>Model: 6c: Batch Create/Insert data dosen
         activate Model
-        Model-->>Excel: 7: Data disimpan ke DB
+        Model-->>Excel: 7c: Data disimpan ke DB
         deactivate Model
-        Excel-->>Ctrl: 8: Proses import selesai
+        Excel-->>Ctrl: 8c: Proses import selesai
         deactivate Excel
-        Ctrl-->>UI: 9: Redirect Back dengan Pesan Sukses
+        Ctrl-->>UI: 9c: Redirect Back dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 10: Menampilkan Daftar Dosen Hasil Import
+        UI-->>Kaprodi: 10c: Menampilkan Daftar Dosen Hasil Import
         deactivate UI
 
     else Aksi: Ekspor Dosen Ke Excel (Export)
-        Kaprodi->>UI: 3: Mengklik tombol Export Dosen
+        Kaprodi->>UI: 3d: Mengklik tombol Export Dosen
         activate UI
-        UI->>Ctrl: 4: export()
+        UI->>Ctrl: 4d: export()
         activate Ctrl
-        Ctrl->>Excel: 5: download(new DosenExport, 'data_dosen.xlsx')
+        Ctrl->>Excel: 5d: download(new DosenExport, 'data_dosen.xlsx')
         activate Excel
-        Excel->>Model: 6: Get Collection / Query Dosen
+        Excel->>Model: 6d: Get Collection / Query Dosen
         activate Model
-        Model-->>Excel: 7: Data Collection Dosen
+        Model-->>Excel: 7d: Data Collection Dosen
         deactivate Model
-        Excel-->>Ctrl: 8: File Excel (.xlsx) Download Response
+        Excel-->>Ctrl: 8d: File Excel (.xlsx) Download Response
         deactivate Excel
-        Ctrl-->>UI: 9: Return Download Response
+        Ctrl-->>UI: 9d: Return Download Response
         deactivate Ctrl
-        UI-->>Kaprodi: 10: File Excel Terunduh Otomatis
+        UI-->>Kaprodi: 10d: File Excel Terunduh Otomatis
         deactivate UI
     end
 ```
