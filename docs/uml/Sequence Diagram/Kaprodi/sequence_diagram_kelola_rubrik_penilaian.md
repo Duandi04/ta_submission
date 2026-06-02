@@ -14,74 +14,82 @@ sequenceDiagram
     %% ==========================================
     Kaprodi->>UI: 1: Membuka Halaman Daftar Rubrik
     activate UI
-    UI-->>Kaprodi: 2: Menampilkan Daftar Rubrik Penilaian & Pilihan Aksi
+    UI->>Ctrl: 2: indexRubric()
+    activate Ctrl
+    Ctrl->>Model: 3: all()
+    activate Model
+    Model-->>Ctrl: 4: Koleksi Data Rubrik Penilaian
+    deactivate Model
+    Ctrl-->>UI: 5: Mengembalikan View Daftar Rubrik
+    deactivate Ctrl
+    UI-->>Kaprodi: 6: Menampilkan Daftar Rubrik Penilaian & Pilihan Aksi
     deactivate UI
 
     %% ==========================================
     %% TAHAP LANJUTAN: PILIHAN TINDAKAN (ALT BLOCK)
     %% ==========================================
     alt Aksi: Tambah Rubrik Baru (Create)
-        Kaprodi->>UI: 3a: Klik tombol "Tambah Rubrik"
+        Kaprodi->>UI: 7a: Klik tombol "Tambah Rubrik"
         activate UI
-        UI->>Ctrl: 4a: createRubric()
+        UI->>Ctrl: 8a: createRubric()
         activate Ctrl
-        Ctrl-->>UI: 5a: Mengembalikan View Form Tambah Rubrik Baru
+        Ctrl-->>UI: 9a: Mengembalikan View Form Tambah Rubrik Baru
         deactivate Ctrl
-        UI-->>Kaprodi: 6a: Menampilkan Form Tambah Rubrik Baru
+        UI-->>Kaprodi: 10a: Menampilkan Form Tambah Rubrik Baru
         deactivate UI
 
-        Kaprodi->>UI: 7a: Mengisi detail rubrik & kriteria penilaian, lalu klik simpan
+        Kaprodi->>UI: 11a: Mengisi detail rubrik & kriteria penilaian, lalu klik simpan
         activate UI
-        UI->>Ctrl: 8a: storeRubric(name, description, criteria)
+        UI->>Ctrl: 12a: storeRubric(name, description, criteria)
         activate Ctrl
-        Ctrl->>Model: 9a: create(name, description, criteria)
+        Ctrl->>Model: 13a: create(name, description, criteria)
         activate Model
-        Model-->>Ctrl: 10a: Rubrik berhasil disimpan
+        Model-->>Ctrl: 14a: Rubrik berhasil disimpan
         deactivate Model
-        Ctrl-->>UI: 11a: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 15a: Redirect dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 12a: Menampilkan Rubrik Baru di Daftar
+        UI-->>Kaprodi: 16a: Menampilkan Rubrik Baru di Daftar
         deactivate UI
 
     else Aksi: Ubah Data Rubrik (Update)
-        Kaprodi->>UI: 3b: Klik tombol "Edit" pada salah satu rubrik
+        Kaprodi->>UI: 7b: Klik tombol "Edit" pada salah satu rubrik
         activate UI
-        UI->>Ctrl: 4b: editRubric(rubricId)
+        UI->>Ctrl: 8b: editRubric(rubricId)
         activate Ctrl
-        Ctrl->>Model: 5b: findOrFail(rubricId)
+        Ctrl->>Model: 9b: findOrFail(rubricId)
         activate Model
-        Model-->>Ctrl: 6b: Data Rubrik
+        Model-->>Ctrl: 10b: Data Rubrik
         deactivate Model
-        Ctrl-->>UI: 7b: Mengembalikan View Form Edit Rubrik dengan data terisi
+        Ctrl-->>UI: 11b: Mengembalikan View Form Edit Rubrik dengan data terisi
         deactivate Ctrl
-        UI-->>Kaprodi: 8b: Menampilkan Form Edit Rubrik dengan data terisi
+        UI-->>Kaprodi: 12b: Menampilkan Form Edit Rubrik dengan data terisi
         deactivate UI
 
-        Kaprodi->>UI: 9b: Mengubah detail rubrik & kriteria, lalu klik perbarui
+        Kaprodi->>UI: 13b: Mengubah detail rubrik & kriteria, lalu klik perbarui
         activate UI
-        UI->>Ctrl: 10b: updateRubric(rubricId, name, description, criteria)
+        UI->>Ctrl: 14b: updateRubric(rubricId, name, description, criteria)
         activate Ctrl
-        Ctrl->>Model: 11b: update(name, description, criteria)
+        Ctrl->>Model: 15b: update(name, description, criteria)
         activate Model
-        Model-->>Ctrl: 12b: Rubrik berhasil diperbarui
+        Model-->>Ctrl: 16b: Rubrik berhasil diperbarui
         deactivate Model
-        Ctrl-->>UI: 13b: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 17b: Redirect dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 14b: Menampilkan Rubrik Terupdate di Daftar
+        UI-->>Kaprodi: 18b: Menampilkan Rubrik Terupdate di Daftar
         deactivate UI
 
     else Aksi: Hapus Rubrik (Delete)
-        Kaprodi->>UI: 3c: Mengklik tombol hapus rubrik
+        Kaprodi->>UI: 7c: Mengklik tombol hapus rubrik
         activate UI
-        UI->>Ctrl: 4c: destroyRubric(rubricId)
+        UI->>Ctrl: 8c: destroyRubric(rubricId)
         activate Ctrl
-        Ctrl->>Model: 5c: delete(rubricId)
+        Ctrl->>Model: 9c: delete(rubricId)
         activate Model
-        Model-->>Ctrl: 6c: Rubrik berhasil dihapus
+        Model-->>Ctrl: 10c: Rubrik berhasil dihapus
         deactivate Model
-        Ctrl-->>UI: 7c: Redirect dengan Pesan Sukses
+        Ctrl-->>UI: 11c: Redirect dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>Kaprodi: 8c: Rubrik Terhapus dari Daftar
+        UI-->>Kaprodi: 12c: Rubrik Terhapus dari Daftar
         deactivate UI
     end
 ```

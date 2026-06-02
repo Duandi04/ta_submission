@@ -14,23 +14,31 @@ sequenceDiagram
     %% ==========================================
     Kaprodi->>UI: 1: Membuka Halaman Laporan
     activate UI
-    UI-->>Kaprodi: 2: Menampilkan Daftar Laporan Mahasiswa & Pembimbing
+    UI->>Ctrl: 2: indexReport()
+    activate Ctrl
+    Ctrl->>Model: 3: getApprovedSubmissions()
+    activate Model
+    Model-->>Ctrl: 4: Data Laporan Mahasiswa & Pembimbing
+    deactivate Model
+    Ctrl-->>UI: 5: Mengembalikan View Daftar Laporan
+    deactivate Ctrl
+    UI-->>Kaprodi: 6: Menampilkan Daftar Laporan Mahasiswa & Pembimbing
     deactivate UI
 
     %% ==========================================
     %% TAHAP LANJUTAN: CETAK LAPORAN
     %% ==========================================
-    Kaprodi->>UI: 3: Mengklik Tombol Cetak Laporan
+    Kaprodi->>UI: 7: Mengklik Tombol Cetak Laporan
     activate UI
-    UI->>Ctrl: 4: reportPrint()
+    UI->>Ctrl: 8: reportPrint()
     activate Ctrl
-    Ctrl->>Model: 5: getApprovedSubmissions()
+    Ctrl->>Model: 9: getApprovedSubmissions()
     activate Model
-    Model-->>Ctrl: 6: Data Laporan Mahasiswa & Pembimbing
+    Model-->>Ctrl: 10: Data Laporan Mahasiswa & Pembimbing
     deactivate Model
-    Ctrl-->>UI: 7: Render Halaman Print View
+    Ctrl-->>UI: 11: Render Halaman Print View
     deactivate Ctrl
-    UI->>UI: 8: Trigger Browser window.print()
-    UI-->>Kaprodi: 9: Menampilkan Print Dialog Sistem & Cetak PDF / Hardcopy
+    UI->>UI: 12: Trigger Browser window.print()
+    UI-->>Kaprodi: 13: Menampilkan Print Dialog Sistem & Cetak PDF / Hardcopy
     deactivate UI
 ```

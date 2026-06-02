@@ -11,27 +11,35 @@ sequenceDiagram
 
     User->>UI: 1: Membuka Halaman Profil
     activate UI
-    UI-->>User: 2: Menampilkan Data Profil Saat Ini
+    UI->>Ctrl: 2: edit()
+    activate Ctrl
+    Ctrl->>Model: 3: Auth::user()
+    activate Model
+    Model-->>Ctrl: 4: Data Profil Pengguna
+    deactivate Model
+    Ctrl-->>UI: 5: Mengembalikan View Profil
+    deactivate Ctrl
+    UI-->>User: 6: Menampilkan Data Profil Saat Ini
     deactivate UI
 
-    User->>UI: 3: Mengisi form edit profil & klik Simpan Perubahan
+    User->>UI: 7: Mengisi form edit profil & klik Simpan Perubahan
     activate UI
-    UI->>Ctrl: 4: updateProfile(request)
+    UI->>Ctrl: 8: updateProfile(request)
     activate Ctrl
-    Ctrl->>Ctrl: 5: Validate input data
+    Ctrl->>Ctrl: 9: Validate input data
     
     alt Sukses (Validasi Berhasil)
-        Ctrl->>Model: 6a: update(userData) & upload photo
+        Ctrl->>Model: 10a: update(userData) & upload photo
         activate Model
-        Model-->>Ctrl: 7a: Profile Updated
+        Model-->>Ctrl: 11a: Profile Updated
         deactivate Model
-        Ctrl-->>UI: 8a: Redirect Back dengan Pesan Sukses
+        Ctrl-->>UI: 12a: Redirect Back dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>User: 9a: Menampilkan Profil Baru & Alert Sukses
+        UI-->>User: 13a: Menampilkan Profil Baru & Alert Sukses
     else Gagal (Validasi Error)
-        Ctrl-->>UI: 6b: Redirect Back dengan Input & Errors
+        Ctrl-->>UI: 10b: Redirect Back dengan Input & Errors
         deactivate Ctrl
-        UI-->>User: 7b: Menampilkan Pesan Error di Form Profil
+        UI-->>User: 11b: Menampilkan Pesan Error di Form Profil
     end
     deactivate UI
 ```

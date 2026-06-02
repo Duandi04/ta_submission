@@ -11,30 +11,34 @@ sequenceDiagram
 
     User->>UI: 1: Membuka Halaman Ubah Password (pada Profil)
     activate UI
-    UI-->>User: 2: Menampilkan Form Ubah Password
+    UI->>Ctrl: 2: changePasswordForm()
+    activate Ctrl
+    Ctrl-->>UI: 3: Mengembalikan View Form Ubah Password
+    deactivate Ctrl
+    UI-->>User: 4: Menampilkan Form Ubah Password
     deactivate UI
 
-    User->>UI: 3: Memasukkan password lama, password baru & konfirmasi
+    User->>UI: 5: Memasukkan password lama, password baru & konfirmasi
     activate UI
-    UI->>Ctrl: 4: updatePassword(request)
+    UI->>Ctrl: 6: updatePassword(request)
     activate Ctrl
-    Ctrl->>Model: 5: Hash::check(password_lama)
+    Ctrl->>Model: 7: Hash::check(password_lama)
     activate Model
-    Model-->>Ctrl: 6: Verification Status
+    Model-->>Ctrl: 8: Verification Status
     deactivate Model
 
     alt Sukses (Password Lama Cocok & Validasi Berhasil)
-        Ctrl->>Model: 7a: update(['password' => Hash::make(password_baru)])
+        Ctrl->>Model: 9a: update(['password' => Hash::make(password_baru)])
         activate Model
-        Model-->>Ctrl: 8a: Password Updated
+        Model-->>Ctrl: 10a: Password Updated
         deactivate Model
-        Ctrl-->>UI: 9a: Redirect Back dengan Pesan Sukses
+        Ctrl-->>UI: 11a: Redirect Back dengan Pesan Sukses
         deactivate Ctrl
-        UI-->>User: 10a: Menampilkan Alert Sukses Password Diperbarui
+        UI-->>User: 12a: Menampilkan Alert Sukses Password Diperbarui
     else Gagal (Password Lama Salah / Konfirmasi Tidak Cocok / Validasi Error)
-        Ctrl-->>UI: 7b: Redirect Back dengan Alert Error
+        Ctrl-->>UI: 9b: Redirect Back dengan Alert Error
         deactivate Ctrl
-        UI-->>User: 8b: Menampilkan Form dengan Detail Error
+        UI-->>User: 10b: Menampilkan Form dengan Detail Error
     end
     deactivate UI
 ```

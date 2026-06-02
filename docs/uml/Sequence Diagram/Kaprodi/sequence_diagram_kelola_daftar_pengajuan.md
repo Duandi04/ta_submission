@@ -28,13 +28,29 @@ sequenceDiagram
     %% 1. VIEW LIST OF SUBMISSIONS
     Kaprodi->>UI: 1: Membuka Halaman Daftar Pengajuan
     activate UI
-    UI-->>Kaprodi: 2: Menampilkan Tabel Daftar Pengajuan Mahasiswa
+    UI->>Ctrl: 2: index()
+    activate Ctrl
+    Ctrl->>Model: 3: with(['student', 'reviewer'])->get()
+    activate Model
+    Model-->>Ctrl: 4: Daftar Pengajuan Mahasiswa
+    deactivate Model
+    Ctrl-->>UI: 5: Mengembalikan View Daftar Pengajuan
+    deactivate Ctrl
+    UI-->>Kaprodi: 6: Menampilkan Tabel Daftar Pengajuan Mahasiswa
     deactivate UI
 
     %% 2. VIEW DETAILED SUBMISSION
-    Kaprodi->>UI: 3: Mengklik Lihat Detail salah satu pengajuan
+    Kaprodi->>UI: 7: Mengklik Lihat Detail salah satu pengajuan
     activate UI
-    UI-->>Kaprodi: 4: Menampilkan Detail Pengajuan & Pilihan Tindakan
+    UI->>Ctrl: 8: show(submissionId)
+    activate Ctrl
+    Ctrl->>Model: 9: findOrFail(submissionId)
+    activate Model
+    Model-->>Ctrl: 10: Detail Data Pengajuan
+    deactivate Model
+    Ctrl-->>UI: 11: Mengembalikan View Detail Pengajuan
+    deactivate Ctrl
+    UI-->>Kaprodi: 12: Menampilkan Detail Pengajuan & Pilihan Tindakan
     deactivate UI
 
     Note over Kaprodi, UI: Pilih alur sub-diagram spesifik di atas<br/>sesuai dengan tipe berkas dan status tindakan yang diinginkan.

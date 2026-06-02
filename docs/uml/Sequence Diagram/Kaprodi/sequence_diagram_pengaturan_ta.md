@@ -11,20 +11,28 @@ sequenceDiagram
 
     Kaprodi->>UI: 1: Membuka Halaman Pengaturan
     activate UI
-    UI-->>Kaprodi: 2: Menampilkan Halaman Pengaturan Sistem TA (dengan data max_batches, attempts_per_batch, submission_start, submission_end)
+    UI->>Ctrl: 2: editSettings()
+    activate Ctrl
+    Ctrl->>Model: 3: first()
+    activate Model
+    Model-->>Ctrl: 4: Data Konfigurasi Program Studi
+    deactivate Model
+    Ctrl-->>UI: 5: Mengembalikan View Pengaturan Sistem TA
+    deactivate Ctrl
+    UI-->>Kaprodi: 6: Menampilkan Halaman Pengaturan Sistem TA (dengan data max_batches, attempts_per_batch, submission_start, submission_end)
     deactivate UI
 
-    Kaprodi->>UI: 3: Mengubah parameter batch, attempts, & rentang waktu (deadline) pengajuan
-    Kaprodi->>UI: 4: Klik tombol Simpan Konfigurasi
+    Kaprodi->>UI: 7: Mengubah parameter batch, attempts, & rentang waktu (deadline) pengajuan
+    Kaprodi->>UI: 8: Klik tombol Simpan Konfigurasi
     activate UI
-    UI->>Ctrl: 5: updateSettings(max_batches, attempts_per_batch, submission_start, submission_end)
+    UI->>Ctrl: 9: updateSettings(max_batches, attempts_per_batch, submission_start, submission_end)
     activate Ctrl
-    Ctrl->>Model: 6: update(max_batches, attempts_per_batch, submission_start, submission_end)
+    Ctrl->>Model: 10: update(max_batches, attempts_per_batch, submission_start, submission_end)
     activate Model
-    Model-->>Ctrl: 7: Konfigurasi Program Studi berhasil diperbarui
+    Model-->>Ctrl: 11: Konfigurasi Program Studi berhasil diperbarui
     deactivate Model
-    Ctrl-->>UI: 8: Redirect Back dengan Pesan Sukses
+    Ctrl-->>UI: 12: Redirect Back dengan Pesan Sukses
     deactivate Ctrl
-    UI-->>Kaprodi: 9: Selesai (Menampilkan halaman dengan konfigurasi terupdate)
+    UI-->>Kaprodi: 13: Selesai (Menampilkan halaman dengan konfigurasi terupdate)
     deactivate UI
 ```
