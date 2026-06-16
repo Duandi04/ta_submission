@@ -21,6 +21,9 @@
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form action="{{ route('kaprodi.students.manage.index') }}" method="GET" class="row g-3">
+                @if(request('filter_status'))
+                    <input type="hidden" name="filter_status" value="{{ request('filter_status') }}">
+                @endif
                 <div class="col-md-10">
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>

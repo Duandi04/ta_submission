@@ -64,7 +64,7 @@ class CommentFactory extends Factory
     public function fromExaminer(): static
     {
         return $this->state(fn (array $attributes) => [
-            'content' => fake()->randomElement(['Bagaimana keunggulan metode ini?', 'Tolong jelaskan arsitektur sistem.', 'Ada pesan error saat pengujian.', 'Waktu respon masih lambat.', 'Apa rencana untuk mengatasi keterbatasan ini?']),
+            'content' => fake()->randomElement(['Bagaimana keunggulan metode ini?', 'Tolong jelaskan arsitektur sistem.', 'Ada pesan error saat pengujian.', 'waktu respon masih lambat.', 'Apa rencana untuk mengatasi keterbatasan ini?']),
         ]);
     }
 

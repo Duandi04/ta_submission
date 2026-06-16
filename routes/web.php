@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ProgramStudiController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\LecturerController;
+use App\Http\Controllers\Admin\RolePermissionController;
 use App\Http\Controllers\Admin\SubmissionController as AdminSubmissionController;
 use App\Http\Controllers\Dosen\AssessmentController;
 use App\Http\Controllers\Dosen\SubmissionController as DosenSubmissionController;
@@ -37,15 +38,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/similarity/check', [\App\Http\Controllers\SimilarityController::class, 'check'])->name('similarity.check');
 
     // Student routes
-    Route::middleware('role:mahasiswa')->prefix('student')->name('student.')->group(function () {
-        Route::post('submissions/{submission}/revision', [StudentSubmissionController::class, 'storeRevision'])->name('submissions.revision');
+    Route::middleware('permission:view menu: mahasiswa')->prefix('student')->name('student.')->group(function () {
         Route::patch('submissions/{submission}/cancel', [StudentSubmissionController::class, 'cancel'])->name('submissions.cancel');
         Route::patch('submissions/{submission}/submit', [StudentSubmissionController::class, 'submit'])->name('submissions.submit');
         Route::resource('submissions', StudentSubmissionController::class);
     });
 
     // Dosen routes (merges Supervisor & Examiner)
-    Route::middleware('role:dosen|kaprodi')->prefix('dosen')->name('dosen.')->group(function () {
+    Route::middleware('permission:view menu: dosen')->prefix('dosen')->name('dosen.')->group(function () {
         // Supervision Routes
         Route::get('/submissions', [DosenSubmissionController::class, 'submissions'])->name('submissions.index');
         Route::get('/students', [DosenSubmissionController::class, 'index'])->name('students.index');
@@ -58,7 +58,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Kaprodi routes
-    Route::middleware('role:kaprodi')->prefix('kaprodi')->name('kaprodi.')->group(function () {
+    Route::middleware('permission:view menu: kaprodi')->prefix('kaprodi')->name('kaprodi.')->group(function () {
         // Management Routes (Students & Lecturers)
         Route::get('students/manage/export', [KaprodiStudentController::class, 'export'])->name('students.manage.export');
         Route::post('students/manage/import', [KaprodiStudentController::class, 'import'])->name('students.manage.import');
@@ -109,7 +109,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Admin routes
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('permission:view menu: admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('users/export', [UserController::class, 'export'])->name('users.export');
         Route::post('users/import', [UserController::class, 'import'])->name('users.import');
         Route::resource('users', UserController::class);
@@ -122,6 +122,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/configuration', [ConfigurationController::class, 'index'])->name('configuration.index');
         Route::post('/configuration', [ConfigurationController::class, 'update'])->name('configuration.update');
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+
+        // RBAC Management
+        Route::get('/rbac', [RolePermissionController::class, 'index'])->name('rbac.index');
+        
+        Route::get('/rbac/roles/create', [RolePermissionController::class, 'createRole'])->name('rbac.roles.create');
+        Route::post('/rbac/roles', [RolePermissionController::class, 'storeRole'])->name('rbac.roles.store');
+        Route::get('/rbac/roles/{role}/edit', [RolePermissionController::class, 'editRole'])->name('rbac.roles.edit');
+        Route::put('/rbac/roles/{role}', [RolePermissionController::class, 'updateRole'])->name('rbac.roles.update');
+        Route::delete('/rbac/roles/{role}', [RolePermissionController::class, 'destroyRole'])->name('rbac.roles.destroy');
+        
+        Route::get('/rbac/permissions/create', [RolePermissionController::class, 'createPermission'])->name('rbac.permissions.create');
+        Route::post('/rbac/permissions', [RolePermissionController::class, 'storePermission'])->name('rbac.permissions.store');
+        Route::get('/rbac/permissions/{permission}/edit', [RolePermissionController::class, 'editPermission'])->name('rbac.permissions.edit');
+        Route::put('/rbac/permissions/{permission}', [RolePermissionController::class, 'updatePermission'])->name('rbac.permissions.update');
+        Route::delete('/rbac/permissions/{permission}', [RolePermissionController::class, 'destroyPermission'])->name('rbac.permissions.destroy');
     });
 
 

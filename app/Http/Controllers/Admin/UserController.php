@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
@@ -37,8 +38,9 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
+        $permissions = Permission::all();
         $programStudis = \App\Models\ProgramStudi::all();
-        return view('admin.users.create', compact('roles', 'programStudis'));
+        return view('admin.users.create', compact('roles', 'permissions', 'programStudis'));
     }
 
     public function store(UserRequest $request)
@@ -62,11 +64,21 @@ class UserController extends Controller
 
         $user = User::create($userData);
         
-        $roles = [$validated['role']];
-        if ($validated['role'] === 'kaprodi') {
-            $roles[] = 'dosen';
+        $roles = $request->input('roles');
+        if (empty($roles) && $request->filled('role')) {
+            $roles = [$request->input('role')];
+            if ($request->input('role') === 'kaprodi') {
+                $roles[] = 'dosen';
+            }
         }
-        $user->assignRole($roles);
+        
+        if (!empty($roles)) {
+            $user->syncRoles($roles);
+        }
+
+        if ($request->has('permissions')) {
+            $user->syncPermissions($request->input('permissions', []));
+        }
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
     }
@@ -97,12 +109,13 @@ class UserController extends Controller
     public function edit(Request $request, User $user)
     {
         $roles = Role::all();
+        $permissions = Permission::all();
         $programStudis = ProgramStudi::all();
 
         $query = User::filterByRequest($request);
         $navigation = NavigationHelper::getNavigation($user, $query, $request->sort_by ?: 'created_at', $request->sort_order ?: 'desc');
 
-        return view('admin.users.edit', compact('user', 'roles', 'programStudis', 'navigation'));
+        return view('admin.users.edit', compact('user', 'roles', 'permissions', 'programStudis', 'navigation'));
     }
 
     public function update(UserRequest $request, User $user)
@@ -138,11 +151,21 @@ class UserController extends Controller
 
         $user->update($userData);
 
-        $roles = [$validated['role']];
-        if ($validated['role'] === 'kaprodi') {
-            $roles[] = 'dosen';
+        $roles = $request->input('roles');
+        if (empty($roles) && $request->filled('role')) {
+            $roles = [$request->input('role')];
+            if ($request->input('role') === 'kaprodi') {
+                $roles[] = 'dosen';
+            }
         }
-        $user->syncRoles($roles);
+        
+        if (!empty($roles)) {
+            $user->syncRoles($roles);
+        }
+
+        if ($request->has('permissions')) {
+            $user->syncPermissions($request->input('permissions', []));
+        }
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil diperbarui.');
     }

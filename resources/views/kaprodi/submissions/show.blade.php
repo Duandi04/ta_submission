@@ -51,8 +51,7 @@
                         <hr>
                         <h6 class="fw-bold mb-2">Lampiran File</h6>
                         @php
-                            $proposalFiles = $submission->files->where('file_type', 'proposal');
-                            $revisionFiles = $submission->files->where('file_type', 'revision');
+                            $proposalFiles = $submission->files->where('file_type', 'proposal')->sortByDesc('created_at');
                         @endphp
 
                         @if ($proposalFiles->count() > 0)

@@ -17,10 +17,13 @@
         <div class="col-md-8 mx-auto">
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
-                    <form action="{{ route('kaprodi.students.manage.store') }}" method="POST" class="needs-validation"
+                    <form action="{{ route('kaprodi.students.manage.store') }}" method="POST" enctype="multipart/form-data" class="needs-validation"
                         novalidate>
                         @csrf
                         <input type="hidden" name="role" value="mahasiswa">
+
+                        {{-- Photo Upload --}}
+                        @include('partials.photo-upload', ['user' => new \App\Models\User()])
 
                         <div class="mb-3">
                             <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>

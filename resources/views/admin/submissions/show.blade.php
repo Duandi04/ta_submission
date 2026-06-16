@@ -39,8 +39,7 @@
                         <hr>
                         <h6 class="fw-bold mb-2">Lampiran File</h6>
                         @php
-                            $proposalFiles = $submission->files->where('file_type', 'proposal');
-                            $revisionFiles = $submission->files->where('file_type', 'revision');
+                            $proposalFiles = $submission->files->where('file_type', 'proposal')->sortByDesc('created_at');
                         @endphp
 
                         @if ($proposalFiles->count() > 0)
@@ -49,29 +48,6 @@
                                 @foreach ($proposalFiles as $file)
                                     <li class="mb-2 d-flex align-items-center">
                                         <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
-                                        <span class="flex-grow-1">{{ $file->file_name }} <span
-                                                class="text-muted small">({{ $file->getFormattedFileSize() }})</span></span>
-                                        @if (Str::endsWith(strtolower($file->file_name), '.pdf'))
-                                            <a href="{{ route('files.preview', $file) }}" target="_blank"
-                                                class="btn btn-sm btn-outline-primary me-1" title="Preview PDF">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                        @endif
-                                        <a href="{{ route('files.download', $file) }}"
-                                            class="btn btn-sm btn-outline-secondary" title="Download">
-                                            <i class="bi bi-download"></i>
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
-
-                        @if ($revisionFiles->count() > 0)
-                            <p class="small text-muted mb-1"><strong>Revisi</strong></p>
-                            <ul class="list-unstyled mb-3">
-                                @foreach ($revisionFiles as $file)
-                                    <li class="mb-2 d-flex align-items-center">
-                                        <i class="bi bi-file-earmark-pdf text-warning me-2"></i>
                                         <span class="flex-grow-1">{{ $file->file_name }} <span
                                                 class="text-muted small">({{ $file->getFormattedFileSize() }})</span></span>
                                         @if (Str::endsWith(strtolower($file->file_name), '.pdf'))

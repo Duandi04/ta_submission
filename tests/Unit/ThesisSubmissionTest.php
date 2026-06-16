@@ -239,7 +239,7 @@ class ThesisSubmissionTest extends TestCase
         $oldFile = SubmissionFile::factory()->proposal()->forThesis($submission)->create([
             'created_at' => now()->subDays(5),
         ]);
-        $newFile = SubmissionFile::factory()->revision()->forThesis($submission)->create([
+        $newFile = SubmissionFile::factory()->finalDocument()->forThesis($submission)->create([
             'created_at' => now(),
         ]);
 

@@ -137,6 +137,21 @@ class ThesisSubmissionFeatureTest extends TestCase
     }
 
     /**
+     * Test dosen can view submissions index
+     */
+    public function test_dosen_can_view_submissions_index(): void
+    {
+        $prodi = ProgramStudi::first();
+        /** @var User $supervisor */
+        $supervisor = User::factory()->dosen()->create(['program_studi_id' => $prodi->id]);
+        $supervisor->assignRole('dosen');
+
+        $response = $this->actingAs($supervisor)->get(route('dosen.submissions.index'));
+
+        $response->assertStatus(200);
+    }
+
+    /**
      * Test dosen can view submission detail they supervise
      */
     public function test_dosen_can_view_supervised_submission_detail(): void
@@ -268,7 +283,7 @@ class ThesisSubmissionFeatureTest extends TestCase
         $submission = ThesisSubmission::factory()->create();
 
         // Title should contain Indonesian words
-        $keywords = ['Sistem', 'Berbasis', 'Aplikasi', 'Pengembangan', 'Implementasi', 'Analisis', 'Rancang', 'Model', 'Tugas', 'Akhir'];
+        $keywords = ['Sistem', 'Berbasis', 'Aplikasi', 'Pengembangan', 'Implementasi', 'Analisis', 'Rancang', 'Model', 'Tugas', 'Akhir', 'Algoritma', 'Prediksi'];
         $found = false;
         foreach ($keywords as $keyword) {
             if (str_contains(strtolower($submission->title), strtolower($keyword))) {

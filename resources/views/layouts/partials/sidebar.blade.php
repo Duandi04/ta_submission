@@ -8,7 +8,7 @@
                 </a>
             </li>
 
-            @role('mahasiswa')
+            @can('view menu: mahasiswa')
                 <div class="sidebar-label">Mahasiswa</div>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('student.submissions.*') ? 'active' : '' }}"
@@ -17,9 +17,9 @@
                         <span>Pengajuan Saya</span>
                     </a>
                 </li>
-            @endrole
+            @endcan
 
-            @role('dosen|kaprodi')
+            @can('view menu: dosen')
                 <div class="sidebar-label">Dosen</div>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('dosen.students.index') ? 'active' : '' }}"
@@ -35,11 +35,11 @@
                         <span>Proposal Mahasiswa</span>
                     </a>
                 </li>
-            @endrole
+            @endcan
 
 
 
-            @role('kaprodi')
+            @can('view menu: kaprodi')
                 <div class="sidebar-label">Kaprodi</div>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('kaprodi.students.manage.*') ? 'active' : '' }}"
@@ -83,9 +83,9 @@
                         <span>Pengaturan TA</span>
                     </a>
                 </li>
-            @endrole
+            @endcan
 
-            @role('kaprodi')
+            @can('view menu: reports')
                 <div class="sidebar-label">Laporan & Cetak</div>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('kaprodi.reports.*') ? 'active' : '' }}"
@@ -94,9 +94,9 @@
                         <span>Laporan Proposal Diterima</span>
                     </a>
                 </li>
-            @endrole
+            @endcan
 
-            @role('admin')
+            @can('view menu: admin')
                 <div class="sidebar-label">Administrator</div>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.lecturers.*') ? 'active' : '' }}"
@@ -113,11 +113,12 @@
                         <span>Kelola Mahasiswa</span>
                     </a>
                 </li>
-                <a class="nav-link {{ request()->routeIs('admin.users.index') && !request()->has('role_group') && (request('role') != 'mahasiswa' || !request()->has('role')) ? 'active' : '' }}"
-                    href="{{ route('admin.users.index') }}">
-                    <i class="bi bi-person-lines-fill"></i>
-                    <span>Semua Pengguna</span>
-                </a>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.users.index') && !request()->has('role_group') && (request('role') != 'mahasiswa' || !request()->has('role')) ? 'active' : '' }}"
+                        href="{{ route('admin.users.index') }}">
+                        <i class="bi bi-person-lines-fill"></i>
+                        <span>Semua Pengguna</span>
+                    </a>
                 </li>
 
                 <li class="nav-item">
@@ -149,7 +150,16 @@
                         <span>Pengaturan Sistem</span>
                     </a>
                 </li>
-            @endrole
+                @can('manage rbac')
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.rbac.*') ? 'active' : '' }}"
+                        href="{{ route('admin.rbac.index') }}">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        <span>Kelola RBAC</span>
+                    </a>
+                </li>
+                @endcan
+            @endcan
         </ul>
     </div>
 </aside>

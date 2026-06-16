@@ -61,14 +61,53 @@
                             @enderror
                         </div>
 
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">File Proposal Saat Ini</label>
+                            @php
+                                $currentProposal = $submission->files->where('file_type', 'proposal')->sortByDesc('created_at')->first();
+                            @endphp
+                            @if ($currentProposal)
+                                <div class="d-flex align-items-center p-3 border border-light rounded shadow-sm bg-light mb-2">
+                                    <div class="me-3 text-center" style="width: 32px;">
+                                        @if (str_contains($currentProposal->mime_type, 'pdf'))
+                                            <i class="bi bi-file-earmark-pdf-fill text-danger fs-3"></i>
+                                        @else
+                                            <i class="bi bi-file-earmark-word-fill text-primary fs-3"></i>
+                                        @endif
+                                    </div>
+                                    <div class="flex-grow-1 min-width-0">
+                                        <h6 class="mb-0 text-truncate text-dark fw-bold" style="font-size: 0.9rem;">{{ $currentProposal->file_name }}</h6>
+                                        <small class="text-muted" style="font-size: 0.75rem;">
+                                            {{ $currentProposal->getFileTypeLabel() }} • {{ $currentProposal->getFormattedFileSize() }}
+                                        </small>
+                                    </div>
+                                    <div class="btn-group ms-3">
+                                        <a href="{{ route('files.preview', $currentProposal) }}"
+                                            class="btn btn-sm btn-outline-primary border-0" target="_blank" title="Pratinjau">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ route('files.download', $currentProposal->id) }}"
+                                            class="btn btn-sm btn-outline-secondary border-0" title="Unduh">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="alert alert-warning py-2 small d-flex align-items-center mb-2">
+                                    <i class="bi bi-exclamation-triangle-fill me-2 text-warning"></i>
+                                    <span>Belum ada file proposal. Silakan unggah file di bawah ini.</span>
+                                </div>
+                            @endif
+                        </div>
+
                         <div class="mb-3">
                             <label for="proposal_file" class="form-label">File Proposal Baru (Opsional)</label>
                             <input type="file" class="form-control @error('proposal_file') is-invalid @enderror"
-                                id="proposal_file" name="proposal_file" accept=".pdf,.doc,.docx">
+                                id="proposal_file" name="proposal_file" accept=".pdf">
                             @error('proposal_file')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted">Kosongkan jika tidak ingin mengubah file. Format: PDF, DOC, DOCX. Maksimal 10MB.</small>
+                            <small class="text-muted">Kosongkan jika tidak ingin mengubah file. Format: PDF. Maksimal 10MB.</small>
                         </div>
 
                         <hr class="my-4">
@@ -103,10 +142,21 @@
                             Revisi</strong>.
                     </p>
                     <hr>
-                    <h6 class="small">File Saat Ini:</h6>
-                    <ul class="small">
+                    <h6 class="small fw-bold">File Saat Ini:</h6>
+                    <ul class="list-unstyled mb-0">
                         @foreach ($submission->files as $file)
-                            <li>{{ $file->file_name }}</li>
+                            <li class="mb-2 text-truncate small d-flex align-items-center">
+                                @if ($file->file_type === 'proposal')
+                                    <i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>
+                                @elseif ($file->file_type === 'final_document')
+                                    <i class="bi bi-file-earmark-text-fill text-success me-2"></i>
+                                @elseif ($file->file_type === 'presentation')
+                                    <i class="bi bi-file-earmark-play-fill text-primary me-2"></i>
+                                @else
+                                    <i class="bi bi-file-earmark-fill text-secondary me-2"></i>
+                                @endif
+                                <span title="{{ $file->file_name }}" class="text-truncate" style="max-width: 180px;">{{ $file->file_name }}</span>
+                            </li>
                         @endforeach
                     </ul>
                 </div>

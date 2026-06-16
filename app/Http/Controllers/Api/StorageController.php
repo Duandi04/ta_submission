@@ -114,9 +114,9 @@ class StorageController extends Controller
     public function upload(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'file'          => 'required|file|mimes:pdf,doc,docx|max:10240',
+            'file'          => 'required|file|mimes:pdf|max:10240',
             'submission_id' => 'required|integer|exists:thesis_submissions,id',
-            'file_type'     => 'required|in:proposal,final_document,presentation,revision',
+            'file_type'     => 'required|in:proposal,final_document,presentation',
         ]);
 
         /** @var \App\Models\User $user */

@@ -82,8 +82,7 @@
                 <div class="card-body">
                     @if ($submission->files->count() > 0)
                         @php
-                            $proposalFiles = $submission->files->where('file_type', 'proposal');
-                            $revisionFiles = $submission->files->where('file_type', 'revision');
+                            $proposalFiles = $submission->files->where('file_type', 'proposal')->sortByDesc('created_at');
                         @endphp
 
                         @if ($proposalFiles->count() > 0)
@@ -93,35 +92,6 @@
                                     <div class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
                                             <i class="bi bi-file-earmark-pdf text-danger fs-5 me-2"></i>
-                                            <strong>{{ $file->file_name }}</strong>
-                                            <br>
-                                            <small class="text-muted ms-4">{{ $file->getFormattedFileSize() }} -
-                                                {{ $file->created_at->format('d/m/Y H:i') }}</small>
-                                        </div>
-                                        <div>
-                                            @if (Str::endsWith(strtolower($file->file_name), '.pdf'))
-                                                <a href="{{ route('files.preview', $file) }}" target="_blank"
-                                                    class="btn btn-sm btn-outline-primary me-1" title="Preview PDF">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
-                                            @endif
-                                            <a href="{{ route('files.download', $file) }}" class="btn btn-sm btn-primary"
-                                                title="Download">
-                                                <i class="bi bi-download"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-
-                        @if ($revisionFiles->count() > 0)
-                            <p class="small text-muted mb-1"><strong>Revisi</strong></p>
-                            <div class="list-group">
-                                @foreach ($revisionFiles as $file)
-                                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <i class="bi bi-file-earmark-pdf text-warning fs-5 me-2"></i>
                                             <strong>{{ $file->file_name }}</strong>
                                             <br>
                                             <small class="text-muted ms-4">{{ $file->getFormattedFileSize() }} -

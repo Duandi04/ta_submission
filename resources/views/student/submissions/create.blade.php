@@ -69,11 +69,11 @@
                             <label for="proposal_file" class="form-label">File Proposal <span
                                     class="text-danger">*</span></label>
                             <input type="file" class="form-control @error('proposal_file') is-invalid @enderror"
-                                id="proposal_file" name="proposal_file" accept=".pdf,.doc,.docx" required>
+                                id="proposal_file" name="proposal_file" accept=".pdf" required>
                             @error('proposal_file')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted">Format: PDF, DOC, DOCX. Maksimal 10MB.</small>
+                            <small class="text-muted">Format: PDF. Maksimal 10MB.</small>
                         </div>
 
                         <hr class="my-4">
@@ -168,7 +168,7 @@
                         <li>Pastikan judul sesuai dengan topik penelitian</li>
                         <li>Abstrak harus menjelaskan tujuan, metode, dan kontribusi penelitian</li>
                         <li>Dosen pembimbing akan ditetapkan oleh Kaprodi</li>
-                        <li>Upload file proposal dalam format PDF, DOC, atau DOCX</li>
+                        <li>Upload file proposal dalam format PDF</li>
                     </ol>
 
                     <hr>

@@ -32,7 +32,7 @@ class SubmissionController extends Controller
             'title' => 'required|max:255',
             'abstract' => 'required',
             'research_field' => 'nullable|max:100',
-            'proposal_file' => 'required|file|mimes:pdf,doc,docx|max:10240',
+            'proposal_file' => 'required|file|mimes:pdf|max:10240',
         ]);
 
         $submission = $this->submissionService->create(
@@ -85,7 +85,7 @@ class SubmissionController extends Controller
             'title' => 'required|max:255',
             'abstract' => 'required',
             'research_field' => 'nullable|max:100',
-            'proposal_file' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
+            'proposal_file' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         $this->submissionService->update(
@@ -97,24 +97,6 @@ class SubmissionController extends Controller
         return redirect()
             ->route('student.submissions.show', $submission)
             ->with('success', 'Pengajuan berhasil diperbarui!');
-    }
-
-    public function storeRevision(Request $request, ThesisSubmission $submission)
-    {
-        /** @var \App\Models\User $user */
-        $user = \Illuminate\Support\Facades\Auth::user();
-        abort_if($submission->student_id !== $user->id, 403);
-
-        $request->validate([
-            'revision_file' => 'required|file|mimes:pdf,doc,docx|max:10240',
-        ]);
-
-        $this->submissionService->storeRevision(
-            $submission,
-            $request->file('revision_file')
-        );
-
-        return back()->with('success', 'File revisi berhasil diungggah!');
     }
 
     public function destroy(ThesisSubmission $submission)
