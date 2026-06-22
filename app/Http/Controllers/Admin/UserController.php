@@ -85,7 +85,7 @@ class UserController extends Controller
 
     public function show(Request $request, User $user)
     {
-        $user->load(['roles', 'programStudi.faculty', 'thesisSubmissions', 'supervisedTheses', 'assessments.thesisSubmission.student']);
+        $user->load(['roles', 'programStudi.faculty', 'thesisSubmissions', 'assessments.thesisSubmission.student']);
 
         $activities = \Spatie\Activitylog\Models\Activity::where(function ($q) use ($user) {
             $q->where('causer_id', $user->id)

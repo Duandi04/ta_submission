@@ -75,6 +75,7 @@ Selain diagram visual, berikut adalah dokumentasi tertulis mengenai cara kerja i
 5.  **[Sistem Pengecekan Similaritas Berkas](file:///opt/lampp/htdocs/ta_submission/docs/SIMILARITY_CHECK.md)** - Cara kerja internal integrasi deteksi plagiarisme proposal tugas akhir.
 6.  **[Panduan Konfigurasi Sistem](file:///opt/lampp/htdocs/ta_submission/docs/CONFIGURATION.md)** - Langkah pengaturan variabel lingkungan (`.env`), *database seeding*, dan pemasangan sistem di server lokal.
 7.  **[Panduan Pengujian (Testing)](file:///opt/lampp/htdocs/ta_submission/docs/TESTING_GUIDE.md)** - Cara menjalankan pengujian unit (*Unit Testing*) dan fungsional untuk memverifikasi keamanan dan reliabilitas alur kode.
+8.  **[Bab 4: Hasil dan Pembahasan (Agile Scrum)](file:///c:/xampp/htdocs/ta_submission/docs/bab_4_hasil_dan_pembahasan.md)** - Pembahasan lengkap inisiasi backlog (MoSCoW), pelaksanaan Sprint 1-4 (analisis, desain, kode, pengujian), dan evaluasi akhir (SUS & UAT).
 
 ---
 
