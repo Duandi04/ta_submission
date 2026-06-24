@@ -3,15 +3,6 @@
 @section('title', 'Pengajuan Saya')
 
 @section('content')
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <h1 class="h2">Pengajuan Tugas Akhir Saya</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <a href="{{ route('student.submissions.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Buat Pengajuan Baru
-            </a>
-        </div>
-    </div>
-
     @php
         $user = auth()->user();
         $prodi = $user->programStudi;
@@ -25,6 +16,21 @@
             if ($prodi->submission_end && $now->gt($prodi->submission_end)) $isWithinDeadline = false;
         }
     @endphp
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2">Pengajuan Tugas Akhir Saya</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            @if ($isWithinDeadline)
+                <a href="{{ route('student.submissions.create') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Buat Pengajuan Baru
+                </a>
+            @else
+                <button class="btn btn-secondary" disabled title="Masa pengajuan ditutup">
+                    <i class="bi bi-lock-fill"></i> Buat Pengajuan Baru (Tutup)
+                </button>
+            @endif
+        </div>
+    </div>
 
     <div class="row mb-4">
         <div class="col-md-4">
@@ -191,9 +197,15 @@
                     <i class="bi bi-inbox empty-state-icon text-muted" style="font-size: 4rem;"></i>
                     <h4 class="mt-3">Belum Ada Pengajuan</h4>
                     <p class="text-muted">Buat pengajuan tugas akhir pertama Anda sekarang.</p>
-                    <a href="{{ route('student.submissions.create') }}" class="btn btn-primary mt-2">
-                        <i class="bi bi-plus-circle"></i> Buat Pengajuan Baru
-                    </a>
+                    @if ($isWithinDeadline)
+                        <a href="{{ route('student.submissions.create') }}" class="btn btn-primary mt-2">
+                            <i class="bi bi-plus-circle"></i> Buat Pengajuan Baru
+                        </a>
+                    @else
+                        <button class="btn btn-secondary mt-2" disabled>
+                            <i class="bi bi-lock-fill"></i> Buat Pengajuan Baru (Tutup)
+                        </button>
+                    @endif
                 </div>
             </div>
         @endif

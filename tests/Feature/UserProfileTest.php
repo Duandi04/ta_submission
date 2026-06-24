@@ -45,16 +45,20 @@ class UserProfileTest extends TestCase
     {
         $profileData = [
             'email' => 'updated@test.com',
+            'angkatan' => 2024,
             'phone' => '08777777777',
         ];
 
+        $oldEmail = $this->user->email;
+        $oldAngkatan = $this->user->angkatan;
+
         $response = $this->actingAs($this->user)->put(route('profile.update'), $profileData);
         $response->assertRedirect();
-        $this->assertDatabaseHas('users', [
-            'id' => $this->user->id,
-            'email' => 'updated@test.com',
-            'phone' => '08777777777',
-        ]);
+
+        $this->user->refresh();
+        $this->assertEquals($oldEmail, $this->user->email);
+        $this->assertEquals($oldAngkatan, $this->user->angkatan);
+        $this->assertEquals('08777777777', $this->user->phone);
     }
 
     /**
@@ -84,7 +88,6 @@ class UserProfileTest extends TestCase
         $photo = UploadedFile::fake()->image('profile.jpg');
 
         $response = $this->actingAs($this->user)->put(route('profile.update'), [
-            'email' => $this->user->email,
             'profile_photo' => $photo
         ]);
 

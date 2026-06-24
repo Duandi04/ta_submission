@@ -3,6 +3,22 @@
 @section('title', 'Detail Pengajuan')
 
 @section('content')
+    @php
+        $user = auth()->user();
+        $prodi = $user->programStudi;
+        $now = now();
+        $isWithinDeadline = true;
+        $deadlineMessage = '';
+        if ($prodi && ($prodi->submission_start || $prodi->submission_end)) {
+            if ($prodi->submission_start && $now->lt($prodi->submission_start)) {
+                $isWithinDeadline = false;
+                $deadlineMessage = 'Masa pengajuan belum dimulai (Mulai pada: ' . $prodi->submission_start->format('d/m/Y H:i') . ')';
+            } elseif ($prodi->submission_end && $now->gt($prodi->submission_end)) {
+                $isWithinDeadline = false;
+                $deadlineMessage = 'Masa pengajuan telah berakhir (Tutup pada: ' . $prodi->submission_end->format('d/m/Y H:i') . ')';
+            }
+        }
+    @endphp
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 class="h2 mb-0">Detail Pengajuan</h1>
         <div class="btn-toolbar mb-2 mb-md-0 d-flex align-items-center">
@@ -291,22 +307,29 @@
             <div class="col-md-4">
                 <!-- Submit Button (Only for Draft) -->
                 @if ($submission->status === 'draft')
-                    <div class="card border-success mb-3">
-                        <div class="card-header bg-success text-white">
+                    <div class="card border-{{ $isWithinDeadline ? 'success' : 'danger' }} mb-3">
+                        <div class="card-header bg-{{ $isWithinDeadline ? 'success' : 'danger' }} text-white">
                             <i class="bi bi-send"></i> Ajukan Proposal
                         </div>
                         <div class="card-body">
-                            <p class="small text-muted mb-3">Jika Anda yakin dengan draft ini, silakan ajukan untuk
-                                direview
-                                oleh Kaprodi.</p>
-                            <div class="alert alert-warning py-2 px-3 mb-3 d-flex align-items-start gap-2">
-                                <i class="bi bi-exclamation-triangle-fill mt-1 flex-shrink-0"></i>
-                                <small>Setelah diajukan, pengajuan <strong>tidak dapat dibatalkan</strong>.</small>
-                            </div>
-                            <button type="button" class="btn btn-success w-100" data-bs-toggle="modal"
-                                data-bs-target="#confirmSubmitModal">
-                                <i class="bi bi-send me-1"></i> Ajukan Sekarang
-                            </button>
+                            @if ($isWithinDeadline)
+                                <p class="small text-muted mb-3">Jika Anda yakin dengan draft ini, silakan ajukan untuk
+                                    direview
+                                    oleh Kaprodi.</p>
+                                <div class="alert alert-warning py-2 px-3 mb-3 d-flex align-items-start gap-2">
+                                    <i class="bi bi-exclamation-triangle-fill mt-1 flex-shrink-0"></i>
+                                    <small>Setelah diajukan, pengajuan <strong>tidak dapat dibatalkan</strong>.</small>
+                                </div>
+                                <button type="button" class="btn btn-success w-100" data-bs-toggle="modal"
+                                    data-bs-target="#confirmSubmitModal">
+                                    <i class="bi bi-send me-1"></i> Ajukan Sekarang
+                                </button>
+                            @else
+                                <div class="alert alert-danger py-2 px-3 mb-0 d-flex align-items-start gap-2">
+                                    <i class="bi bi-lock-fill mt-1 flex-shrink-0"></i>
+                                    <small><strong>Pengajuan Ditutup:</strong> {{ $deadlineMessage }}</small>
+                                </div>
+                            @endif
                         </div>
                     </div>
 

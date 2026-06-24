@@ -194,6 +194,79 @@ class StudentSubmissionControllerTest extends TestCase
         $response403->assertStatus(403);
     }
 
+    public function test_student_submissions_create_fails_before_start_deadline(): void
+    {
+        $this->prodi->update([
+            'submission_start' => now()->addDays(1),
+            'submission_end' => now()->addDays(5),
+        ]);
+
+        $response = $this->actingAs($this->student)->get(route('student.submissions.create'));
+        $response->assertRedirect(route('student.submissions.index'));
+        $response->assertSessionHas('error', 'Masa pengajuan belum dimulai. Mulai pada: ' . $this->prodi->submission_start->format('d/m/Y H:i'));
+    }
+
+    public function test_student_submissions_create_fails_after_end_deadline(): void
+    {
+        $this->prodi->update([
+            'submission_start' => now()->subDays(5),
+            'submission_end' => now()->subDays(1),
+        ]);
+
+        $response = $this->actingAs($this->student)->get(route('student.submissions.create'));
+        $response->assertRedirect(route('student.submissions.index'));
+        $response->assertSessionHas('error', 'Masa pengajuan telah berakhir pada: ' . $this->prodi->submission_end->format('d/m/Y H:i'));
+    }
+
+    public function test_student_submissions_store_fails_before_start_deadline(): void
+    {
+        $this->prodi->update([
+            'submission_start' => now()->addDays(1),
+            'submission_end' => now()->addDays(5),
+        ]);
+
+        $file = UploadedFile::fake()->create('proposal.pdf', 500, 'application/pdf');
+        $payload = [
+            'title' => 'Sistem Pendeteksi Objek Baru',
+            'abstract' => 'Penelitian ini mendeteksi objek dengan model baru.',
+            'research_field' => 'Artificial Intelligence',
+            'proposal_file' => $file,
+        ];
+
+        $response = $this->actingAs($this->student)->post(route('student.submissions.store'), $payload);
+        $response->assertSessionHasErrors(['deadline']);
+    }
+
+    public function test_student_submissions_submit_fails_before_start_deadline(): void
+    {
+        $submission = ThesisSubmission::factory()->draft()->forStudent($this->student)->create();
+
+        $this->prodi->update([
+            'submission_start' => now()->addDays(1),
+            'submission_end' => now()->addDays(5),
+        ]);
+
+        $response = $this->actingAs($this->student)->patch(route('student.submissions.submit', $submission));
+        $response->assertRedirect(route('student.submissions.show', $submission));
+        $response->assertSessionHas('error', 'Masa pengajuan belum dimulai. Mulai pada: ' . $this->prodi->submission_start->format('d/m/Y H:i'));
+        $this->assertEquals('draft', $submission->fresh()->status);
+    }
+
+    public function test_student_submissions_submit_fails_after_end_deadline(): void
+    {
+        $submission = ThesisSubmission::factory()->draft()->forStudent($this->student)->create();
+
+        $this->prodi->update([
+            'submission_start' => now()->subDays(5),
+            'submission_end' => now()->subDays(1),
+        ]);
+
+        $response = $this->actingAs($this->student)->patch(route('student.submissions.submit', $submission));
+        $response->assertRedirect(route('student.submissions.show', $submission));
+        $response->assertSessionHas('error', 'Masa pengajuan telah berakhir pada: ' . $this->prodi->submission_end->format('d/m/Y H:i'));
+        $this->assertEquals('draft', $submission->fresh()->status);
+    }
+
     /**
      * Test FileDownloadController @download and @preview
      */

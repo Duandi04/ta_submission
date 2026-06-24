@@ -45,12 +45,10 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email"
-                                name="email" value="{{ old('email', auth()->user()->email) }}" required>
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email"
+                                value="{{ auth()->user()->email }}" disabled>
+                            <div class="form-text">Email tidak dapat diubah. Hubungi admin untuk perubahan.</div>
                         </div>
 
                         <div class="row mb-3">
@@ -63,11 +61,9 @@
                             <div class="col-md-4">
                                 <label for="angkatan" class="form-label">Tahun Angkatan</label>
                                 @if(auth()->user()->hasRole('mahasiswa'))
-                                    <input type="number" class="form-control @error('angkatan') is-invalid @enderror" id="angkatan"
-                                        name="angkatan" value="{{ old('angkatan', auth()->user()->angkatan) }}" placeholder="Contoh: 2021">
-                                    @error('angkatan')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <input type="text" class="form-control" id="angkatan"
+                                        value="{{ auth()->user()->angkatan ?? '-' }}" disabled>
+                                    <div class="form-text">Hubungi admin untuk perubahan angkatan.</div>
                                 @else
                                     <input type="text" class="form-control" value="-" disabled>
                                 @endif

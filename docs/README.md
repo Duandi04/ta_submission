@@ -74,8 +74,12 @@ Selain diagram visual, berikut adalah dokumentasi tertulis mengenai cara kerja i
 4.  **[Panduan Ekspor & Impor Excel](file:///opt/lampp/htdocs/ta_submission/docs/excel_import_export_guide.md)** - Aturan format data berkas spreadsheet untuk impor massal data dosen dan mahasiswa.
 5.  **[Sistem Pengecekan Similaritas Berkas](file:///opt/lampp/htdocs/ta_submission/docs/SIMILARITY_CHECK.md)** - Cara kerja internal integrasi deteksi plagiarisme proposal tugas akhir.
 6.  **[Panduan Konfigurasi Sistem](file:///opt/lampp/htdocs/ta_submission/docs/CONFIGURATION.md)** - Langkah pengaturan variabel lingkungan (`.env`), *database seeding*, dan pemasangan sistem di server lokal.
-7.  **[Panduan Pengujian (Testing)](file:///opt/lampp/htdocs/ta_submission/docs/TESTING_GUIDE.md)** - Cara menjalankan pengujian unit (*Unit Testing*) dan fungsional untuk memverifikasi keamanan dan reliabilitas alur kode.
+7.  **[Panduan Pengujian (Testing)](file:///c:/xampp/htdocs/ta_submission/docs/TESTING_GUIDE.md)** - Cara menjalankan pengujian unit (*Unit Testing*) dan fungsional untuk memverifikasi keamanan dan reliabilitas alur kode.
 8.  **[Bab 4: Hasil dan Pembahasan (Agile Scrum)](file:///c:/xampp/htdocs/ta_submission/docs/bab_4_hasil_dan_pembahasan.md)** - Pembahasan lengkap inisiasi backlog (MoSCoW), pelaksanaan Sprint 1-4 (analisis, desain, kode, pengujian), dan evaluasi akhir (SUS & UAT).
+9.  **[Laporan Pengujian Unit (Unit Test List)](file:///c:/xampp/htdocs/ta_submission/docs/unit_test.md)** - Daftar lengkap 183 kasus uji otomatis (47 unit test, 136 feature test) beserta penjelasannya.
+10. **[Laporan Coverage Pengujian (Code Coverage Report)](file:///c:/xampp/htdocs/ta_submission/docs/coverage_test.md)** - Analisis cakupan kode (76.74%) per direktori dan penjelasannya.
+11. **[Dokumentasi Agile Scrum Process](file:///c:/xampp/htdocs/ta_submission/docs/sprint_agile_docs.md)** - Analisis proses Agile Scrum per iterasi Sprint 1-4, DoD, kendala, dan evaluasinya.
+12. **[Panduan Teori Pengujian Perangkat Lunak (Software Testing Guide)](file:///c:/xampp/htdocs/ta_submission/docs/testing_theory/README.md)** - Pembahasan mendalam mengenai Black Box, White Box, Unit Testing, AAA Pattern, penghitungan Code Coverage, kualitas kode, keamanan, dan keandalan sistem.
 
 ---
 
