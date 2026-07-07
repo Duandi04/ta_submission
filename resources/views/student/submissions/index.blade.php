@@ -64,8 +64,8 @@
         </div>
         
         @php
-            $attemptsPerBatch = \App\Models\Setting::getValue('attempts_per_batch', 3);
-            $maxBatches = \App\Models\Setting::getValue('max_batches', 2);
+            $attemptsPerBatch = $prodi ? (int) ($prodi->attempts_per_batch ?? 3) : (int) \App\Models\Setting::getValue('attempts_per_batch', 3);
+            $maxBatches = $prodi ? (int) ($prodi->max_batches ?? 2) : (int) \App\Models\Setting::getValue('max_batches', 2);
             $maxTotal = $attemptsPerBatch * $maxBatches;
             
             $allSub = $user->thesisSubmissions()->orderBy('id', 'asc')->get();

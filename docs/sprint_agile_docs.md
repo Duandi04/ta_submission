@@ -80,8 +80,8 @@ Sebelum memasuki Sprint 1, kebutuhan fungsional dan non-fungsional dipetakan ke 
 
 #### B. Implementasi Kode Aktual
 1.  **Pemberlakuan Batasan & Kunci Draf**: Diimplementasikan pada [SubmissionService.php](file:///c:/xampp/htdocs/ta_submission/app/Services/Student/SubmissionService.php#L40-L90) di metode `create()`. Aturan mengunci proses jika mahasiswa memiliki proposal berstatus `approved` atau melampaui batas batch pengajuan.
-2.  **Deteksi Kemiripan Judul**: Logika komparasi string berada di kelas [SimilarityHelper.php](file:///c:/xampp/htdocs/ta_submission/app/Helpers/SimilarityHelper.php) menggunakan rumus *Longest Common Subsequence* (LCS) via fungsi `similar_text()` PHP:
-    $$\text{Similarity} = \frac{2 \times |LCS|}{|S_1| + |S_2|} \times 100\%$$
+2.  **Deteksi Kemiripan Judul**: Logika komparasi string berada di kelas [SimilarityHelper.php](file:///c:/xampp/htdocs/ta_submission/app/Helpers/SimilarityHelper.php) menggunakan algoritma **Ratcliff-Obershelp (Oliver's Algorithm)** via fungsi `similar_text()` PHP. Algoritma ini membandingkan kecocokan dengan mencari *longest common substring* secara rekursif:
+    $$\text{Similarity} = \frac{2 \times \text{jumlah\_karakter\_sama}}{|S_1| + |S_2|} \times 100\%$$
 3.  **Otorisasi Controller**: Diintegrasikan di [SubmissionController.php](file:///c:/xampp/htdocs/ta_submission/app/Http/Controllers/Student/SubmissionController.php).
 
 #### C. Definition of Done (DoD) & Pengujian

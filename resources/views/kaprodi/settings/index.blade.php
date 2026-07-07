@@ -17,10 +17,10 @@
                     <form action="{{ route('kaprodi.settings.update') }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label for="max_batches" class="form-label">Maksimal Batch Pengajuan (SIklus)</label>
+                            <label for="max_batches" class="form-label">Maksimal Batch Pengajuan (Siklus)</label>
                             <div class="input-group">
                                 <input type="number" class="form-control" id="max_batches" name="max_batches"
-                                    value="{{ $settings['max_batches'] ?? 2 }}" min="1">
+                                    value="{{ $settings['max_batches'] ?? 3 }}" min="1">
                                 <span class="input-group-text">Batch</span>
                             </div>
                             <div class="form-text text-muted small">Berapa kali siklus pengajuan yang diizinkan (Total Max = Batch * Pengajuan per Batch).</div>
