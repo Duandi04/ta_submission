@@ -997,6 +997,12 @@ body {
     outline: none;
 }
 
+/* Fix overlapping icons when input is invalid */
+.password-input-wrapper .form-control.is-invalid {
+    background-image: none !important;
+    padding-right: 2.5rem !important; /* Reset to normal padding for the eye icon */
+}
+
 .guest-layout .form-check-input {
     width: 1.25rem;
     height: 1.25rem;
