@@ -112,30 +112,45 @@
                         <div class="mb-3">
                             <label for="current_password" class="form-label">Password Saat Ini <span
                                     class="text-danger">*</span></label>
-                            <input type="password"
-                                class="form-control @error('current_password') is-invalid @enderror"
-                                id="current_password" name="current_password" required>
-                            @error('current_password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <div class="password-input-wrapper position-relative">
+                                <input type="password"
+                                    class="form-control @error('current_password') is-invalid @enderror"
+                                    id="current_password" name="current_password" required>
+                                <button type="button" class="password-toggle-btn toggle-password" data-target="current_password" tabindex="-1" aria-label="Toggle password visibility">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                @error('current_password')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="password" class="form-label">Password Baru <span
                                         class="text-danger">*</span></label>
-                                <input type="password"
-                                    class="form-control @error('password') is-invalid @enderror" id="password"
-                                    name="password" required>
-                                @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <div class="password-input-wrapper position-relative">
+                                    <input type="password"
+                                        class="form-control @error('password') is-invalid @enderror" id="password"
+                                        name="password" required>
+                                    <button type="button" class="password-toggle-btn toggle-password" data-target="password" tabindex="-1" aria-label="Toggle password visibility">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    @error('password')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="password_confirmation" class="form-label">Konfirmasi Password <span
                                         class="text-danger">*</span></label>
-                                <input type="password" class="form-control" id="password_confirmation"
-                                    name="password_confirmation" required>
+                                <div class="password-input-wrapper position-relative">
+                                    <input type="password" class="form-control" id="password_confirmation"
+                                        name="password_confirmation" required>
+                                    <button type="button" class="password-toggle-btn toggle-password" data-target="password_confirmation" tabindex="-1" aria-label="Toggle password visibility">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -152,3 +167,25 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleButtons = document.querySelectorAll('.toggle-password');
+            toggleButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const targetId = this.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+                    const icon = this.querySelector('i');
+                    
+                    if (input && icon) {
+                        const isPassword = input.getAttribute('type') === 'password';
+                        input.setAttribute('type', isPassword ? 'text' : 'password');
+                        icon.classList.toggle('bi-eye');
+                        icon.classList.toggle('bi-eye-slash');
+                    }
+                });
+            });
+        });
+    </script>
+@endpush

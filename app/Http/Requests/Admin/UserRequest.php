@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UserRequest extends FormRequest
 {
@@ -27,7 +28,9 @@ class UserRequest extends FormRequest
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $userId,
-            'password' => $this->isMethod('POST') ? 'required|string|min:8|confirmed' : 'nullable|string|min:8|confirmed',
+            'password' => $this->isMethod('POST')
+                ? ['required', 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()]
+                : ['nullable', 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
             'nim_nip' => 'nullable|string|max:50|unique:users,nim_nip,' . $userId,
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
