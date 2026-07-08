@@ -34,10 +34,12 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation
         }
 
         // Avoid duplicates by email or NIM/NIP
+        $nimNip = $row['nim_nip'] ?? $row['nimnip'] ?? $row['nim'] ?? $row['nip'] ?? null;
+
         $user = User::where('email', $row['email'])
-            ->orWhere(function($q) use ($row) {
-                if (!empty($row['nim_nip'])) {
-                    $q->where('nim_nip', $row['nim_nip']);
+            ->orWhere(function($q) use ($nimNip) {
+                if (!empty($nimNip)) {
+                    $q->where('nim_nip', $nimNip);
                 }
             })->first();
 
@@ -45,7 +47,7 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation
             // Update existing user
             $user->update([
                 'name' => $row['nama'] ?? $user->name,
-                'nim_nip' => $row['nim_nip'] ?? $user->nim_nip,
+                'nim_nip' => $nimNip ?? $user->nim_nip,
                 'phone' => $row['telepon'] ?? $user->phone,
                 'address' => $row['alamat'] ?? $user->address,
                 'program_studi_id' => $prodi ? $prodi->id : $user->program_studi_id,
@@ -61,7 +63,7 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation
             $user = User::create([
                 'name' => $row['nama'],
                 'email' => $row['email'],
-                'nim_nip' => $row['nim_nip'] ?? null,
+                'nim_nip' => $nimNip,
                 'password' => Hash::make($row['password'] ?? 'password123'),
                 'phone' => $row['telepon'] ?? null,
                 'address' => $row['alamat'] ?? null,
@@ -90,6 +92,9 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation
             'nama' => 'required|string|max:255',
             'email' => 'required|email',
             'nim_nip' => 'nullable',
+            'nimnip' => 'nullable',
+            'nim' => 'nullable',
+            'nip' => 'nullable',
             'program_studi' => 'nullable|string',
             'angkatan' => 'nullable|numeric',
         ];

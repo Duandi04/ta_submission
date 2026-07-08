@@ -248,6 +248,34 @@ class KaprodiStudentControllerTest extends TestCase
             'address' => 'Alamat Import Updated'
         ]);
 
+        // Import CSV with "NIM/NIP" heading to test the slugification to "nimnip"
+        $csvContent2 = "nama,email,NIM/NIP,telepon,program_studi,alamat,angkatan,password\n";
+        $csvContent2 .= "Imported Student Two,imported_student2@example.com,88990011,081299997777,{$this->prodi->name},Alamat Import 2,2022,password123\n";
+        $file2 = UploadedFile::fake()->createWithContent('students_nim_nip.csv', $csvContent2);
+        
+        $response2 = $this->actingAs($this->kaprodi)->post(route('kaprodi.students.manage.import'), [
+            'file' => $file2
+        ]);
+        $response2->assertRedirect();
+        $this->assertDatabaseHas('users', [
+            'email' => 'imported_student2@example.com',
+            'nim_nip' => '88990011'
+        ]);
+
+        // Import CSV with "NIM" heading to test the slugification to "nim"
+        $csvContent3 = "nama,email,NIM,telepon,program_studi,alamat,angkatan,password\n";
+        $csvContent3 .= "Imported Student Three,imported_student3@example.com,77665544,081299996666,{$this->prodi->name},Alamat Import 3,2022,password123\n";
+        $file3 = UploadedFile::fake()->createWithContent('students_nim.csv', $csvContent3);
+        
+        $response3 = $this->actingAs($this->kaprodi)->post(route('kaprodi.students.manage.import'), [
+            'file' => $file3
+        ]);
+        $response3->assertRedirect();
+        $this->assertDatabaseHas('users', [
+            'email' => 'imported_student3@example.com',
+            'nim_nip' => '77665544'
+        ]);
+
         // Test ValidationException path
         $invalidCsv = "nama,email,nim_nip\n";
         $invalidCsv .= ",invalid_email,1234\n"; // missing name and invalid email
