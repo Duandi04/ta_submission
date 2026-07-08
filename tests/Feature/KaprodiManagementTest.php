@@ -128,8 +128,8 @@ class KaprodiManagementTest extends TestCase
         $lecturerData = [
             'name' => 'Dosen Baru',
             'email' => 'dosenbaru@test.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'nim_nip' => '1990111222',
             'phone' => '08123456789',
             'role' => 'dosen',

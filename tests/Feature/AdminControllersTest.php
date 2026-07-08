@@ -162,8 +162,8 @@ class AdminControllersTest extends TestCase
         $response = $this->actingAs($this->admin)->post(route('admin.users.store'), [
             'name' => 'User Baru',
             'email' => 'userbaru@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'nim_nip' => '12345678',
             'role' => 'mahasiswa',
             'program_studi_id' => $prodi->id,
@@ -227,8 +227,8 @@ class AdminControllersTest extends TestCase
         $response = $this->actingAs($this->admin)->post(route('admin.students.store'), [
             'name' => 'Student Baru',
             'email' => 'studentbaru@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'nim_nip' => 'S12345678',
             'program_studi_id' => $prodi->id,
             'angkatan' => '2023',
@@ -287,8 +287,8 @@ class AdminControllersTest extends TestCase
         $response = $this->actingAs($this->admin)->post(route('admin.lecturers.store'), [
             'name' => 'Lecturer Baru',
             'email' => 'lecturerbaru@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'nim_nip' => 'L12345678',
             'program_studi_id' => $prodi->id,
             'is_active' => '1',

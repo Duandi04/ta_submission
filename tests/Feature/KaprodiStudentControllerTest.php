@@ -99,8 +99,8 @@ class KaprodiStudentControllerTest extends TestCase
         $payload = [
             'name' => 'Mahasiswa Baru',
             'email' => 'mhsbaru@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'nim_nip' => '1122339900',
             'phone' => '081211112222',
             'address' => 'Alamat baru',
@@ -157,8 +157,8 @@ class KaprodiStudentControllerTest extends TestCase
         $payload = [
             'name' => 'Updated Name',
             'email' => $student->email,
-            'password' => 'password123new',
-            'password_confirmation' => 'password123new',
+            'password' => 'Password123new!',
+            'password_confirmation' => 'Password123new!',
             'nim_nip' => '1122339900',
             'phone' => '081211112222',
             'address' => 'Alamat baru',

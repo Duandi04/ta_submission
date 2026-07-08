@@ -68,14 +68,14 @@ class UserProfileTest extends TestCase
     {
         $passwordData = [
             'current_password' => 'password',
-            'password' => 'newpassword123',
-            'password_confirmation' => 'newpassword123',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
         ];
 
         $response = $this->actingAs($this->user)->put(route('profile.password.update'), $passwordData);
         $response->assertRedirect();
         
-        $this->assertTrue(Hash::check('newpassword123', $this->user->fresh()->password));
+        $this->assertTrue(Hash::check('Password123!', $this->user->fresh()->password));
     }
 
     /**
