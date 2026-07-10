@@ -79,7 +79,11 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation
         if ($roleName) {
             $roleName = strtolower(trim($roleName));
             if (Role::where('name', $roleName)->exists()) {
-                $user->syncRoles([$roleName]);
+                $rolesToSync = [$roleName];
+                if ($user->exists && $user->hasRole('kaprodi')) {
+                    $rolesToSync[] = 'kaprodi';
+                }
+                $user->syncRoles(array_unique($rolesToSync));
             }
         }
 

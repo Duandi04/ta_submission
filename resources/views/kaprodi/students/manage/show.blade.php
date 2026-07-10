@@ -102,7 +102,7 @@
             <div class="card border-0 shadow-sm p-4">
                 <h5 class="fw-bold mb-4 border-bottom pb-2">Riwayat Pengajuan Tugas Akhir</h5>
                 @php
-                    $submissions = \App\Models\ThesisSubmission::with('supervisor')->where('student_id', $student->id)->latest()->get();
+                    $submissions = \App\Models\ThesisSubmission::with(['supervisor', 'assessments'])->where('student_id', $student->id)->latest()->get();
                 @endphp
                 @if ($submissions->count() > 0)
                     <div class="list-group list-group-flush">
@@ -117,6 +117,13 @@
                                 @if($submission->supervisor)
                                     <p class="mb-1 small text-muted"><i class="bi bi-person me-1"></i>Pembimbing: <strong>{{ $submission->supervisor->name }}</strong></p>
                                 @endif
+                                @php
+                                    $avgScore = $submission->assessments->where('is_submitted', true)->avg('total_score');
+                                @endphp
+                                <p class="mb-1 small text-muted">
+                                    <i class="bi bi-star-fill {{ $avgScore !== null ? 'text-warning' : 'text-muted' }} me-1"></i>Rata-rata Nilai: 
+                                    <strong>{{ $avgScore !== null ? number_format($avgScore, 2) : '-' }}</strong>
+                                </p>
                                 <span
                                     class="badge bg-{{ $submission->getStatusBadgeClass() }}">{{ $submission->getStatusLabel() }}</span>
                             </a>

@@ -86,10 +86,11 @@
         <thead>
             <tr>
                 <th style="width: 5%;">No</th>
-                <th style="width: 25%;">Nama Mahasiswa</th>
-                <th style="width: 15%;">NIM</th>
-                <th style="width: 35%;">Judul Proposal Diterima</th>
-                <th style="width: 20%;">Dosen Pembimbing</th>
+                <th style="width: 20%;">Nama Mahasiswa</th>
+                <th style="width: 12%;">NIM</th>
+                <th style="width: 30%;">Judul Proposal Diterima</th>
+                <th style="width: 20%;">Catatan / Komentar</th>
+                <th style="width: 13%;">Dosen Pembimbing</th>
             </tr>
         </thead>
         <tbody>
@@ -102,11 +103,50 @@
                     <td>{{ $student->name }}</td>
                     <td class="text-center">{{ $student->nim_nip }}</td>
                     <td>{{ $accepted ? $accepted->title : '-' }}</td>
-                    <td>{{ $accepted && $accepted->supervisor ? $accepted->supervisor->name : '-' }}</td>
+                    <td>
+                        @php
+                            $feedbacks = $accepted ? $accepted->assessments->where('is_submitted', true)->filter(function($a) {
+                                return !empty($a->comments) || !empty($a->strengths) || !empty($a->weaknesses) || !empty($a->recommendations);
+                            }) : collect();
+                        @endphp
+                        @if($feedbacks->isNotEmpty())
+                            <ul style="margin: 0; padding-left: 10px; font-size: 9pt; list-style-type: none;">
+                                @foreach($feedbacks as $assessment)
+                                    <li style="margin-bottom: 6px;">
+                                        <strong style="color: #0d6efd;">{{ $assessment->getAnonymousLabel() }}:</strong>
+                                        <div style="padding-left: 8px; line-height: 1.2;">
+                                            @if(!empty($assessment->strengths))
+                                                <div><span style="color: #666;">Kelebihan:</span> {{ $assessment->strengths }}</div>
+                                            @endif
+                                            @if(!empty($assessment->weaknesses))
+                                                <div><span style="color: #666;">Kekurangan:</span> {{ $assessment->weaknesses }}</div>
+                                            @endif
+                                            @if(!empty($assessment->comments))
+                                                <div><span style="color: #666;">Komentar:</span> {{ $assessment->comments }}</div>
+                                            @endif
+                                            @if(!empty($assessment->recommendations))
+                                                <div><span style="color: #666;">Saran:</span> {{ $assessment->recommendations }}</div>
+                                            @endif
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td>
+                        @if($accepted)
+                            1. {{ $accepted->supervisor ? $accepted->supervisor->name : '-' }}<br>
+                            2. {{ $accepted->supervisor2 ? $accepted->supervisor2->name : '-' }}
+                        @else
+                            -
+                        @endif
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center" style="padding: 2rem;">Tidak ada data mahasiswa dengan proposal diterima.</td>
+                    <td colspan="6" class="text-center" style="padding: 2rem;">Tidak ada data mahasiswa dengan proposal diterima.</td>
                 </tr>
             @endforelse
         </tbody>

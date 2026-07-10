@@ -34,7 +34,7 @@ class KaprodiController extends Controller
                 $query->where('status', 'approved');
             })
             ->with(['thesisSubmissions' => function ($query) {
-                $query->where('status', 'approved')->with('supervisor');
+                $query->where('status', 'approved')->with(['supervisor', 'supervisor2', 'assessments.evaluator']);
             }])
             ->orderBy('nim_nip', 'asc')
             ->get();
@@ -50,7 +50,7 @@ class KaprodiController extends Controller
                 $query->where('status', 'approved');
             })
             ->with(['thesisSubmissions' => function ($query) {
-                $query->where('status', 'approved')->with('supervisor');
+                $query->where('status', 'approved')->with(['supervisor', 'supervisor2', 'assessments.evaluator']);
             }])
             ->orderBy('nim_nip', 'asc')
             ->get();
