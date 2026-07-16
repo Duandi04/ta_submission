@@ -30,6 +30,13 @@
                         <span class="mx-2">|</span>
                         <span
                             class="badge bg-{{ $submission->getStatusBadgeClass() }}">{{ $submission->getStatusLabel() }}</span>
+                        @php
+                            $avgScore = $submission->assessments->where('is_submitted', true)->avg('total_score');
+                        @endphp
+                        @if($avgScore !== null)
+                            <span class="mx-2">|</span>
+                            <span class="text-success fw-bold"><i class="bi bi-star-fill text-warning me-1"></i>Rata-rata Nilai: {{ number_format($avgScore, 2) }}</span>
+                        @endif
                     </p>
                     <hr>
                     <h6 class="fw-bold mb-2">Abstrak</h6>
@@ -39,8 +46,7 @@
                         <hr>
                         <h6 class="fw-bold mb-2">Lampiran File</h6>
                         @php
-                            $proposalFiles = $submission->files->where('file_type', 'proposal');
-                            $revisionFiles = $submission->files->where('file_type', 'revision');
+                            $proposalFiles = $submission->files->where('file_type', 'proposal')->sortByDesc('created_at');
                         @endphp
 
                         @if ($proposalFiles->count() > 0)
@@ -65,37 +71,22 @@
                                 @endforeach
                             </ul>
                         @endif
-
-                        @if ($revisionFiles->count() > 0)
-                            <p class="small text-muted mb-1"><strong>Revisi</strong></p>
-                            <ul class="list-unstyled mb-3">
-                                @foreach ($revisionFiles as $file)
-                                    <li class="mb-2 d-flex align-items-center">
-                                        <i class="bi bi-file-earmark-pdf text-warning me-2"></i>
-                                        <span class="flex-grow-1">{{ $file->file_name }} <span
-                                                class="text-muted small">({{ $file->getFormattedFileSize() }})</span></span>
-                                        @if (Str::endsWith(strtolower($file->file_name), '.pdf'))
-                                            <a href="{{ route('files.preview', $file) }}" target="_blank"
-                                                class="btn btn-sm btn-outline-primary me-1" title="Preview PDF">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                        @endif
-                                        <a href="{{ route('files.download', $file) }}"
-                                            class="btn btn-sm btn-outline-secondary" title="Download">
-                                            <i class="bi bi-download"></i>
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
                     @endif
                 </div>
             </div>
 
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
-                    <span class="fw-bold"><i class="bi bi-clipboard-check me-2 text-success"></i>Hasil Penilaian
-                        Dosen</span>
+                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <span class="fw-bold"><i class="bi bi-clipboard-check me-2 text-success"></i>Hasil Penilaian Dosen</span>
+                    @if($avgScore !== null)
+                        <span class="badge bg-success-subtle text-success border border-success-subtle fs-7 px-3 py-2 rounded-pill">
+                            <i class="bi bi-star-fill text-warning me-1"></i>Rata-rata Nilai: <strong>{{ number_format($avgScore, 2) }}</strong>
+                        </span>
+                    @else
+                        <span class="badge bg-light text-muted border fs-7 px-3 py-2 rounded-pill">
+                            <i class="bi bi-star me-1"></i>Rata-rata Nilai: <strong>-</strong>
+                        </span>
+                    @endif
                 </div>
                 <div class="card-body p-0">
                     @if ($submission->assessments->count() > 0)

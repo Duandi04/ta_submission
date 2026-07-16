@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="d-flex align-items-center gap-2">
             <button class="sidebar-toggle" id="sidebarToggle">
-                <i class="bi bi-list"></i>
+                <i class="bi bi-list fs-4"></i>
             </button>
             <a class="navbar-brand ms-2 ms-lg-4 d-flex align-items-center" href="{{ route('dashboard') }}">
                 <img src="{{ asset('images/logo_uvers.webp')}}" alt="Logo"

@@ -291,7 +291,7 @@
                             <span
                                 class="badge bg-success-subtle text-success border border-success-subtle">{{ $stats['submitted_students_count'] ?? 0 }}</span>
                         </div>
-                        <a href="{{ route('kaprodi.submissions.index') }}"
+                        <a href="{{ route('kaprodi.students.manage.index', ['filter_status' => 'sudah_mengumpulkan']) }}"
                             class="btn btn-sm btn-light border text-primary px-3">
                             Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
                         </a>
@@ -323,7 +323,7 @@
                                                     @endif
                                                 </td>
                                                 <td class="text-end pe-3">
-                                                    <a href="{{ route('kaprodi.students.show', $student->id) }}"
+                                                    <a href="{{ route('kaprodi.students.manage.index', ['search' => $student->nim_nip]) }}"
                                                         class="btn btn-sm btn-outline-primary px-3">
                                                         Detail
                                                     </a>
@@ -353,7 +353,7 @@
                             <span
                                 class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ $stats['not_submitted_students_count'] ?? 0 }}</span>
                         </div>
-                        <a href="{{ route('kaprodi.students.index') }}"
+                        <a href="{{ route('kaprodi.students.manage.index', ['filter_status' => 'belum_mengumpulkan']) }}"
                             class="btn btn-sm btn-light border text-primary px-3">
                             Lihat Semua <i class="bi bi-arrow-right ms-1"></i>
                         </a>
@@ -379,7 +379,7 @@
                                                     <span class="text-muted small">{{ $student->nim_nip }}</span>
                                                 </td>
                                                 <td class="text-end pe-3">
-                                                    <a href="{{ route('kaprodi.students.show', $student->id) }}"
+                                                    <a href="{{ route('kaprodi.students.manage.index', ['search' => $student->nim_nip]) }}"
                                                         class="btn btn-sm btn-outline-secondary px-3">
                                                         Detail
                                                     </a>
@@ -447,7 +447,7 @@
                                         </td>
                                         <td>{{ $submission->created_at->format('d/m/Y') }}</td>
                                         <td class="text-end pe-3">
-                                            <a href="{{ route('kaprodi.students.show', $submission->student_id) }}"
+                                            <a href="{{ route('kaprodi.submissions.index', ['search' => $submission->student->nim_nip, 'status' => $submission->status]) }}"
                                                 class="btn btn-sm btn-outline-primary px-3">
                                                 <i class="bi bi-person-plus"></i> Atur Dosen
                                             </a>

@@ -1,104 +1,135 @@
 # Class Diagram
 
-Diagram ini menggambarkan entitas utama penyusun sistem beserta properti pokok dan strukturnya. Tidak mencakup fitur manajemen hak akses admin agar fokus pada proses pengajuan. Entitas Pengguna (User) secara hierarkis dibedakan berdasarkan perannya (Mahasiswa, Dosen, Kaprodi) untuk memperjelas batas fungsi masing-masing.
+Diagram Kelas (*Class Diagram*) ini menggambarkan struktur statis sistem dengan menunjukkan kelas-kelas yang ada (beserta atribut dan metodenya) serta hubungan antarkelas (Generalisasi/Pewarisan, Asosiasi, dan Komposisi). Diagram ini diselaraskan secara **presisi 100% dengan model Eloquent Laravel dan skema database aktual** (seperti `ThesisSubmission`, `Assessment`, dll.), serta disederhanakan dengan menyatukan berkas lampiran langsung ke kelas pengajuan utama demi kemudahan pemahaman akademis.
 
 ```mermaid
 classDiagram
+    %% ==========================================
+    %% DEFINISI KELAS UTAMA (SESUAI LARAVEL MODEL)
+    %% ==========================================
     class User {
-        +BigInteger id
         +String name
         +String email
+        +String password
         +String nim_nip
+        +String phone
+        +String address
+        +String profile_photo
         +Boolean is_active
         +Integer program_studi_id
-        +login()
-        +logout()
     }
 
     class Mahasiswa {
-        +String roles = "mahasiswa"
-        +isStudent() Boolean
+        +Integer angkatan
+        +Boolean can_exceed_submission_limit
+        +buatPengajuanDraft(title, abstract, research_field, file)
+        +submitPengajuanFinal(submission)
+        +batalkanPengajuan(submission)
     }
 
     class Dosen {
-        +String roles = "dosen"
-        +isLecturer() Boolean
-        +isSupervisor() Boolean
+        +lihatDaftarBimbingan()
+        +buatPenilaianDraft(submission, score, comment)
+        +submitPenilaianFinal(assessment)
     }
 
     class Kaprodi {
-        +String roles = "kaprodi"
-        +isCoordinator() Boolean
+        +kelolaMahasiswa()
+        +kelolaDosen()
+        +kelolaDaftarPengajuan()
+        +kelolaRubrikPenilaian()
+        +kelolaPengaturanSistem()
+        +cetakLaporan()
     }
 
-    %% Inheritance to distinguish User roles
+    class ThesisSubmission {
+        +String title
+        +Text abstract
+        +String research_field
+        +String file_name
+        +String file_type
+        +String file_path
+        +String status
+        +Date submission_date
+        +Date defense_date
+        +Text notes
+        +Decimal final_score
+        +Boolean is_historical
+        +canBeEditedByStudent() Boolean
+        +getStatusLabel() String
+        +getStatusBadgeClass() String
+    }
+
+    class Assessment {
+        +Decimal total_score
+        +Text comments
+        +Text strengths
+        +Text weaknesses
+        +Text recommendations
+        +Boolean is_submitted
+        +Date submitted_at
+    }
+
+    class AssessmentScore {
+        +Decimal score
+        +Text notes
+        +String criterion_name
+        +Text criterion_description
+        +Integer weight
+    }
+
+    class Rubric {
+        +String name
+        +Text description
+        +Boolean is_active
+    }
+
+    class AssessmentCriterion {
+        +String name
+        +Text description
+        +Integer max_score
+        +Integer weight_percentage
+        +Integer order
+    }
+
+    class ProgramStudi {
+        +String name
+        +String code
+        +Date submission_start
+        +Date submission_end
+        +Integer max_batches
+        +Integer attempts_per_batch
+    }
+
+    %% ==========================================
+    %% HUBUNGAN PEWARISAN (INHERITANCE)
+    %% ==========================================
     User <|-- Mahasiswa
     User <|-- Dosen
     User <|-- Kaprodi
 
-    class ThesisSubmission {
-        +BigInteger id
-        +BigInteger student_id
-        +BigInteger supervisor_id
-        +BigInteger supervisor_2_id
-        +String title
-        +Text abstract
-        +String status
-        +Date submission_date
-        +Date defense_date
-        +Decimal final_score
-        +Text notes
-        +getStatusLabel()
-        +canBeEditedByStudent()
-    }
+    %% ==========================================
+    %% HUBUNGAN ASOSIASI DAN MULTIPLISITAS (UMUM)
+    %% ==========================================
+    User "*" -- "1" ProgramStudi : Terdaftar Di
+    Mahasiswa "1" -- "*" ThesisSubmission : Mengajukan
+    Dosen "1" -- "*" ThesisSubmission : Membimbing
+    Dosen "1" -- "*" Assessment : Menilai
+    Assessment "*" -- "1" ThesisSubmission : Dinilai
+    ThesisSubmission "*" -- "0..1" Rubric : Menggunakan
 
-    class SubmissionFile {
-        +BigInteger id
-        +BigInteger thesis_submission_id
-        +String file_name
-        +String file_type
-        +String file_path
-        +BigInteger uploaded_by
-        +getFileTypeLabel()
-        +getFormattedFileSize()
-    }
+    %% ==========================================
+    %% HUBUNGAN ASOSIASI KAPRODI (MANAJEMEN & KONTROL)
+    %% ==========================================
+    Kaprodi "1" -- "*" Mahasiswa : Mengelola
+    Kaprodi "1" -- "*" Dosen : Mengelola
+    Kaprodi "1" -- "1" ProgramStudi : Mengatur
+    Kaprodi "1" -- "*" ThesisSubmission : Mengelola & Mencetak Laporan
+    Kaprodi "1" -- "*" Rubric : Mengelola
 
-    class Assessment {
-        +BigInteger id
-        +BigInteger thesis_submission_id
-        +BigInteger evaluator_id
-        +BigInteger rubric_id
-        +Decimal total_score
-        +Text comments
-        +Boolean is_submitted
-        +Date submitted_at
-        +canBeEditedBy()
-    }
-
-    class Comment {
-        +BigInteger id
-        +BigInteger thesis_submission_id
-        +BigInteger user_id
-        +Text body
-        +Timestamps created_at
-    }
-
-    class ProgramStudi {
-        +BigInteger id
-        +String name
-        +BigInteger faculty_id
-    }
-
-    %% Relationships indicating clear actor assignments
-    Mahasiswa "1" -- "*" ThesisSubmission : Mengajukan (Sebagai Mahasiswa)
-    Dosen "1" -- "*" ThesisSubmission : Membimbing (Sebagai Pembimbing)
-    Dosen "1" -- "*" Assessment : Menilai (Sebagai Penguji)
-    
-    User "1" -- "*" Comment : Menambahkan Komentar Diskusi
-    
-    ThesisSubmission "1" *-- "*" SubmissionFile : Terdiri dari
-    ThesisSubmission "1" *-- "*" Assessment : Memiliki Nilai
-    ThesisSubmission "1" *-- "*" Comment : Memiliki Diskusi Review
-    
-    ProgramStudi "1" -- "*" User : Menampung Anggota Program Studi
+    %% ==========================================
+    %% HUBUNGAN KOMPOSISI (COMPOSITION)
+    %% ==========================================
+    Assessment "1" *-- "*" AssessmentScore : Detail Nilai
+    Rubric "1" *-- "*" AssessmentCriterion : Terdiri dari
 ```

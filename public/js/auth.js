@@ -34,4 +34,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // ── CAPTCHA Reload ──────────────────────────────────────────────────
+    const reloadBtn = document.querySelector('#reload-captcha');
+    const captchaImg = document.querySelector('#captcha-img');
+    
+    if (reloadBtn && captchaImg) {
+        reloadBtn.addEventListener('click', function () {
+            captchaImg.src = captchaImg.src.split('?')[0] + '?t=' + new Date().getTime();
+        });
+    }
+
 });

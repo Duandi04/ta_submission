@@ -23,6 +23,21 @@ class SubmissionController extends Controller
 
     public function create()
     {
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $prodi = $user->programStudi;
+        if ($prodi && ($prodi->submission_start || $prodi->submission_end)) {
+            $now = now();
+            if ($prodi->submission_start && $now->lt($prodi->submission_start)) {
+                return redirect()->route('student.submissions.index')
+                    ->with('error', "Masa pengajuan belum dimulai. Mulai pada: " . $prodi->submission_start->format('d/m/Y H:i'));
+            }
+            if ($prodi->submission_end && $now->gt($prodi->submission_end)) {
+                return redirect()->route('student.submissions.index')
+                    ->with('error', "Masa pengajuan telah berakhir pada: " . $prodi->submission_end->format('d/m/Y H:i'));
+            }
+        }
+
         return view('student.submissions.create');
     }
 
@@ -32,7 +47,7 @@ class SubmissionController extends Controller
             'title' => 'required|max:255',
             'abstract' => 'required',
             'research_field' => 'nullable|max:100',
-            'proposal_file' => 'required|file|mimes:pdf,doc,docx|max:10240',
+            'proposal_file' => 'required|file|mimes:pdf|max:10240',
         ]);
 
         $submission = $this->submissionService->create(
@@ -85,7 +100,7 @@ class SubmissionController extends Controller
             'title' => 'required|max:255',
             'abstract' => 'required',
             'research_field' => 'nullable|max:100',
-            'proposal_file' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
+            'proposal_file' => 'nullable|file|mimes:pdf|max:10240',
         ]);
 
         $this->submissionService->update(
@@ -97,24 +112,6 @@ class SubmissionController extends Controller
         return redirect()
             ->route('student.submissions.show', $submission)
             ->with('success', 'Pengajuan berhasil diperbarui!');
-    }
-
-    public function storeRevision(Request $request, ThesisSubmission $submission)
-    {
-        /** @var \App\Models\User $user */
-        $user = \Illuminate\Support\Facades\Auth::user();
-        abort_if($submission->student_id !== $user->id, 403);
-
-        $request->validate([
-            'revision_file' => 'required|file|mimes:pdf,doc,docx|max:10240',
-        ]);
-
-        $this->submissionService->storeRevision(
-            $submission,
-            $request->file('revision_file')
-        );
-
-        return back()->with('success', 'File revisi berhasil diungggah!');
     }
 
     public function destroy(ThesisSubmission $submission)
@@ -161,6 +158,20 @@ class SubmissionController extends Controller
         $user = \Illuminate\Support\Facades\Auth::user();
         abort_if($submission->student_id !== $user->id, 403);
         abort_if($submission->status !== 'draft', 403, 'Hanya pengajuan draft yang dapat disubmit.');
+
+        // Check Deadline
+        $prodi = $user->programStudi;
+        if ($prodi && ($prodi->submission_start || $prodi->submission_end)) {
+            $now = now();
+            if ($prodi->submission_start && $now->lt($prodi->submission_start)) {
+                return redirect()->route('student.submissions.show', $submission)
+                    ->with('error', "Masa pengajuan belum dimulai. Mulai pada: " . $prodi->submission_start->format('d/m/Y H:i'));
+            }
+            if ($prodi->submission_end && $now->gt($prodi->submission_end)) {
+                return redirect()->route('student.submissions.show', $submission)
+                    ->with('error', "Masa pengajuan telah berakhir pada: " . $prodi->submission_end->format('d/m/Y H:i'));
+            }
+        }
 
         $submission->update(['status' => 'submitted', 'submission_date' => now()]);
 

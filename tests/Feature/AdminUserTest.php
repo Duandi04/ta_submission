@@ -42,8 +42,8 @@ class AdminUserTest extends TestCase
         $response = $this->actingAs($admin)->post(route('admin.users.store'), [
             'name' => 'New User',
             'email' => 'newuser@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
             'role' => 'mahasiswa',
             'nim_nip' => '123456789',
             'phone' => '08123456789',

@@ -3,6 +3,22 @@
 @section('title', 'Detail Pengajuan')
 
 @section('content')
+    @php
+        $user = auth()->user();
+        $prodi = $user->programStudi;
+        $now = now();
+        $isWithinDeadline = true;
+        $deadlineMessage = '';
+        if ($prodi && ($prodi->submission_start || $prodi->submission_end)) {
+            if ($prodi->submission_start && $now->lt($prodi->submission_start)) {
+                $isWithinDeadline = false;
+                $deadlineMessage = 'Masa pengajuan belum dimulai (Mulai pada: ' . $prodi->submission_start->format('d/m/Y H:i') . ')';
+            } elseif ($prodi->submission_end && $now->gt($prodi->submission_end)) {
+                $isWithinDeadline = false;
+                $deadlineMessage = 'Masa pengajuan telah berakhir (Tutup pada: ' . $prodi->submission_end->format('d/m/Y H:i') . ')';
+            }
+        }
+    @endphp
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
         <h1 class="h2 mb-0">Detail Pengajuan</h1>
         <div class="btn-toolbar mb-2 mb-md-0 d-flex align-items-center">
@@ -114,8 +130,7 @@
                                 'final_document',
                                 'presentation',
                             ]);
-                            $revisionFiles = $submission->files->where('file_type', 'revision');
-                            $proposalFile = $submission->files->where('file_type', 'proposal')->first();
+                            $proposalFile = $submission->files->where('file_type', 'proposal')->sortByDesc('created_at')->first();
                         @endphp
 
                         @if ($mainFiles->count() > 0)
@@ -153,82 +168,7 @@
                             </div>
                         @endif
 
-                        <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
-                            <div>
-                                <h6 class="mb-0 fw-bold"><i class="bi bi-clock-history text-warning"></i> Riwayat Revisi</h6>
-                            </div>
-                            <button type="button" class="btn btn-sm btn-primary rounded-pill" data-bs-toggle="modal"
-                                data-bs-target="#uploadRevisionModal">
-                                <i class="bi bi-plus"></i> Unggah Revisi
-                            </button>
-                        </div>
 
-                        @if ($revisionFiles->count() > 0)
-                            <div class="list-group mb-3">
-                                @foreach ($revisionFiles->sortByDesc('created_at') as $file)
-                                    <div
-                                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-0 shadow-sm mb-2 rounded bg-light">
-                                        <div class="d-flex align-items-center">
-                                            <div class="file-icon-wrapper me-3">
-                                                <i class="bi bi-file-earmark-arrow-up-fill text-warning fs-4"></i>
-                                            </div>
-                                            <div>
-                                                <h6 class="mb-0 smaller-text fw-bold">{{ $file->file_name }}</h6>
-                                                <small class="text-muted smaller-extra">
-                                                    {{ $file->created_at->format('d/m/Y H:i') }} •
-                                                    {{ $file->getFormattedFileSize() }}
-                                                </small>
-                                            </div>
-                                        </div>
-                                        <div class="btn-group">
-                                            <a href="{{ route('files.preview', $file) }}"
-                                                class="btn btn-sm btn-outline-primary border-0" target="_blank">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a href="{{ route('files.download', $file->id) }}"
-                                                class="btn btn-sm btn-outline-secondary border-0">
-                                                <i class="bi bi-download"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center py-4 bg-light rounded border border-dashed">
-                                <i class="bi bi-file-earmark-x text-muted fs-1 mb-2 d-block"></i>
-                                <p class="text-muted mb-0 small">Belum ada file revisi yang diunggah.</p>
-                            </div>
-                        @endif
-
-                        <!-- Upload Revision Modal -->
-                        <div class="modal fade" id="uploadRevisionModal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <form action="{{ route('student.submissions.revision', $submission->id) }}"
-                                        method="POST" enctype="multipart/form-data">
-                                        @csrf
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Unggah File Revisi</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label class="form-label">Pilih File Revisi (PDF/Doc/Docx)</label>
-                                                <input type="file" name="revision_file" id="revision_file"
-                                                    class="form-control" required>
-                                                <small class="text-muted">Maksimal 10MB</small>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Batal</button>
-                                            <button type="submit" class="btn btn-primary">Unggah Sekarang</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
 
                         @if ($proposalFile && str_contains($proposalFile->mime_type, 'pdf'))
                             <div class="pdf-preview-container mt-4">
@@ -367,22 +307,29 @@
             <div class="col-md-4">
                 <!-- Submit Button (Only for Draft) -->
                 @if ($submission->status === 'draft')
-                    <div class="card border-success mb-3">
-                        <div class="card-header bg-success text-white">
+                    <div class="card border-{{ $isWithinDeadline ? 'success' : 'danger' }} mb-3">
+                        <div class="card-header bg-{{ $isWithinDeadline ? 'success' : 'danger' }} text-white">
                             <i class="bi bi-send"></i> Ajukan Proposal
                         </div>
                         <div class="card-body">
-                            <p class="small text-muted mb-3">Jika Anda yakin dengan draft ini, silakan ajukan untuk
-                                direview
-                                oleh Kaprodi.</p>
-                            <div class="alert alert-warning py-2 px-3 mb-3 d-flex align-items-start gap-2">
-                                <i class="bi bi-exclamation-triangle-fill mt-1 flex-shrink-0"></i>
-                                <small>Setelah diajukan, pengajuan <strong>tidak dapat dibatalkan</strong>.</small>
-                            </div>
-                            <button type="button" class="btn btn-success w-100" data-bs-toggle="modal"
-                                data-bs-target="#confirmSubmitModal">
-                                <i class="bi bi-send me-1"></i> Ajukan Sekarang
-                            </button>
+                            @if ($isWithinDeadline)
+                                <p class="small text-muted mb-3">Jika Anda yakin dengan draft ini, silakan ajukan untuk
+                                    direview
+                                    oleh Kaprodi.</p>
+                                <div class="alert alert-warning py-2 px-3 mb-3 d-flex align-items-start gap-2">
+                                    <i class="bi bi-exclamation-triangle-fill mt-1 flex-shrink-0"></i>
+                                    <small>Setelah diajukan, pengajuan <strong>tidak dapat dibatalkan</strong>.</small>
+                                </div>
+                                <button type="button" class="btn btn-success w-100" data-bs-toggle="modal"
+                                    data-bs-target="#confirmSubmitModal">
+                                    <i class="bi bi-send me-1"></i> Ajukan Sekarang
+                                </button>
+                            @else
+                                <div class="alert alert-danger py-2 px-3 mb-0 d-flex align-items-start gap-2">
+                                    <i class="bi bi-lock-fill mt-1 flex-shrink-0"></i>
+                                    <small><strong>Pengajuan Ditutup:</strong> {{ $deadlineMessage }}</small>
+                                </div>
+                            @endif
                         </div>
                     </div>
 

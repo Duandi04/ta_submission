@@ -76,7 +76,7 @@
                                         <tr class="small">
                                             <th class="ps-3">Kriteria</th>
                                             <th class="text-center" width="70">Bobot</th>
-                                            <th class="text-center" width="90">Nilai</th>
+                                            <th class="text-center" width="110">Nilai</th>
                                             <th class="text-center" width="80">Kontribusi</th>
                                         </tr>
                                     </thead>
@@ -105,7 +105,9 @@
                                                         class="form-control form-control-sm text-center score-input"
                                                         min="0" max="100" step="0.1"
                                                         value="{{ old('scores.' . $criterion->id, $scoreVal ?? '') }}"
-                                                        required>
+                                                        required
+                                                        style="min-width: 80px;">
+                                                    <div class="invalid-feedback text-center mt-1" style="font-size: 0.65rem;">Rentang 0-100</div>
                                                 </td>
                                                 <td class="text-center small fw-bold contribution-cell">
                                                     {{ number_format($contribution, 1) }}
@@ -179,6 +181,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             const scoreInputs = document.querySelectorAll('.score-input');
             const totalDisplay = document.getElementById('total-score-display');
+            const form = document.querySelector('form');
+
+            function validateInput(input) {
+                const score = parseFloat(input.value);
+                if (input.value !== "" && (isNaN(score) || score < 0 || score > 100)) {
+                    input.classList.add('is-invalid');
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            }
 
             function updateTotal() {
                 let total = 0;
@@ -193,8 +205,15 @@
                 });
             }
 
+            // Validate on load
+            scoreInputs.forEach(input => {
+                validateInput(input);
+            });
+
             scoreInputs.forEach(input => {
                 input.addEventListener('input', function() {
+                    validateInput(this);
+                    
                     const row = this.closest('.criterion-row');
                     const weight = parseFloat(row.dataset.weight) || 0;
                     const score = parseFloat(this.value) || 0;
@@ -209,6 +228,29 @@
                     updateTotal();
                 });
             });
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    let hasInvalid = false;
+                    scoreInputs.forEach(input => {
+                        validateInput(input);
+                        if (input.classList.contains('is-invalid')) {
+                            hasInvalid = true;
+                        }
+                    });
+
+                    if (hasInvalid) {
+                        e.preventDefault();
+                        Swal.fire({
+                            title: 'Peringatan',
+                            text: 'Ada nilai yang berada di luar jangkauan (0 - 100). Silakan periksa kembali nilai Anda.',
+                            icon: 'warning',
+                            confirmButtonColor: '#0d6efd',
+                            confirmButtonText: 'Mengerti'
+                        });
+                    }
+                });
+            }
         });
     </script>
 @endpush

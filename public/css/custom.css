@@ -286,9 +286,9 @@ body {
     background: transparent;
     border: none;
     color: var(--text-muted);
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -312,6 +312,34 @@ body {
     padding-top: 60px;
     z-index: 1030;
     transition: width var(--transition-speed) ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Custom Scrollbar for Sidebar */
+#sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+#sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+
+#sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+[data-bs-theme="dark"] #sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+[data-bs-theme="dark"] #sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 #sidebar.collapsed {
@@ -967,6 +995,12 @@ body {
 
 .password-input-wrapper .password-toggle-btn:focus {
     outline: none;
+}
+
+/* Fix overlapping icons when input is invalid */
+.password-input-wrapper .form-control.is-invalid {
+    background-image: none !important;
+    padding-right: 2.5rem !important; /* Reset to normal padding for the eye icon */
 }
 
 .guest-layout .form-check-input {

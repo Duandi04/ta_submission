@@ -17,9 +17,12 @@
         <div class="col-md-8 mx-auto">
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
-                    <form action="{{ route('kaprodi.lecturers.manage.store') }}" method="POST" class="needs-validation"
+                    <form action="{{ route('kaprodi.lecturers.manage.store') }}" method="POST" enctype="multipart/form-data" class="needs-validation"
                         novalidate>
                         @csrf
+
+                        {{-- Photo Upload --}}
+                        @include('partials.photo-upload', ['user' => new \App\Models\User()])
 
                         <div class="mb-3">
                             <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
@@ -32,7 +35,7 @@
                         </div>
 
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="nim_nip" class="form-label">NIP (Nomor Induk Pegawai) <span
                                         class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('nim_nip') is-invalid @enderror"
@@ -42,7 +45,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control @error('email') is-invalid @enderror"
                                     id="email" name="email" value="{{ old('email') }}"
@@ -51,7 +54,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div hidden class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="program_studi_id" class="form-label">Program Studi <span
                                         class="text-danger">*</span></label>
                                 <input type="hidden" name="program_studi_id" value="{{ $programStudis->first()->id }}">

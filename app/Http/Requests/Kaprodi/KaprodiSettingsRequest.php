@@ -24,6 +24,8 @@ class KaprodiSettingsRequest extends FormRequest
         return [
             'max_batches' => 'required|integer|min:1',
             'attempts_per_batch' => 'required|integer|min:1',
+            'submission_start' => 'nullable|date',
+            'submission_end' => 'nullable|date|after_or_equal:submission_start',
         ];
     }
 }

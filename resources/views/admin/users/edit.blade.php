@@ -116,30 +116,47 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
-                            <select class="form-select @error('role') is-invalid @enderror" id="role" name="role"
-                                required>
-                                <option value="">-- Pilih Role --</option>
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role->name }}"
-                                        {{ old('role', $user->getRoleNames()->first()) == $role->name ? 'selected' : '' }}>
-                                        {{ ucfirst(str_replace('_', ' ', $role->name)) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('role')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <label class="form-label d-block fw-semibold">Roles <span class="text-danger">*</span></label>
+                            @error('roles')
+                                <div class="text-danger small mb-2">{{ $message }}</div>
                             @enderror
+                            <div class="card shadow-sm p-3">
+                                <div class="row">
+                                    @foreach ($roles as $role)
+                                        <div class="col-md-3 col-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input @error('roles') is-invalid @enderror" type="checkbox" name="roles[]" 
+                                                    value="{{ $role->name }}" id="role_{{ $role->id }}"
+                                                    {{ (is_array(old('roles', $user->roles->pluck('name')->toArray())) && in_array($role->name, old('roles', $user->roles->pluck('name')->toArray()))) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="role_{{ $role->id }}">
+                                                    {{ ucfirst(str_replace('_', ' ', $role->name)) }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="is_active" id="is_active"
-                                    value="1" {{ old('is_active', $user->is_active) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="is_active">
-                                    Akun Aktif
-                                </label>
+                            <label class="form-label d-block fw-semibold">Direct Permissions (Opsional)</label>
+                            <div class="card shadow-sm p-3" style="max-height: 250px; overflow-y: auto;">
+                                <div class="row">
+                                    @foreach ($permissions as $permission)
+                                        <div class="col-md-4 col-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="permissions[]" 
+                                                    value="{{ $permission->name }}" id="perm_{{ $permission->id }}"
+                                                    {{ (is_array(old('permissions', $user->permissions->pluck('name')->toArray())) && in_array($permission->name, old('permissions', $user->permissions->pluck('name')->toArray()))) ? 'checked' : '' }}>
+                                                <label class="form-check-label small" for="perm_{{ $permission->id }}">
+                                                    {{ $permission->name }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
+                            <div class="form-text mt-1 text-muted">Permission langsung ini akan mengoverride/menambah permission yang didapat dari Role.</div>
                         </div>
 
                         <hr class="my-4">

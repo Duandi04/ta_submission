@@ -21,12 +21,10 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $rules = [
-            'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'nullable|max:20',
             'address' => 'nullable',
             'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'remove_photo' => 'nullable|boolean',
-            'angkatan' => 'nullable|integer|min:2000|max:2099',
         ];
 
         // Only allow name change if NOT a student or lecturer (e.g., Admin)
@@ -68,7 +66,7 @@ class ProfileController extends Controller
     {
         $validated = $request->validate([
             'current_password' => 'required',
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
         ]);
 
         /** @var \App\Models\User $user */

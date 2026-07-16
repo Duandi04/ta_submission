@@ -13,7 +13,7 @@ Sistem ini menggunakan fungsi internal PHP `similar_text()` yang didasarkan pada
 
 ### Karakteristik Algoritma:
 - **Case-Insensitive**: Sistem mengubah semua input menjadi huruf kecil (`strtolower`) sebelum dibandingkan.
-- **Urutan Karakter**: Algoritma ini mencari urutan karakter terpanjang yang sama (*longest common subsequence*) secara rekursif.
+- **Urutan Karakter**: Algoritma ini mencari substring terpanjang yang sama secara berurutan (*longest common substring*) secara rekursif (bukan subsequence).
 - **Skor Persentase**:
   $$ \text{Kemiripan} = \frac{\text{Jumlah Karakter Sama} \times 2}{\text{Total Panjang String 1} + \text{Total Panjang String 2}} \times 100 $$
 - **Kelebihan**: Sangat efektif untuk membandingkan judul pendek hingga menengah tanpa memerlukan library eksternal yang berat.

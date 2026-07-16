@@ -24,6 +24,20 @@ class StudentController extends Controller
         $students = User::role('mahasiswa')
             ->where('program_studi_id', $user->program_studi_id)
             ->filterByRequest($request)
+            ->when($request->filter_status, function ($q) use ($request) {
+                if ($request->filter_status === 'belum_mengumpulkan') {
+                    $q->where(function ($query) {
+                        $query->whereDoesntHave('thesisSubmissions')
+                            ->orWhereDoesntHave('thesisSubmissions', function ($sq) {
+                                $sq->whereNotIn('status', ['draft', 'cancelled']);
+                            });
+                    });
+                } elseif ($request->filter_status === 'sudah_mengumpulkan') {
+                    $q->whereHas('thesisSubmissions', function ($query) {
+                        $query->whereNotIn('status', ['draft', 'cancelled']);
+                    });
+                }
+            })
             ->when($request->sort_by, function ($q) use ($request) {
                 $q->orderBy($request->sort_by, $request->sort_order ?: 'asc')->orderBy('users.id', $request->sort_order ?: 'asc');
             }, function ($q) {

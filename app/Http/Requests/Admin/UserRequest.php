@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UserRequest extends FormRequest
 {
@@ -27,12 +28,34 @@ class UserRequest extends FormRequest
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $userId,
-            'password' => $this->isMethod('POST') ? 'required|string|min:8|confirmed' : 'nullable|string|min:8|confirmed',
+            'password' => $this->isMethod('POST')
+                ? ['required', 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()]
+                : ['nullable', 'string', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
             'nim_nip' => 'nullable|string|max:50|unique:users,nim_nip,' . $userId,
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
-            'role' => 'required|string|exists:roles,name',
-            'program_studi_id' => 'required_if:role,mahasiswa,dosen,kaprodi|nullable|exists:program_studis,id',
+            // Support both single role (role) and array of roles (roles)
+            'role' => 'required_without:roles|string|exists:roles,name',
+            'roles' => 'required_without:role|array',
+            'roles.*' => 'exists:roles,name',
+            
+            // Direct permissions
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,name',
+
+            'program_studi_id' => [
+                'nullable',
+                'exists:program_studis,id',
+                function ($attribute, $value, $fail) {
+                    $role = $this->input('role');
+                    $roles = $this->input('roles', $role ? [$role] : []);
+                    $requiredRoles = ['mahasiswa', 'dosen', 'kaprodi'];
+                    $hasRequiredRole = count(array_intersect($roles, $requiredRoles)) > 0;
+                    if ($hasRequiredRole && empty($value)) {
+                        $fail('Program Studi wajib diisi untuk mahasiswa, dosen, atau kaprodi.');
+                    }
+                }
+            ],
             'is_active' => 'boolean',
             'angkatan' => 'nullable|integer|min:2000|max:2099',
             'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',

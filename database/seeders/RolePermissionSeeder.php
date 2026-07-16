@@ -57,6 +57,7 @@ class RolePermissionSeeder extends Seeder
             'manage faculties',
             'manage program-studis',
             'manage configuration',
+            'manage rbac',
         ];
 
         foreach ($permissions as $permission) {

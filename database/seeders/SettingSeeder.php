@@ -12,7 +12,7 @@ class SettingSeeder extends Seeder
         \App\Models\Setting::updateOrCreate(
             ['key' => 'max_batches'],
             [
-                'value' => '2',
+                'value' => '3',
                 'description' => 'Maksimal jumlah batch (siklus) pengajuan yang diizinkan'
             ]
         );

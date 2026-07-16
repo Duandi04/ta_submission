@@ -37,6 +37,13 @@
                         <i class="bi bi-tag me-1"></i>{{ $submission->research_field ?? 'Umum' }}
                         <span class="mx-2">|</span>
                         <span class="badge bg-{{ $submission->getStatusBadgeClass() }}">{{ $submission->getStatusLabel() }}</span>
+                        @php
+                            $avgScore = $submission->assessments->where('is_submitted', true)->avg('total_score');
+                        @endphp
+                        @if($avgScore !== null)
+                            <span class="mx-2">|</span>
+                            <span class="text-success fw-bold"><i class="bi bi-star-fill text-warning me-1"></i>Rata-rata Nilai: {{ number_format($avgScore, 2) }}</span>
+                        @endif
                         <span class="mx-2">|</span>
                         <span class="text-muted"><i class="bi bi-files me-1"></i>{{ $submission->files->count() }} Dokumen</span>
                         <span class="mx-2">|</span>
@@ -51,8 +58,7 @@
                         <hr>
                         <h6 class="fw-bold mb-2">Lampiran File</h6>
                         @php
-                            $proposalFiles = $submission->files->where('file_type', 'proposal');
-                            $revisionFiles = $submission->files->where('file_type', 'revision');
+                            $proposalFiles = $submission->files->where('file_type', 'proposal')->sortByDesc('created_at');
                         @endphp
 
                         @if ($proposalFiles->count() > 0)
@@ -84,9 +90,17 @@
             @include('partials.similarity', ['isDetailView' => true, 'excludeId' => $submission->id])
 
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
-                    <span class="fw-bold"><i class="bi bi-clipboard-check me-2 text-success"></i>Hasil Penilaian
-                        Dosen</span>
+                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <span class="fw-bold"><i class="bi bi-clipboard-check me-2 text-success"></i>Hasil Penilaian Dosen</span>
+                    @if($avgScore !== null)
+                        <span class="badge bg-success-subtle text-success border border-success-subtle fs-7 px-3 py-2 rounded-pill">
+                            <i class="bi bi-star-fill text-warning me-1"></i>Rata-rata Nilai: <strong>{{ number_format($avgScore, 2) }}</strong>
+                        </span>
+                    @else
+                        <span class="badge bg-light text-muted border fs-7 px-3 py-2 rounded-pill">
+                            <i class="bi bi-star me-1"></i>Rata-rata Nilai: <strong>-</strong>
+                        </span>
+                    @endif
                 </div>
                 <div class="card-body p-0">
                     @if ($submission->assessments->count() > 0)

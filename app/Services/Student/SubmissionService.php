@@ -25,19 +25,6 @@ class SubmissionService
     }
 
 
-    public function storeRevision(ThesisSubmission $submission, ?UploadedFile $file = null): void
-    {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        // No longer limiting file revisions per submission
-        if ($file) {
-            $this->uploadFile($submission, $file, 'revision');
-        }
-
-        activity()
-            ->performedOn($submission)
-            ->log('Uploaded revision file');
-    }
 
     public function create(array $data, ?UploadedFile $file = null): ThesisSubmission
     {
@@ -61,8 +48,9 @@ class SubmissionService
         }
 
         // 2. Check Submission Limit (Strict Batch Logic)
-        $attemptsPerBatch = (int) Setting::getValue('attempts_per_batch', 3);
-        $maxBatches = (int) Setting::getValue('max_batches', 2);
+        $prodi = $user->programStudi;
+        $attemptsPerBatch = $prodi ? (int) ($prodi->attempts_per_batch ?? 3) : (int) Setting::getValue('attempts_per_batch', 3);
+        $maxBatches = $prodi ? (int) ($prodi->max_batches ?? 2) : (int) Setting::getValue('max_batches', 2);
         $maxTotal = $attemptsPerBatch * $maxBatches;
 
         $allSubmissions = $user->thesisSubmissions()->orderBy('id', 'asc')->get();
@@ -120,6 +108,15 @@ class SubmissionService
         $submission->update(collect($data)->except(['revision_file'])->toArray());
 
         if ($file) {
+            $existingProposals = $submission->files()->where('file_type', 'proposal')->get();
+            foreach ($existingProposals as $existingFile) {
+                $disk = $existingFile->storage_disk ?? config('filesystems.default', 'local');
+                if (\Illuminate\Support\Facades\Storage::disk($disk)->exists($existingFile->file_path)) {
+                    \Illuminate\Support\Facades\Storage::disk($disk)->delete($existingFile->file_path);
+                }
+                $existingFile->forceDelete();
+            }
+
             $this->uploadFile($submission, $file, 'proposal');
         }
 

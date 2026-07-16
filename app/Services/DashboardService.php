@@ -123,13 +123,13 @@ class DashboardService
         $assessments = $user->assessments();
 
         return [
-            'supervised_total'      => $supervised->count(),
-            'supervised_ongoing'    => $supervised->whereIn('status', ['submitted', 'under_review'])->count(),
-            'supervised_completed'  => $supervised->where('status', 'completed')->count(),
+            'supervised_total'      => $supervised->clone()->count(),
+            'supervised_ongoing'    => $supervised->clone()->whereIn('status', ['submitted', 'under_review'])->count(),
+            'supervised_completed'  => $supervised->clone()->where('status', 'completed')->count(),
             'supervised_students'   => $user->supervisedTheses()->with('student')->latest()->take(10)->get(),
-            'pending_assessments'   => $assessments->where('is_submitted', false)->count(),
-            'submitted_assessments' => $assessments->where('is_submitted', true)->count(),
-            'total_assessments'     => $assessments->count(),
+            'pending_assessments'   => $assessments->clone()->where('is_submitted', false)->count(),
+            'submitted_assessments' => $assessments->clone()->where('is_submitted', true)->count(),
+            'total_assessments'     => $assessments->clone()->count(),
         ];
     }
 
