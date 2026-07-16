@@ -34,7 +34,7 @@ class CustomExportSeeder extends Seeder
 
         // Create Fakultas and Prodi
         $faculty = Faculty::create([
-            'code' => 'FKOM',
+            'code' => 'FAKOM',
             'name' => 'Fakultas Komputer'
         ]);
 
@@ -253,6 +253,56 @@ class CustomExportSeeder extends Seeder
                     'content' => $prop['comment']
                 ]);
             }
+        }
+
+        $rejectedData = [
+            ['2022133011', 'Alex Ferguson', 'Perancangan Sistem Crowdsourcing Demand Produk untuk Analisis Kebutuhan Pasar di Indonesia Berbasis Web'],
+            ['2022133001', 'Calvin Whenjaya', 'PERANCANGAN SISTEM REKOMENDASI DESTINASI WISATA BERBASIS KEPRIPADIAN & BUDGET PENGGUNA'],
+            ['2022133012', 'Duandi', 'RANCANG BANGUN SISTEM E-SURAT DENGAN METODOLOGI AGILE SCRUM DI FAKULTAS KOMPUTER UNIVERSITAS UNIVERSAL (UVERS)'],
+            ['2022133012', 'Duandi', 'PERANCANGAN APLIKASI MONITORING, MANAJEMEN, DAN KOLABORASI KEGIATAN HIMPUNAN MAHASISWA UNIVERSITAS UNIVERSAL BERBASIS WEB'],
+            ['2022133012', 'Duandi', 'SISTEM REKOMENDASI KARIER BERBASIS DATA AKADEMIK DAN MINAT DENGAN METODE SAW DI UNIVERSITAS UNIVERSAL'],
+            ['2022133002', 'Dustin Walter Lim', 'Gamifikasi Kebersihan Lingkungan : Perancangan Game Simulasi untuk Menumbuhkan Kesadaran Peduli Lingkungan'],
+            ['2022133007', 'Edison', 'Rancang Bangun Website Informasi Perawatan Kulit Berjerawat dengan Fitur Rekomendasi Produk dan Edukasi'],
+            ['2022133014', 'Fariwati', 'PERANCANGAN GAME EDUKASI DENGAN PENDEKATAN PROBLEM-BASED LEARNING  UNTUK MATERI GERAK PARABOLA DI SMA'],
+            ['2022133003', 'Hadi Susanto', 'Rancang Bangun Game Simulasi Petualangan untuk Mencapai Kebebasan Keuangan Pribadi di Kalangan Generasi-Z'],
+            ['2022133006', 'Herman', 'PERANCANGAN SISTEM MONITORING STOK SPAREPART KOMPUTER BERBASIS WEBSITE PADA CV INNOVATION TECHNOLOGY CENTER'],
+            ['2022133005', 'Khenjy Johnelson', 'PERANCANGANAPLIKASI PEMINJAMAN RUANGAN FASILITAS KAMPUS BERBASIS MOBILE DI UNIVERSITAS UNIVERSAL'],
+            ['2022133005', 'Khenjy Johnelson', 'PERANCANGAN APLIKASI PENGELOLAAN PRODUK INDUSTRI KREATIF PADA PLUT KUMKM BATAM'],
+            ['2022133010', 'Lily', 'RANCANG BANGUN APLIKASI WEB JURNAL HARIAN DENGAN ANALISIS SENTIMEN UNTUK MENDUKUNG KESEHATAN MENTAL MAHASISWA'],
+            ['2022133008', 'Steven Tang', 'Perancangan dan Implementasi Sistem Informasi Marketplace Penjualan Aksesori Ponsel Berbasis Web Responsif Axxora'],
+            ['2022133017', 'Venessya Calista', 'Pengembangan Aplikasi Gamifikasi Pembelajaran Bahasa Mandarin untuk Meningkatkan Literasi Membaca dan Menulis  bagi Penutur Non-Native'],
+            ['2022133018', 'Vito Timothi', 'PENGEMBANGAN SISTEM PENCATATAN DAN MONITORING DATA PEMINJAMAN SARANA DAN PRASARANA UNIVERSITAS BERBASIS WEB'],
+            ['2022133004', 'Vivie Triyanti', 'Rancang Bangun Gameplay Platformer Berbasis 2D dengan Simulasi Visual Dampak Pengelolaan Sampah'],
+        ];
+
+        foreach ($rejectedData as $row) {
+            $nim = trim($row[0]);
+            $name = trim($row[1]);
+            $title = trim($row[2]);
+
+            $student = User::firstOrCreate(
+                ['nim_nip' => $nim],
+                [
+                    'name' => $name,
+                    'email' => strtolower(str_replace(' ', '', $name)) . '@ta.test',
+                    'password' => Hash::make('password'),
+                    'is_active' => true,
+                    'program_studi_id' => $prodi->id,
+                ]
+            );
+
+            if (!$student->hasRole('mahasiswa')) {
+                $student->assignRole('mahasiswa');
+            }
+
+            ThesisSubmission::create([
+                'student_id' => $student->id,
+                'title' => $title,
+                'abstract' => 'Abstrak untuk ' . $title,
+                'research_field' => 'Teknik Perangkat Lunak',
+                'status' => 'rejected',
+                'submission_date' => now()->subDays(rand(31, 60)),
+            ]);
         }
     }
 }
